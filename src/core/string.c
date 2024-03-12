@@ -1,4 +1,4 @@
-#include <ALibrary/core/string.h>
+#include <alibrary/core/string.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -3,51 +3,16 @@
  * \author Christien Alden (34119981)
  * \brief OFF file format internal functions and structures.
 */
-#include <alibrary/geometry/off.h>
+#include "off.h"
 #include <alibrary/math/vec3.h>
 #include <alibrary/core/error.h>
 #include <alibrary/core/string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <setjmp.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
-	/**
-	 * \struct OFFReader
-	*/
-struct OFFReader
-{
-	jmp_buf errorContext;            ///< the error handling context
-	FILE* stream;                    ///< the file stream to read from
-	size_t lineNumber;               ///< the current line number
-	char line[MAX_LINE_LENGTH];      ///< holds the currently buffered line
-	char* tokens[MAX_LINE_TOKENS];   ///< the tokens point to the line buffer
-	size_t numTokens;                ///< the number of tokens in the line
-	bool hasHeader;                  ///< true if the file has an OFF descriptor
-	OFF* obj;                        ///< the object being created
-};
-
-// setup and teardown functions
-static void RemovePreamble(struct OFFReader* reader);
-static void InitialiseOFF(struct OFFReader* reader);
-static void ReadCounts(struct OFFReader* reader);
-static void AllocateVertices(struct OFFReader* reader);
-static void AllocateFaces(struct OFFReader* reader);
-static void ReadVertices(struct OFFReader* reader);
-static void ReadFaces(struct OFFReader* reader);
-static void DestroyOFFFace(struct OFFFace* face);
-
-// utility functions
-static void HandleError(jmp_buf buf, const char* fmt, ...);
-static bool SeekToNextLine(struct OFFReader* reader);
-static bool ShouldIgnoreLine(const char* line);
-static void ValidateFileTail(struct OFFReader* reader);
-
 
 //--------------------------------------------------------------------------------------------------
 // Public Functions

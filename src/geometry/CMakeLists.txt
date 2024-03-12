@@ -3,4 +3,5 @@ target_sources(
 	${PROJECT_NAME}
 	PRIVATE
 		off.c
+		off.h
 )
