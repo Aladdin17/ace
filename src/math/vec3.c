@@ -1,9 +1,19 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \brief 3-component vector types and functions implementation.
+*/
 #include <alibrary/math/vec3.h>
 #include <math.h>
+
+	/**
+	 * \def AML_EPSILON
+	 * \brief An epsilon value for floating point comparisons against zero.
+	*/
 #define AML_EPSILON 1e-5f
 
 //--------------------------------------------------------------------------------------------------
-// Vec3
+// Float
 //--------------------------------------------------------------------------------------------------
 
 Vec3 Vec3Add(const Vec3* a, const Vec3* b)
