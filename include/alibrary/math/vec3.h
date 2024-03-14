@@ -2,6 +2,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	/**
 	 * \typedef Vec3
 	 * \brief A 3-component vector of type float.
@@ -81,3 +85,7 @@ Vec3 Vec3Normalize(const Vec3* v);
 	 * \return True if any of the components of the vector are NaN, false otherwise.
 	*/
 bool Vec3IsNaN(const Vec3* v);
+
+#ifdef __cplusplus
+}
+#endif

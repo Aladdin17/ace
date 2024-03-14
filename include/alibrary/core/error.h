@@ -8,6 +8,9 @@
 #pragma once
 #include <stdarg.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #define ERROR_MESSAGE_SIZE 256
 
 	/**
@@ -31,3 +34,7 @@ void WriteGlobalErrorMessage(const char* fmt, ...);
 	 * \return The global error message.
 	*/
 const char* GetGlobalErrorMessage();
+
+#ifdef __cplusplus
+}
+#endif

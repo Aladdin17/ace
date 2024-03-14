@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	/**
 	 * \def MAX_LINE_LENGTH
 	 * \brief The maximum length of a line in the OFF file format.
@@ -68,3 +72,7 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision);
 	*/
 void OFFDestroy(OFF** obj);
 void OFFNormalise(OFF* obj, bool alignToOrigin);
+
+#ifdef __cplusplus
+}
+#endif

@@ -3,6 +3,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	/**
 	 * \brief Converts the given string to an unsigned 32-bit integer.
 	 * \param[in] str The string to convert.
@@ -16,3 +20,7 @@ bool strToUint32(const char* str, uint32_t* value, int base);
 bool strToFloat(const char* str, float* value);
 size_t tokeniseLine(char* line, char** tokens, size_t maxTokens);
 void removeNewlineChar(char* str);
+
+#ifdef __cplusplus
+}
+#endif

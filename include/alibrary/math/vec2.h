@@ -2,6 +2,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	/**
 	 * \typedef Vec2f
 	 * \brief A 2-component vector.
@@ -77,3 +81,7 @@ Vec2f Vec2fNormalize(const Vec2f* v);
 	 * \return True if any of the components of the vector are NaN, false otherwise.
 	*/
 bool Vec2fIsNaN(const Vec2f* v);
+
+#ifdef __cplusplus
+}
+#endif
