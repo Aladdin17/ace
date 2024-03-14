@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	/**
 	 * \struct OFFReader
 	*/
@@ -34,3 +38,7 @@ INTERNAL void HandleError(jmp_buf buf, const char* fmt, ...);
 INTERNAL bool SeekToNextLine(struct OFFReader* reader);
 INTERNAL bool ShouldIgnoreLine(const char* line);
 INTERNAL void ValidateFileTail(struct OFFReader* reader);
+
+#ifdef __cplusplus
+}
+#endif

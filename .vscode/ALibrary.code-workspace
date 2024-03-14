@@ -9,7 +9,8 @@
 		"cmake.configureOnOpen": true,
 		"cmake.buildDirectory": "${workspaceFolder}/.build",
 		"cmake.configureSettings": {
-			"CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
+			"CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+			"AL_BUILD_TESTS": "ON"
 		},
 
 		"launch": {
