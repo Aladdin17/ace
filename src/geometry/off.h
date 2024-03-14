@@ -1,3 +1,14 @@
+/**
+ * \file
+ * \author Christien Alden (34119981)
+ * \brief Internal header for the OFF file format reader
+ * \remark
+ * This file contains internal declarations and should not be included directly;
+ * include \ref alibrary/geometry/off.h instead. The file has been made available
+ * for the purpose of documentation and testing.
+ *
+*/
+#pragma once
 #include <core/config.h>
 #include <alibrary/geometry/off.h>
 #include <stdio.h>
