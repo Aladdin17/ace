@@ -11,6 +11,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	/**
+	 * \brief Set the global error message.
+	 * \param[in] fmt printf style format string.
+	 * \param[in] args va_list of arguments.
+	 * \note The message is truncated to ERROR_MESSAGE_SIZE - 1 characters.
+	 * \note You must call va_end(args) after calling this function.
+	*/
 #define ERROR_MESSAGE_SIZE 256
 
 	/**
