@@ -1,8 +1,9 @@
-cmake_minimum_required( VERSION 3.8 )
+cmake_minimum_required( VERSION 3.9 )
 project(
 	aLibrary
-	VERSION 0.0.1
+	VERSION 0.1
 	LANGUAGES C CXX
+	DESCRIPTION "A C graphics utility library"
 )
 
 set( CMAKE_POLICY_DEFAULT_CMP0076 NEW )
@@ -90,4 +91,41 @@ if( AL_BUILD_TESTS )
 	include( CTest )
 	include( Catch )
 	catch_discover_tests( ${PROJECT_NAME}_test )
+endif()
+
+option( AL_BUILD_DOCS "Build aLibrary documentation" ON )
+if( AL_BUILD_DOCS )
+	find_package(
+		Doxygen
+		OPTIONAL_COMPONENTS dot
+	)
+
+	if( Doxygen_FOUND )
+		if( NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/docs" )
+			file( MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs" )
+		endif()
+
+		# set doxygen options
+		option( DOXYGEN_GENERATE_HTML "Generate HTML documentation" ON )
+		option( DOXYGEN_GENERATE_LATEX "Generate LaTeX documentation" OFF )
+
+		# configure for project
+		set( DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES )
+		set( DOXYGEN_WARN_IF_UNDOCUMENTED NO )
+		set( DOXYGEN_EXTRACT_STATIC NO )
+		set( DOXYGEN_EXTRACT_PRIVATE NO )
+		set( DOXYGEN_TYPEDEF_HIDES_STRUCT YES )
+		set( DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md" )
+		set( DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/docs" )
+
+		# add doxygen target and link to project build
+		doxygen_add_docs(
+			docs
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+			${CMAKE_CURRENT_SOURCE_DIR}/src
+		)
+		add_dependencies( ${PROJECT_NAME} docs )
+	else()
+		message( "Doxygen not found, cannot build documentation" )
+	endif()
 endif()

@@ -35,6 +35,10 @@
 		"foldOnOpen.targets": [
 			"AllBlockComments"
 		],
-		"dotnet.defaultSolution": "disable"
+		"dotnet.defaultSolution": "disable",
+
+		"files.exclude": {
+			"docs/": false
+		}
 	}
 }
