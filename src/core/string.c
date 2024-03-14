@@ -1,3 +1,8 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \brief String manipulation functions implementation.
+*/
 #include <alibrary/core/string.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,16 +59,15 @@ bool strToFloat(const char* str, float* value)
 	return true;
 }
 
-size_t tokeniseLine(char* line, char** tokens, size_t maxTokens)
+size_t tokeniseString(char* str, char** tokens, size_t maxTokens, const char* delimiters)
 {
-	const char delimiters[] = " \t"; // space and tab
-	size_t count = 0;                // number of tokens found
+	size_t count = 0;
 
 #pragma warning(push)
 #pragma warning(disable : 4996) // disable msvc warning to use strtok_s instead of strtok
 
-	// use strtok to split the line into tokens
-	char* token = strtok(line, delimiters);
+	// use strtok to split the str into tokens
+	char* token = strtok(str, delimiters);
 	while (token != NULL && count < maxTokens)
 	{
 		// store the token in the array and increment the count
