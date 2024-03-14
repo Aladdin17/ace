@@ -1,18 +1,18 @@
 /**
  * \file
- * \author Christien Alden (34119981)
- * \brief OFF file format internal functions and structures.
+ * \author Christien Alden
+ * \brief OFF functions and structures implementation.
 */
 #include "off.h"
 #include <alibrary/math/vec3.h>
 #include <alibrary/core/error.h>
 #include <alibrary/core/string.h>
-#include <assert.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <string.h>
+#include <stdint.h>
 
 //--------------------------------------------------------------------------------------------------
 // Public Functions
@@ -27,7 +27,7 @@ OFF* OFFImportFile(FILE* stream)
 	}
 
 	// setup OFFReader object
-	struct OFFReader reader = {
+	OFFReader reader = {
 		.stream = stream,
 		.lineNumber = 0,
 		.hasHeader = false,
@@ -79,7 +79,7 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
 	{
 		for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
 		{
-			struct OFFFace* face = &obj->faces[fi];
+			OFFFace* face = &obj->faces[fi];
 			fprintf(stream, "%d", face->type);
 
 			for (int vi = 0; vi < (int) face->type; ++vi)
@@ -101,7 +101,7 @@ void OFFDestroy(OFF** obj)
 	// destroy the faces and vertices
 	for (uint32_t fi = 0; fi < (*obj)->numFaces; ++fi)
 	{
-		struct OFFFace* face = &(*obj)->faces[fi];
+		OFFFace* face = &(*obj)->faces[fi];
 		DestroyOFFFace(face);
 	}
 	free((*obj)->faces);
@@ -182,7 +182,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 // Setup and Teardown
 //--------------------------------------------------------------------------------------------------
 
-void RemovePreamble(struct OFFReader* reader)
+void RemovePreamble(OFFReader* reader)
 {
 	// read the first line of the file
 	if (!SeekToNextLine(reader))
@@ -191,13 +191,13 @@ void RemovePreamble(struct OFFReader* reader)
 	}
 
 	// check if the line is the OFF descriptor
-	reader->numTokens = tokeniseLine(reader->line, reader->tokens, MAX_LINE_TOKENS);
+	reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
 	if (reader->numTokens == 0)
 	{
 		// this should never happen...
 		HandleError(
 			reader->errorContext,
-			"OFF : tokeniseLine failed when reading OFF descriptor on line %d, contact the developer",
+			"OFF : tokeniseString failed when reading OFF descriptor on line %d, contact the developer",
 			reader->lineNumber
 		);
 	}
@@ -229,7 +229,7 @@ void RemovePreamble(struct OFFReader* reader)
 	}
 }
 
-void ReadCounts(struct OFFReader* reader)
+void ReadCounts(OFFReader* reader)
 {
 	// if the last buffered line was the header, we need to read the next line
 	if (reader->hasHeader)
@@ -242,7 +242,7 @@ void ReadCounts(struct OFFReader* reader)
 			);
 		}
 
-		reader->numTokens = tokeniseLine(reader->line, reader->tokens, MAX_LINE_TOKENS);
+		reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
 	}
 
 	// there needs to be at least 3 tokens for the vertex, face, and edge counts
@@ -297,7 +297,7 @@ void ReadCounts(struct OFFReader* reader)
 	return;
 }
 
-void InitialiseOFF(struct OFFReader* reader)
+void InitialiseOFF(OFFReader* reader)
 {
 	reader->obj = (OFF*) malloc(sizeof(OFF));
 	if (reader->obj == NULL)
@@ -317,7 +317,7 @@ void InitialiseOFF(struct OFFReader* reader)
 	obj->faces = NULL;
 }
 
-void AllocateVertices(struct OFFReader* reader)
+void AllocateVertices(OFFReader* reader)
 {
 	OFF* obj = reader->obj;
 	obj->vertices = (Vec3*) malloc(sizeof(Vec3) * obj->numVertices);
@@ -335,10 +335,10 @@ void AllocateVertices(struct OFFReader* reader)
 	}
 }
 
-void AllocateFaces(struct OFFReader* reader)
+void AllocateFaces(OFFReader* reader)
 {
 	OFF* obj = reader->obj;
-	obj->faces = (struct OFFFace*) malloc(sizeof(struct OFFFace) * obj->numFaces);
+	obj->faces = (OFFFace*) malloc(sizeof(OFFFace) * obj->numFaces);
 	if (obj->faces == NULL)
 	{
 		HandleError(
@@ -349,13 +349,13 @@ void AllocateFaces(struct OFFReader* reader)
 
 	for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
 	{
-		struct OFFFace* face = &obj->faces[fi];
+		OFFFace* face = &obj->faces[fi];
 		face->vertices = NULL;
 		face->type = UNDEFINED;
 	}
 }
 
-void ReadVertices(struct OFFReader* reader)
+void ReadVertices(OFFReader* reader)
 {
 	OFF* obj = reader->obj;
 
@@ -369,7 +369,7 @@ void ReadVertices(struct OFFReader* reader)
 		}
 
 		// tokenise the line and check that there are at least 3 tokens
-		reader->numTokens = tokeniseLine(reader->line, reader->tokens, MAX_LINE_TOKENS);
+		reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
 		if (reader->numTokens < 3)
 		{
 			HandleError(
@@ -420,7 +420,7 @@ void ReadVertices(struct OFFReader* reader)
 	}
 }
 
-void ReadFaces(struct OFFReader* reader)
+void ReadFaces(OFFReader* reader)
 {
 	OFF* obj = reader->obj;
 
@@ -435,7 +435,7 @@ void ReadFaces(struct OFFReader* reader)
 		}
 
 		// tokenise the line and check that there are at least 4 tokens
-		reader->numTokens = tokeniseLine(reader->line, reader->tokens, MAX_LINE_TOKENS);
+		reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
 		if (reader->numTokens < 4)
 		{
 			HandleError(
@@ -457,7 +457,7 @@ void ReadFaces(struct OFFReader* reader)
 		}
 
 		// set the type of the face and allocate memory for the vertices
-		struct OFFFace* face = &obj->faces[fi];
+		OFFFace* face = &obj->faces[fi];
 		face->type = (enum OFFFaceType) numVertices;
 		face->vertices = (uint32_t*) malloc(sizeof(uint32_t) * numVertices);
 
@@ -487,7 +487,7 @@ void ReadFaces(struct OFFReader* reader)
 	}
 }
 
-void DestroyOFFFace(struct OFFFace* face)
+void DestroyOFFFace(OFFFace* face)
 {
 	if (face == NULL)
 	{
@@ -516,12 +516,12 @@ void HandleError(jmp_buf buf, const char* fmt, ...)
 	longjmp(buf, 1);
 }
 
-bool SeekToNextLine(struct OFFReader* file)
+bool SeekToNextLine(OFFReader* file)
 {
 	do
 	{
 		file->lineNumber++;
-		if (fgets(file->line, MAX_LINE_LENGTH, file->stream) == NULL)
+		if (fgets(file->line, OFF_MAX_LINE_LENGTH, file->stream) == NULL)
 		{
 			return false;
 		}
@@ -545,7 +545,7 @@ bool ShouldIgnoreLine(const char* line)
 	return *p == '#' || *p == '\r' || *p == '\n';
 }
 
-void ValidateFileTail(struct OFFReader* reader)
+void ValidateFileTail(OFFReader* reader)
 {
 	// check for extra invalid lines at end of file
 	if (SeekToNextLine(reader))

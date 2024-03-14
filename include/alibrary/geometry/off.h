@@ -1,7 +1,7 @@
 /**
  * \file
- * \author Christien Alden (34119981)
- * \brief OFF file format public functions and structures.
+ * \author Christien Alden
+ * \brief OFF functions and structures.
 */
 #pragma once
 #include <alibrary/math/vec3.h>
@@ -13,36 +13,36 @@ extern "C" {
 #endif
 
 	/**
-	 * \def MAX_LINE_LENGTH
+	 * \def OFF_MAX_LINE_LENGTH
 	 * \brief The maximum length of a line in the OFF file format.
 	*/
-#define MAX_LINE_LENGTH 128
+#define OFF_MAX_LINE_LENGTH 128
 	/**
-	 * \def MAX_LINE_TOKENS
+	 * \def OFF_MAX_LINE_TOKENS
 	 * \brief The maximum number of tokens in a line in the OFF file format.
 	*/
-#define MAX_LINE_TOKENS 16
+#define OFF_MAX_LINE_TOKENS 16
 
 	/**
 	 * \enum OFFFaceType
 	 * \brief Represents the number of vertices in a face.
 	*/
-enum OFFFaceType
+typedef enum OFFFaceType
 {
 	UNDEFINED = 0,
 	TRIANGLE = 3,
 	QUAD = 4
-};
+} OFFFaceType;
 
 	/**
 	 * \struct OFFFace
-	 * \brief Represents a triangle in the OFF file format.
+	 * \brief Represents a face in an OFF object.
 	*/
-struct OFFFace
+typedef struct OFFFace
 {
-	uint32_t* vertices;
-	enum OFFFaceType type;
-};
+	uint32_t* vertices;   ///< The indices of the vertices in the face.
+	OFFFaceType type;     ///< Represents the type of the face (number of vertices).
+} OFFFace;
 
 	/**
 	 * \struct OFF
@@ -50,18 +50,18 @@ struct OFFFace
 	*/
 typedef struct OFF
 {
-	uint32_t numVertices;
-	uint32_t numFaces;
-	uint32_t numEdges;
-	Vec3* vertices;
-	struct OFFFace* faces;
+	uint32_t numVertices;   ///< The number of vertices in the object.
+	uint32_t numFaces;      ///< The number of faces in the object.
+	uint32_t numEdges;      ///< The number of edges in the object (not used).
+	Vec3* vertices;         ///< The vertices in the object.
+	OFFFace* faces;         ///< The faces in the object.
 } OFF;
 
 	/**
 	 * \brief Creates a new OFF object from the given stream.
 	 * \param[in] stream The stream to read the OFF file from.
 	 * \return A new OFF object, or NULL if the stream was invalid.
-	 * \note If NULL is returned the \ref global_error_message will be set.
+	 * \note If NULL is returned the global_error_message will be set, see \ref GetGlobalErrorMessage.
 	*/
 OFF* OFFImportFile(FILE* stream);
 void OFFExportFile(OFF* obj, FILE* stream, int precision);
