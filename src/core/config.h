@@ -1,9 +1,18 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \brief Common configuration settings for the core library.
+*/
 #pragma once
 
-// conditionally compile internal functions as static based on the build configuration
-// this is mainly used to expose internal functions to the test suite
 #ifdef AL_NO_STATIC_FUNCTIONS
 	#define INTERNAL
 #else
 	#define INTERNAL static
 #endif
+
+/**
+ * \def INTERNAL
+ * \brief Allows for conditional static linkage of functions based on the build requirements.
+ * \remark Used to support testing of static functions in the core library.
+*/
