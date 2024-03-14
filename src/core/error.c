@@ -1,5 +1,9 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \brief Error message system implementation.
+*/
 #include <ALibrary/core/error.h>
-#include <stdarg.h>
 #include <stdio.h>
 
 static char global_error_message[ERROR_MESSAGE_SIZE] = { '\0' };
