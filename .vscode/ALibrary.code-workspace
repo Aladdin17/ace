@@ -21,6 +21,12 @@
 			"AL_RUN_CLANG_TIDY": "ON"
 		},
 
+		// set indentation format
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4,
+		"editor.useTabStops": false,
+
 		"foldOnOpen.disableFiles": [
 			"**/*.c"
 		],

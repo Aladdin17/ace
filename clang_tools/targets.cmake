@@ -12,6 +12,7 @@ file(
 	GLOB_RECURSE
 	FORMAT_SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/*.c
+    ${CMAKE_SOURCE_DIR}/src/*.h
 	${CMAKE_SOURCE_DIR}/include/*.h
 )
 
