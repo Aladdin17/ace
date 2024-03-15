@@ -23,6 +23,9 @@
 	#define fprintf fprintf
 #endif
 
+// the base being used for the uint conversion
+static const int off_uint_base = 10;
+
 //--------------------------------------------------------------------------------------------------
 // Public Functions
 //--------------------------------------------------------------------------------------------------
@@ -148,7 +151,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 	{
 		centroid = Vec3Add(&centroid, &vertices[vi]);
 	}
-	centroid = Vec3Scale(&centroid, 1.0f / numVertices);
+	centroid = Vec3Scale(&centroid, 1.0f / (float) numVertices);
 
 	// translate the vertices to the origin
 	for (uint32_t vi = 0; vi < numVertices; ++vi)
@@ -266,7 +269,7 @@ void ReadCounts(OFFReader* reader)
 
 	// attempt to convert each token to an integer and store the results
 	OFF* obj = reader->obj;
-	if (!strToUint32(reader->tokens[0], &obj->numVertices, 10))
+	if (!strToUint32(reader->tokens[0], &obj->numVertices, off_uint_base))
 	{
 		HandleError(
 			reader->errorContext,
@@ -275,7 +278,7 @@ void ReadCounts(OFFReader* reader)
 		);
 	}
 
-	if (!strToUint32(reader->tokens[1], &obj->numFaces, 10))
+	if (!strToUint32(reader->tokens[1], &obj->numFaces, off_uint_base))
 	{
 		HandleError(
 			reader->errorContext,
@@ -284,7 +287,7 @@ void ReadCounts(OFFReader* reader)
 		);
 	}
 
-	if (!strToUint32(reader->tokens[2], &obj->numEdges, 10))
+	if (!strToUint32(reader->tokens[2], &obj->numEdges, off_uint_base))
 	{
 		HandleError(
 			reader->errorContext,
@@ -302,8 +305,6 @@ void ReadCounts(OFFReader* reader)
 			reader->lineNumber
 		);
 	}
-
-	return;
 }
 
 void InitialiseOFF(OFFReader* reader)
@@ -360,7 +361,7 @@ void AllocateFaces(OFFReader* reader)
 	{
 		OFFFace* face = &obj->faces[fi];
 		face->vertices = NULL; // NOLINT (clang-analyzer-core.NullDereference)
-		face->type = UNDEFINED;
+		face->type = OFFFaceType_UNDEFINED;
 	}
 }
 
@@ -454,9 +455,12 @@ void ReadFaces(OFFReader* reader)
 			);
 		}
 
-		// convert and validate the number of vertices in the face, must be 3 or 4
+		// convert and validate the number of vertices in the face
 		uint32_t numVertices;
-		if (!strToUint32(reader->tokens[0], &numVertices, 10) || numVertices < 3 || numVertices > 4)
+		if (!strToUint32(
+			reader->tokens[0], &numVertices, off_uint_base) ||
+			numVertices < OFFFaceType_MIN ||
+			numVertices > OFFFaceType_MAX)
 		{
 			HandleError(
 				reader->errorContext,
@@ -474,7 +478,7 @@ void ReadFaces(OFFReader* reader)
 		for (uint32_t vi = 0; vi < numVertices; ++vi)
 		{
 			uint32_t* vertex = &face->vertices[vi];
-			if (!strToUint32(reader->tokens[vi + 1], vertex, 10))
+			if (!strToUint32(reader->tokens[vi + 1], vertex, off_uint_base))
 			{
 				HandleError(
 					reader->errorContext,
@@ -508,7 +512,7 @@ void DestroyOFFFace(OFFFace* face)
 
 	// reset fields
 	face->vertices = NULL;
-	face->type = UNDEFINED;
+	face->type = OFFFaceType_UNDEFINED;
 }
 
 
@@ -543,15 +547,15 @@ bool SeekToNextLine(OFFReader* file)
 bool ShouldIgnoreLine(const char* line)
 {
 	// parse through the line until we find a non-whitespace character
-	const char* p = line;
-	while (*p == ' ' || *p == '\t')
+	const char* cp = line;
+	while (*cp == ' ' || *cp == '\t')
 	{
-		p++;
+		cp++;
 	}
 
 	// ignore the line if the first non-whitespace character is:
 	// a comment, carriage return, or newline
-	return *p == '#' || *p == '\r' || *p == '\n';
+	return *cp == '#' || *cp == '\r' || *cp == '\n';
 }
 
 void ValidateFileTail(OFFReader* reader)

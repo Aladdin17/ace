@@ -93,6 +93,7 @@ Vec3 Vec3Normalize(const Vec3* v)
 	return Vec3Scale(v, invMagnitude);
 }
 
+// NOLINTNEXTLINE (readability-function-cognitive-complexity)
 bool Vec3IsNaN(const Vec3* v)
 {
 	return (

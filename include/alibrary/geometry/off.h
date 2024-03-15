@@ -29,9 +29,11 @@ extern "C" {
 	*/
 typedef enum OFFFaceType
 {
-	UNDEFINED = 0,
-	TRIANGLE = 3,
-	QUAD = 4
+	OFFFaceType_UNDEFINED = 0,
+	OFFFaceType_TRIANGLE = 3,
+	OFFFaceType_QUAD = 4,
+	OFFFaceType_MIN = OFFFaceType_TRIANGLE,
+	OFFFaceType_MAX = OFFFaceType_QUAD
 } OFFFaceType;
 
 	/**

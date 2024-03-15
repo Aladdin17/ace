@@ -1,6 +1,17 @@
-{
-   "Checks": "-*,modernize-*,performance-*",
-   "WarningsAsErrors": "",
-   "HeaderFilterRegex": "",
-   "FormatStyle": "none"
-}
+Checks: |
+   -*,
+   bugprone-*,
+   clang-analyzer-*,
+   misc-*,
+   -misc-include-cleaner,
+   modernize-*,
+   performance-*,
+   portability-*,
+   readability-*,
+   -readability-uppercase-literal-suffix
+CheckOptions:
+   readability-identifier-length.MinimumParameterNameLength: 0
+   readability-identifier-length.MinimumVariableNameLength: 2
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: 'none'
