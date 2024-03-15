@@ -81,6 +81,18 @@ if( AL_BUILD_TESTS )
 			CXX_STANDARD_REQUIRED ON
 	)
 
+	target_compile_options(
+		${PROJECT_NAME}_test
+		PRIVATE
+			# Set gcc compiler warnings
+			$<$<C_COMPILER_ID:GNU>: -Wall -Wextra -Wpedantic>
+			$<$<C_COMPILER_ID:GNU>: -Wno-unknown-pragmas> # disable warnings from external headers
+
+			# Set MSVC compiler warnings
+			$<$<C_COMPILER_ID:MSVC>: /W4>
+			$<$<C_COMPILER_ID:MSVC>: /external:anglebrackets /external:W0> # disable warnings from external headers
+	)
+
 	# link Catch2, base library, and tests directory
 	target_link_libraries( ${PROJECT_NAME}_test PRIVATE Catch2::Catch2WithMain )
 	target_link_libraries( ${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME} )
@@ -106,8 +118,8 @@ if( AL_BUILD_DOCS )
 		endif()
 
 		# set doxygen options
-		option( DOXYGEN_GENERATE_HTML "Generate HTML documentation" ON )
-		option( DOXYGEN_GENERATE_LATEX "Generate LaTeX documentation" OFF )
+		set( DOXYGEN_GENERATE_HTML TRUE CACHE BOOL "Generate HTML documentation" )
+		set( DOXYGEN_GENERATE_LATEX FALSE CACHE BOOL "Generate LaTeX documentation" )
 
 		# configure for project
 		set( DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES )
@@ -127,5 +139,14 @@ if( AL_BUILD_DOCS )
 		add_dependencies( ${PROJECT_NAME} docs )
 	else()
 		message( "Doxygen not found, cannot build documentation" )
+	endif()
+endif()
+
+option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
+if( AL_USE_CLANG_TOOLS )
+	include( clang_tools/targets.cmake )
+	option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
+	if( AL_RUN_CLANG_TIDY )
+		add_dependencies( ${PROJECT_NAME} clang-tidy )
 	endif()
 endif()

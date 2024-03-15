@@ -19,37 +19,37 @@
 Vec3 Vec3Add(const Vec3* a, const Vec3* b)
 {
 	return (Vec3) {
-		a->x + b->x,
+		{ a->x + b->x ,
 		a->y + b->y,
-		a->z + b->z
+		a->z + b->z }
 	};
 }
 
 Vec3 Vec3Sub(const Vec3* a, const Vec3* b)
 {
-	return (Vec3) {
+	return (Vec3) {{
 		a->x - b->x,
 		a->y - b->y,
 		a->z - b->z
-	};
+	}};
 }
 
 Vec3 Vec3Neg(const Vec3* v)
 {
-	return (Vec3) {
+	return (Vec3) {{
 		-v->x,
 		-v->y,
 		-v->z
-	};
+	}};
 }
 
 Vec3 Vec3Scale(const Vec3* v, float scalar)
 {
-	return (Vec3) {
+	return (Vec3) {{
 		v->x * scalar,
 		v->y * scalar,
 		v->z * scalar
-	};
+	}};
 }
 
 float Vec3Dot(const Vec3* a, const Vec3* b)
@@ -63,11 +63,11 @@ float Vec3Dot(const Vec3* a, const Vec3* b)
 
 Vec3 Vec3Cross(const Vec3* a, const Vec3* b)
 {
-	return (Vec3) {
+	return (Vec3) {{
 		a->y * b->z - a->z * b->y,
 		a->z * b->x - a->x * b->z,
 		a->x * b->y - a->y * b->x
-	};
+	}};
 }
 
 float Vec3Lenth(const Vec3* v)

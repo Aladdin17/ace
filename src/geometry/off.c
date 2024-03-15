@@ -14,6 +14,15 @@
 #include <string.h>
 #include <stdint.h>
 
+#ifdef __STD_LIB_EXT1__
+	// use the secure CRT functions if available
+	#define fprintf fprintf_s
+#else
+	// ignore the use of depracated functions if secure CRT is not available
+	// NOLINTNEXTLINE (clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
+	#define fprintf fprintf
+#endif
+
 //--------------------------------------------------------------------------------------------------
 // Public Functions
 //--------------------------------------------------------------------------------------------------
@@ -57,14 +66,14 @@ OFF* OFFImportFile(FILE* stream)
 
 void OFFExportFile(OFF* obj, FILE* stream, int precision)
 {
-	fprintf(stream, "OFF\n");
-	fprintf(stream, "%d %d %d\n", obj->numVertices, obj->numFaces, obj->numEdges);
+	fprintf_s(stream, "OFF\n");
+	fprintf_s(stream, "%d %d %d\n", obj->numVertices, obj->numFaces, obj->numEdges);
 	if (obj->numVertices > 0)
 	{
 		for (uint32_t vi = 0; vi < obj->numVertices; ++vi)
 		{
 			Vec3* vertex = &obj->vertices[vi];
-			fprintf(stream, "%.*f %.*f %.*f\n",
+			fprintf_s(stream, "%.*f %.*f %.*f\n",
 				precision,
 				vertex->x,
 				precision,
@@ -133,7 +142,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 	}
 
 	// find the centroid of the mesh
-	Vec3 centroid = { 0.0f, 0.0f, 0.0f };
+	Vec3 centroid = {{ 0.0f, 0.0f, 0.0f }};
 	Vec3* vertices = obj->vertices;
 	for (uint32_t vi = 0; vi < numVertices; ++vi)
 	{
@@ -331,7 +340,7 @@ void AllocateVertices(OFFReader* reader)
 
 	for (uint32_t vi = 0; vi < obj->numVertices; ++vi)
 	{
-		obj->vertices[vi] = (Vec3) { 0.0f, 0.0f, 0.0f };
+		obj->vertices[vi] = (Vec3) { 0.0f, 0.0f, 0.0f }; // NOLINT (clang-analyzer-core.NullDereference)
 	}
 }
 
@@ -350,7 +359,7 @@ void AllocateFaces(OFFReader* reader)
 	for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
 	{
 		OFFFace* face = &obj->faces[fi];
-		face->vertices = NULL;
+		face->vertices = NULL; // NOLINT (clang-analyzer-core.NullDereference)
 		face->type = UNDEFINED;
 	}
 }
@@ -458,7 +467,7 @@ void ReadFaces(OFFReader* reader)
 
 		// set the type of the face and allocate memory for the vertices
 		OFFFace* face = &obj->faces[fi];
-		face->type = (enum OFFFaceType) numVertices;
+		face->type = (OFFFaceType) numVertices; // NOLINT (clang-analyzer-optin.core.EnumCastOutOfRange)
 		face->vertices = (uint32_t*) malloc(sizeof(uint32_t) * numVertices);
 
 		// attempt to convert each token to an integer and store the results
