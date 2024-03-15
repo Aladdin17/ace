@@ -22,6 +22,7 @@ find_program( CLANG_TIDY_EXE NAMES clang-tidy )
 add_custom_target(
 	clang-tidy
 	COMMAND ${CLANG_TIDY_EXE}
+		--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
 		${ALL_SOURCE_FILES}
 		-p ${CMAKE_BINARY_DIR}
 )
