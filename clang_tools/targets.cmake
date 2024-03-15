@@ -4,25 +4,32 @@
 # Get all project files
 file(
 	GLOB_RECURSE
-	ALL_SOURCE_FILES
+	TIDY_SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/*.c
 )
 
-# Get the executable path
-find_program( CLANG_TIDY_EXE NAMES clang-tidy )
+file(
+	GLOB_RECURSE
+	FORMAT_SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/*.c
+	${CMAKE_SOURCE_DIR}/include/*.h
+)
 
-# add_custom_target(
-# 	clang-format
-# 	COMMAND /usr/bin/clang-format
-# 	-style=file
-# 	-i
-# 	${ALL_SOURCE_FILES}
-# )
+find_program( CLANG_TIDY_EXE NAMES clang-tidy )
+find_program( CLANG_FORMAT_EXE NAMES clang-format )
 
 add_custom_target(
 	clang-tidy
 	COMMAND ${CLANG_TIDY_EXE}
 		--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
-		${ALL_SOURCE_FILES}
+		${TIDY_SOURCE_FILES}
 		-p ${CMAKE_BINARY_DIR}
+)
+
+add_custom_target(
+	clang-format
+	COMMAND ${CLANG_FORMAT_EXE}
+		-i
+		--style=file:${CMAKE_SOURCE_DIR}/clang_tools/.clang-format
+		${FORMAT_SOURCE_FILES}
 )
