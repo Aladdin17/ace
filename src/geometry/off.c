@@ -142,9 +142,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     }
 
     // find the centroid of the mesh
-    Vec3 centroid = {
-        { 0.0f, 0.0f, 0.0f }
-    };
+    Vec3  centroid = { 0.0f, 0.0f, 0.0f };
     Vec3* vertices = obj->vertices;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
