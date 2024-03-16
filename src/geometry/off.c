@@ -64,14 +64,14 @@ OFF* OFFImportFile(FILE* stream)
 
 void OFFExportFile(OFF* obj, FILE* stream, int precision)
 {
-    fprintf_s(stream, "OFF\n");
-    fprintf_s(stream, "%d %d %d\n", obj->numVertices, obj->numFaces, obj->numEdges);
+    fprintf(stream, "OFF\n");
+    fprintf(stream, "%d %d %d\n", obj->numVertices, obj->numFaces, obj->numEdges);
     if ( obj->numVertices > 0 )
     {
         for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
         {
             Vec3* vertex = &obj->vertices[vi];
-            fprintf_s(
+            fprintf(
                 stream,
                 "%.*f %.*f %.*f\n",
                 precision,
