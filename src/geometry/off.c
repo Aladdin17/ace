@@ -32,7 +32,7 @@ static const int off_uint_base = 10;
 
 OFF* OFFImportFile(FILE* stream)
 {
-    if (stream == NULL)
+    if ( stream == NULL )
     {
         WriteGlobalErrorMessage("The passed FILE* argument 'stream' was NULL");
         return NULL;
@@ -42,7 +42,7 @@ OFF* OFFImportFile(FILE* stream)
     OFFReader reader = { .stream = stream, .lineNumber = 0, .hasHeader = false, .obj = NULL };
 
     // setup error handling context
-    if (setjmp(reader.errorContext) == 0)
+    if ( setjmp(reader.errorContext) == 0 )
     {
         InitialiseOFF(&reader);
         RemovePreamble(&reader);
@@ -66,9 +66,9 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
 {
     fprintf_s(stream, "OFF\n");
     fprintf_s(stream, "%d %d %d\n", obj->numVertices, obj->numFaces, obj->numEdges);
-    if (obj->numVertices > 0)
+    if ( obj->numVertices > 0 )
     {
-        for (uint32_t vi = 0; vi < obj->numVertices; ++vi)
+        for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
         {
             Vec3* vertex = &obj->vertices[vi];
             fprintf_s(
@@ -84,14 +84,14 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
         }
     }
 
-    if (obj->numFaces > 0)
+    if ( obj->numFaces > 0 )
     {
-        for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
+        for ( uint32_t fi = 0; fi < obj->numFaces; ++fi )
         {
             OFFFace* face = &obj->faces[fi];
             fprintf(stream, "%d", face->type);
 
-            for (int vi = 0; vi < (int) face->type; ++vi)
+            for ( int vi = 0; vi < (int) face->type; ++vi )
             {
                 fprintf(stream, " %d", face->vertices[vi]);
             }
@@ -102,13 +102,13 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
 
 void OFFDestroy(OFF** obj)
 {
-    if ((obj == NULL) || (*obj == NULL))
+    if ( (obj == NULL) || (*obj == NULL) )
     {
         return;
     }
 
     // destroy the faces and vertices
-    for (uint32_t fi = 0; fi < (*obj)->numFaces; ++fi)
+    for ( uint32_t fi = 0; fi < (*obj)->numFaces; ++fi )
     {
         OFFFace* face = &(*obj)->faces[fi];
         DestroyOFFFace(face);
@@ -130,13 +130,13 @@ void OFFDestroy(OFF** obj)
 
 void OFFNormalise(OFF* obj, bool alignToOrigin)
 {
-    if (!obj)
+    if ( !obj )
     {
         return;
     }
 
     size_t numVertices = obj->numVertices;
-    if (numVertices == 0)
+    if ( numVertices == 0 )
     {
         return;
     }
@@ -146,24 +146,24 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
         { 0.0f, 0.0f, 0.0f }
     };
     Vec3* vertices = obj->vertices;
-    for (uint32_t vi = 0; vi < numVertices; ++vi)
+    for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
         centroid = Vec3Add(&centroid, &vertices[vi]);
     }
     centroid = Vec3Scale(&centroid, 1.0f / (float) numVertices);
 
     // translate the vertices to the origin
-    for (uint32_t vi = 0; vi < numVertices; ++vi)
+    for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
         vertices[vi] = Vec3Sub(&vertices[vi], &centroid);
     }
 
     // find the maximum vertex magnitude
     float maxMagnitude = Vec3Lenth(vertices);
-    for (uint32_t vi = 1; vi < numVertices; ++vi)
+    for ( uint32_t vi = 1; vi < numVertices; ++vi )
     {
         float magnitude = Vec3Lenth(&vertices[vi]);
-        if (magnitude > maxMagnitude)
+        if ( magnitude > maxMagnitude )
         {
             maxMagnitude = magnitude;
         }
@@ -171,17 +171,17 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 
     // normalise the vertices based on the maximum magnitude
     float scale = 1.0f / maxMagnitude;
-    for (uint32_t vi = 0; vi < numVertices; ++vi)
+    for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
         vertices[vi] = Vec3Scale(&vertices[vi], scale);
     }
 
     // allows for the mesh itself to fit within the unit sphere if the sphere is
     // aligned to the mesh's local coordinate system
-    if (!alignToOrigin)
+    if ( !alignToOrigin )
     {
         // translate the vertices back to the centroid
-        for (uint32_t vi = 0; vi < numVertices; ++vi)
+        for ( uint32_t vi = 0; vi < numVertices; ++vi )
         {
             vertices[vi] = Vec3Add(&vertices[vi], &centroid);
         }
@@ -195,14 +195,14 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 void RemovePreamble(OFFReader* reader)
 {
     // read the first line of the file
-    if (!SeekToNextLine(reader))
+    if ( !SeekToNextLine(reader) )
     {
         HandleError(reader->errorContext, "OFF : File is empty");
     }
 
     // check if the line is the OFF descriptor
     reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
-    if (reader->numTokens == 0)
+    if ( reader->numTokens == 0 )
     {
         // this should never happen...
         HandleError(
@@ -213,14 +213,14 @@ void RemovePreamble(OFFReader* reader)
         );
     }
 
-    if (!isdigit(*reader->tokens[0]))
+    if ( !isdigit(*reader->tokens[0]) )
     {
-        if (strcmp(reader->tokens[0], "OFF") == 0)
+        if ( strcmp(reader->tokens[0], "OFF") == 0 )
         {
             reader->hasHeader = true;
 
             // check that trailing characters are commented out
-            if (reader->numTokens > 1 && *reader->tokens[1] != '#')
+            if ( reader->numTokens > 1 && *reader->tokens[1] != '#' )
             {
                 HandleError(
                     reader->errorContext,
@@ -243,9 +243,9 @@ void RemovePreamble(OFFReader* reader)
 void ReadCounts(OFFReader* reader)
 {
     // if the last buffered line was the header, we need to read the next line
-    if (reader->hasHeader)
+    if ( reader->hasHeader )
     {
-        if (!SeekToNextLine(reader))
+        if ( !SeekToNextLine(reader) )
         {
             HandleError(reader->errorContext, "OFF : Unexpected EOF after OFF descriptor");
         }
@@ -255,7 +255,7 @@ void ReadCounts(OFFReader* reader)
     }
 
     // there needs to be at least 3 tokens for the vertex, face, and edge counts
-    if (reader->numTokens < 3)
+    if ( reader->numTokens < 3 )
     {
         HandleError(
             reader->errorContext,
@@ -266,7 +266,7 @@ void ReadCounts(OFFReader* reader)
 
     // attempt to convert each token to an integer and store the results
     OFF* obj = reader->obj;
-    if (!strToUint32(reader->tokens[0], &obj->numVertices, off_uint_base))
+    if ( !strToUint32(reader->tokens[0], &obj->numVertices, off_uint_base) )
     {
         HandleError(
             reader->errorContext,
@@ -275,7 +275,7 @@ void ReadCounts(OFFReader* reader)
         );
     }
 
-    if (!strToUint32(reader->tokens[1], &obj->numFaces, off_uint_base))
+    if ( !strToUint32(reader->tokens[1], &obj->numFaces, off_uint_base) )
     {
         HandleError(
             reader->errorContext,
@@ -284,7 +284,7 @@ void ReadCounts(OFFReader* reader)
         );
     }
 
-    if (!strToUint32(reader->tokens[2], &obj->numEdges, off_uint_base))
+    if ( !strToUint32(reader->tokens[2], &obj->numEdges, off_uint_base) )
     {
         HandleError(
             reader->errorContext,
@@ -294,7 +294,7 @@ void ReadCounts(OFFReader* reader)
     }
 
     // check that trailing characters are commented out
-    if (reader->numTokens > 3 && *reader->tokens[3] != '#')
+    if ( reader->numTokens > 3 && *reader->tokens[3] != '#' )
     {
         HandleError(
             reader->errorContext,
@@ -307,7 +307,7 @@ void ReadCounts(OFFReader* reader)
 void InitialiseOFF(OFFReader* reader)
 {
     reader->obj = (OFF*) malloc(sizeof(OFF));
-    if (reader->obj == NULL)
+    if ( reader->obj == NULL )
     {
         HandleError(reader->errorContext, "OFF : Failed to allocate memory for the OFF object");
     }
@@ -325,12 +325,12 @@ void AllocateVertices(OFFReader* reader)
 {
     OFF* obj      = reader->obj;
     obj->vertices = (Vec3*) malloc(sizeof(Vec3) * obj->numVertices);
-    if (obj->vertices == NULL)
+    if ( obj->vertices == NULL )
     {
         HandleError(reader->errorContext, "OFF : Failed to allocate memory for vertices");
     }
 
-    for (uint32_t vi = 0; vi < obj->numVertices; ++vi)
+    for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
         // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
         obj->vertices[vi] = (Vec3){ 0.0f, 0.0f, 0.0f };
@@ -341,12 +341,12 @@ void AllocateFaces(OFFReader* reader)
 {
     OFF* obj   = reader->obj;
     obj->faces = (OFFFace*) malloc(sizeof(OFFFace) * obj->numFaces);
-    if (obj->faces == NULL)
+    if ( obj->faces == NULL )
     {
         HandleError(reader->errorContext, "OFF : Failed to allocate memory for faces");
     }
 
-    for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
+    for ( uint32_t fi = 0; fi < obj->numFaces; ++fi )
     {
         OFFFace* face  = &obj->faces[fi];
         face->vertices = NULL;  // NOLINT(clang-analyzer-core.NullDereference)
@@ -358,9 +358,9 @@ void ReadVertices(OFFReader* reader)
 {
     OFF* obj = reader->obj;
 
-    for (uint32_t vi = 0; vi < obj->numVertices; ++vi)
+    for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
-        if (!SeekToNextLine(reader))
+        if ( !SeekToNextLine(reader) )
         {
             HandleError(reader->errorContext, "OFF : Unexpected end of file when reading vertices");
         }
@@ -368,7 +368,7 @@ void ReadVertices(OFFReader* reader)
         // tokenise the line and check that there are at least 3 tokens
         reader->numTokens =
             tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
-        if (reader->numTokens < 3)
+        if ( reader->numTokens < 3 )
         {
             HandleError(
                 reader->errorContext,
@@ -379,7 +379,7 @@ void ReadVertices(OFFReader* reader)
 
         // convert and validate the vertex coordinates
         Vec3* vertex = &obj->vertices[vi];
-        if (!strToFloat(reader->tokens[0], &vertex->x))
+        if ( !strToFloat(reader->tokens[0], &vertex->x) )
         {
             HandleError(
                 reader->errorContext,
@@ -388,7 +388,7 @@ void ReadVertices(OFFReader* reader)
             );
         }
 
-        if (!strToFloat(reader->tokens[1], &vertex->y))
+        if ( !strToFloat(reader->tokens[1], &vertex->y) )
         {
             HandleError(
                 reader->errorContext,
@@ -397,7 +397,7 @@ void ReadVertices(OFFReader* reader)
             );
         }
 
-        if (!strToFloat(reader->tokens[2], &vertex->z))
+        if ( !strToFloat(reader->tokens[2], &vertex->z) )
         {
             HandleError(
                 reader->errorContext,
@@ -407,7 +407,7 @@ void ReadVertices(OFFReader* reader)
         }
 
         // check that trailing characters are commented out
-        if (reader->numTokens > 3 && *reader->tokens[3] != '#')
+        if ( reader->numTokens > 3 && *reader->tokens[3] != '#' )
         {
             HandleError(
                 reader->errorContext,
@@ -422,9 +422,9 @@ void ReadFaces(OFFReader* reader)
 {
     OFF* obj = reader->obj;
 
-    for (uint32_t fi = 0; fi < obj->numFaces; ++fi)
+    for ( uint32_t fi = 0; fi < obj->numFaces; ++fi )
     {
-        if (!SeekToNextLine(reader))
+        if ( !SeekToNextLine(reader) )
         {
             HandleError(reader->errorContext, "OFF : Unexpected end of file when reading faces");
         }
@@ -432,7 +432,7 @@ void ReadFaces(OFFReader* reader)
         // tokenise the line and check that there are at least 4 tokens
         reader->numTokens =
             tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
-        if (reader->numTokens < 4)
+        if ( reader->numTokens < 4 )
         {
             HandleError(
                 reader->errorContext,
@@ -443,8 +443,8 @@ void ReadFaces(OFFReader* reader)
 
         // convert and validate the number of vertices in the face
         uint32_t numVertices;
-        if (!strToUint32(reader->tokens[0], &numVertices, off_uint_base) ||
-            numVertices < OFFFaceType_MIN || numVertices > OFFFaceType_MAX)
+        if ( !strToUint32(reader->tokens[0], &numVertices, off_uint_base) ||
+             numVertices < OFFFaceType_MIN || numVertices > OFFFaceType_MAX )
         {
             HandleError(
                 reader->errorContext,
@@ -460,10 +460,10 @@ void ReadFaces(OFFReader* reader)
         face->vertices = (uint32_t*) malloc(sizeof(uint32_t) * numVertices);
 
         // attempt to convert each token to an integer and store the results
-        for (uint32_t vi = 0; vi < numVertices; ++vi)
+        for ( uint32_t vi = 0; vi < numVertices; ++vi )
         {
             uint32_t* vertex = &face->vertices[vi];
-            if (!strToUint32(reader->tokens[vi + 1], vertex, off_uint_base))
+            if ( !strToUint32(reader->tokens[vi + 1], vertex, off_uint_base) )
             {
                 HandleError(
                     reader->errorContext,
@@ -474,7 +474,7 @@ void ReadFaces(OFFReader* reader)
         }
 
         // check that trailing characters are commented out
-        if (reader->numTokens > (numVertices + 1) && *reader->tokens[numVertices + 1] != '#')
+        if ( reader->numTokens > (numVertices + 1) && *reader->tokens[numVertices + 1] != '#' )
         {
             HandleError(
                 reader->errorContext,
@@ -487,7 +487,7 @@ void ReadFaces(OFFReader* reader)
 
 void DestroyOFFFace(OFFFace* face)
 {
-    if (face == NULL)
+    if ( face == NULL )
     {
         return;
     }
@@ -518,11 +518,11 @@ bool SeekToNextLine(OFFReader* file)
     do
     {
         file->lineNumber++;
-        if (fgets(file->line, OFF_MAX_LINE_LENGTH, file->stream) == NULL)
+        if ( fgets(file->line, OFF_MAX_LINE_LENGTH, file->stream) == NULL )
         {
             return false;
         }
-    } while (ShouldIgnoreLine(file->line));
+    } while ( ShouldIgnoreLine(file->line) );
 
     removeNewlineChar(file->line);
     return true;
@@ -532,7 +532,7 @@ bool ShouldIgnoreLine(const char* line)
 {
     // parse through the line until we find a non-whitespace character
     const char* cp = line;
-    while (*cp == ' ' || *cp == '\t')
+    while ( *cp == ' ' || *cp == '\t' )
     {
         cp++;
     }
@@ -545,7 +545,7 @@ bool ShouldIgnoreLine(const char* line)
 void ValidateFileTail(OFFReader* reader)
 {
     // check for extra invalid lines at end of file
-    if (SeekToNextLine(reader))
+    if ( SeekToNextLine(reader) )
     {
         HandleError(
             reader->errorContext,

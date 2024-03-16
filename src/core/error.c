@@ -10,7 +10,7 @@ static char global_error_message[ERROR_MESSAGE_SIZE] = { '\0' };
 
 void WriteGlobalErrorMessageVA(const char* fmt, va_list args)
 {
-    if (fmt == NULL)
+    if ( fmt == NULL )
     {
         global_error_message[0] = '\0';
         return;

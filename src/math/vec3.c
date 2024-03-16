@@ -65,7 +65,7 @@ Vec3 Vec3Normalize(const Vec3* v)
 {
     // naive check for zero vector
     float magnitude = Vec3Lenth(v);
-    if (fabsf(magnitude) < AML_EPSILON)
+    if ( fabsf(magnitude) < AML_EPSILON )
     {
         return (Vec3){ NAN, NAN, NAN };
     }

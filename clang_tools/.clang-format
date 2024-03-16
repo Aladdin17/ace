@@ -34,6 +34,7 @@ AlignTrailingComments:
   OverEmptyLines: 0
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: true
+AlwaysBreakAfterDefinitionReturnType: None # Deprecated in v19
 AllowBreakBeforeNoexceptSpecifier: Never
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: false
@@ -189,7 +190,7 @@ SpacesInLineCommentPrefix:
   Maximum: -1
 SpacesInParens: Custom
 SpacesInParensOptions:
-  InConditionalStatements: false
+  InConditionalStatements: true
   InCStyleCasts: false
   InEmptyParentheses: false
   Other: false

@@ -10,7 +10,7 @@
 bool strToUint32(const char* str, uint32_t* value, int base)
 {
     // check for NULL arguments
-    if (str == NULL || value == NULL)
+    if ( str == NULL || value == NULL )
     {
         return false;
     }
@@ -23,13 +23,13 @@ bool strToUint32(const char* str, uint32_t* value, int base)
     long long temp = strtoll(str, &end, base);
 
     // check that the value will fit in a uint32_t
-    if (temp < 0 || temp > UINT32_MAX)
+    if ( temp < 0 || temp > UINT32_MAX )
     {
         return false;
     }
 
     // check that the entire string was used in the conversion
-    if (*end != '\0')
+    if ( *end != '\0' )
     {
         return false;
     }
@@ -41,7 +41,7 @@ bool strToUint32(const char* str, uint32_t* value, int base)
 bool strToFloat(const char* str, float* value)
 {
     // check for NULL arguments
-    if (str == NULL || value == NULL)
+    if ( str == NULL || value == NULL )
     {
         return false;
     }
@@ -50,7 +50,7 @@ bool strToFloat(const char* str, float* value)
     float temp = strtof(str, &end);
 
     // check that the entire string was used in the conversion
-    if (*end != '\0')
+    if ( *end != '\0' )
     {
         return false;
     }
@@ -68,7 +68,7 @@ size_t tokeniseString(char* str, char** tokens, size_t maxTokens, const char* de
 
     // use strtok to split the str into tokens
     char* token = strtok(str, delimiters);
-    while (token != NULL && count < maxTokens)
+    while ( token != NULL && count < maxTokens )
     {
         // store the token in the array and increment the count
         tokens[count++] = token;
@@ -86,14 +86,14 @@ void removeNewlineChar(char* str)
 {
     // check first for windows style newline
     char* newline = strchr(str, '\r');
-    if (newline == NULL)
+    if ( newline == NULL )
     {
         // if not found, check for unix style newline
         newline = strchr(str, '\n');
     }
 
     // if a newline character was found, replace it with a null terminator
-    if (newline != NULL)
+    if ( newline != NULL )
     {
         *newline = '\0';
     }
