@@ -109,16 +109,23 @@ option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
 if( AL_USE_CLANG_TOOLS )
 	include( clang_tools/targets.cmake )
 
-	option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
-	if( AL_RUN_CLANG_FORMAT )
-		add_dependencies( ${PROJECT_NAME} clang-format )
+    # add clang-format target
+	if( TARGET clang-format )
+	    option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
+        if ( AL_RUN_CLANG_FORMAT )
+            message( STATUS "Running clang-format on build" )
+            add_dependencies( ${PROJECT_NAME} clang-format )
+        endif()
 	endif()
 
-	option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
-	if( AL_RUN_CLANG_TIDY )
-		add_dependencies( ${PROJECT_NAME} clang-tidy )
-	endif()
-
+    # add clang-tidy target
+    if( TARGET clang-tidy )
+	    option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
+	    if( AL_RUN_CLANG_TIDY )
+            message( STATUS "Running clang-tidy on build" )
+		    add_dependencies( ${PROJECT_NAME} clang-tidy )
+	    endif()
+    endif()
 endif()
 
 option( AL_BUILD_DOCS "Build aLibrary documentation" ON )
