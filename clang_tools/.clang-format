@@ -97,7 +97,9 @@ IncludeBlocks: Merge
 IncludeCategories:
   - Regex:           '^<alibrary/.*\.h>'  # alibrary headers
     Priority:        2
-  - Regex:           '^<[^/]*(\.h)?>'     # system headers
+  - Regex:           '^<[^/]*\.h>'        # c system headers
+    Priority:        5
+  - Regex:           '^<[^/]*>'           # c++ system headers
     Priority:        4
   - Regex:           '<.*'                # non-system dependencies
     Priority:        3
