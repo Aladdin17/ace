@@ -27,6 +27,7 @@
 		"editor.insertSpaces": true,
 		"editor.tabSize": 4,
 		"editor.useTabStops": false,
+		"editor.renderWhitespace": "selection",
 
 		// use tabs for cmake, code-workspace, and txt files
 		"[cmake, code-workspace, txt]": {
