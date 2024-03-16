@@ -48,17 +48,23 @@ if( NOT CLANG_TIDY_EXE )
 	message( STATUS "clang-tidy not found" )
 else()
 	message( STATUS "clang-tidy version: " )
-	file(
-		GLOB_RECURSE
-		TIDY_SOURCE_FILES
-		${CMAKE_SOURCE_DIR}/src/*.c
-	)
+	set( CLANG_TIDY_COMPATIBLE_GENERATORS "Ninja" "Unix Makefiles" "MinGW Makefiles" )
+	list( FIND CLANG_TIDY_COMPATIBLE_GENERATORS "${CMAKE_GENERATOR}" _index )
+	if( ${_index} EQUAL -1 )
+		message( STATUS "Clang-tidy is not compatible with the current generator: ${CMAKE_GENERATOR}" )
+	else()
+		file(
+			GLOB_RECURSE
+			TIDY_SOURCE_FILES
+			${CMAKE_SOURCE_DIR}/src/*.c
+		)
 
-	add_custom_target(
-		clang-tidy
-		COMMAND ${CLANG_TIDY_EXE}
-			--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
-			${TIDY_SOURCE_FILES}
-			-p ${CMAKE_BINARY_DIR}
-	)
+		add_custom_target(
+			clang-tidy
+			COMMAND ${CLANG_TIDY_EXE}
+				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
+				${TIDY_SOURCE_FILES}
+				-p ${CMAKE_BINARY_DIR}
+		)
+	endif()
 endif()
