@@ -107,13 +107,14 @@ endif()
 
 option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
 if( AL_USE_CLANG_TOOLS )
+	message( STATUS "Configuring clang tools" )
 	include( clang_tools/targets.cmake )
 
 	# add clang-format target
 	if( TARGET clang-format )
 		option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
 		if ( AL_RUN_CLANG_FORMAT )
-			message( STATUS "Running clang-format on build" )
+			message( STATUS "Clang-format - Run on build" )
 			add_dependencies( ${PROJECT_NAME} clang-format )
 		endif()
 	endif()
@@ -122,7 +123,7 @@ if( AL_USE_CLANG_TOOLS )
 	if( TARGET clang-tidy )
 		option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
 		if( AL_RUN_CLANG_TIDY )
-			message( STATUS "Running clang-tidy on build" )
+			message( STATUS "Clang-tidy - Run on build" )
 			add_dependencies( ${PROJECT_NAME} clang-tidy )
 		endif()
 	endif()
@@ -154,6 +155,7 @@ if( AL_BUILD_DOCS )
 		set( DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/docs" )
 
 		# add doxygen target and link to project build
+		message( STATUS "Doxygen - Run on build" )
 		doxygen_add_docs(
 			docs
 			${CMAKE_CURRENT_SOURCE_DIR}/include

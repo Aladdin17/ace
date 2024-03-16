@@ -6,7 +6,7 @@
 #---------------------------------------------------------------------------------------------------
 find_program( CLANG_FORMAT_EXE NAMES clang-format )
 if( NOT CLANG_FORMAT_EXE )
-	message( STATUS "clang-format not found" )
+	message( STATUS "Clang-format executable not found" )
 else()
 	execute_process(
 		COMMAND ${CLANG_FORMAT_EXE} --version
@@ -17,10 +17,9 @@ else()
 	set( CLANG_FORMAT_MIN_VERSION "18.0.0" )
 	string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" CLANG_FORMAT_VERSION ${CLANG_FORMAT_VERSION_OUTPUT})
 	if( CLANG_FORMAT_VERSION VERSION_LESS ${CLANG_FORMAT_MIN_VERSION} )
-		message( STATUS "clang-format version must be at least ${CLANG_FORMAT_MIN_VERSION}" )
-		message( STATUS "\tclang-format version found: ${CLANG_FORMAT_VERSION}" )
+		message( STATUS "Clang-format version must be at least ${CLANG_FORMAT_MIN_VERSION}, found ${CLANG_FORMAT_VERSION}" )
 	else()
-		message( STATUS "clang-format version: ${CLANG_FORMAT_VERSION}" )
+		message( STATUS "Clang-format configured - Version ${CLANG_FORMAT_VERSION}" )
 		file(
 			GLOB_RECURSE
 			FORMAT_SOURCE_FILES
@@ -35,6 +34,8 @@ else()
 				-i
 				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/.clang-format
 				${FORMAT_SOURCE_FILES}
+			COMMENT
+				"Running clang-format"
 		)
 	endif()
 endif()
@@ -45,14 +46,14 @@ endif()
 #---------------------------------------------------------------------------------------------------
 find_program( CLANG_TIDY_EXE NAMES clang-tidy )
 if( NOT CLANG_TIDY_EXE )
-	message( STATUS "clang-tidy not found" )
+	message( STATUS "Clang-tidy executable not found" )
 else()
-	message( STATUS "clang-tidy version: " )
 	set( CLANG_TIDY_COMPATIBLE_GENERATORS "Ninja" "Unix Makefiles" "MinGW Makefiles" )
 	list( FIND CLANG_TIDY_COMPATIBLE_GENERATORS "${CMAKE_GENERATOR}" _index )
 	if( ${_index} EQUAL -1 )
 		message( STATUS "Clang-tidy is not compatible with the current generator: ${CMAKE_GENERATOR}" )
 	else()
+		message( STATUS "Clang-tidy configured - Version " )
 		file(
 			GLOB_RECURSE
 			TIDY_SOURCE_FILES
@@ -65,6 +66,8 @@ else()
 				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
 				${TIDY_SOURCE_FILES}
 				-p ${CMAKE_BINARY_DIR}
+			COMMENT
+				"Running clang-tidy"
 		)
 	endif()
 endif()
