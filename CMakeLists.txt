@@ -105,6 +105,22 @@ if( AL_BUILD_TESTS )
 	catch_discover_tests( ${PROJECT_NAME}_test )
 endif()
 
+option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
+if( AL_USE_CLANG_TOOLS )
+	include( clang_tools/targets.cmake )
+
+	option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
+	if( AL_RUN_CLANG_FORMAT )
+		add_dependencies( ${PROJECT_NAME} clang-format )
+	endif()
+
+	option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
+	if( AL_RUN_CLANG_TIDY )
+		add_dependencies( ${PROJECT_NAME} clang-tidy )
+	endif()
+
+endif()
+
 option( AL_BUILD_DOCS "Build aLibrary documentation" ON )
 if( AL_BUILD_DOCS )
 	find_package(
@@ -139,14 +155,5 @@ if( AL_BUILD_DOCS )
 		add_dependencies( ${PROJECT_NAME} docs )
 	else()
 		message( "Doxygen not found, cannot build documentation" )
-	endif()
-endif()
-
-option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
-if( AL_USE_CLANG_TOOLS )
-	include( clang_tools/targets.cmake )
-	option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
-	if( AL_RUN_CLANG_TIDY )
-		add_dependencies( ${PROJECT_NAME} clang-tidy )
 	endif()
 endif()

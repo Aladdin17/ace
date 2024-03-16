@@ -248,8 +248,8 @@ void ReadCounts(OFFReader* reader)
             HandleError(reader->errorContext, "OFF : Unexpected EOF after OFF descriptor");
         }
 
-        reader->numTokens
-            = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
+        reader->numTokens =
+            tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
     }
 
     // there needs to be at least 3 tokens for the vertex, face, and edge counts
@@ -358,8 +358,8 @@ void ReadVertices(OFFReader* reader)
         }
 
         // tokenise the line and check that there are at least 3 tokens
-        reader->numTokens
-            = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
+        reader->numTokens =
+            tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
         if (reader->numTokens < 3)
         {
             HandleError(
@@ -422,8 +422,8 @@ void ReadFaces(OFFReader* reader)
         }
 
         // tokenise the line and check that there are at least 4 tokens
-        reader->numTokens
-            = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
+        reader->numTokens =
+            tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
         if (reader->numTokens < 4)
         {
             HandleError(
@@ -435,8 +435,8 @@ void ReadFaces(OFFReader* reader)
 
         // convert and validate the number of vertices in the face
         uint32_t numVertices;
-        if (!strToUint32(reader->tokens[0], &numVertices, off_uint_base)
-            || numVertices < OFFFaceType_MIN || numVertices > OFFFaceType_MAX)
+        if (!strToUint32(reader->tokens[0], &numVertices, off_uint_base) ||
+            numVertices < OFFFaceType_MIN || numVertices > OFFFaceType_MAX)
         {
             HandleError(
                 reader->errorContext,
@@ -446,9 +446,9 @@ void ReadFaces(OFFReader* reader)
         }
 
         // set the type of the face and allocate memory for the vertices
-        OFFFace* face = &obj->faces[fi];
+        OFFFace* face  = &obj->faces[fi];
         // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-        face->type = (OFFFaceType) numVertices;
+        face->type     = (OFFFaceType) numVertices;
         face->vertices = (uint32_t*) malloc(sizeof(uint32_t) * numVertices);
 
         // attempt to convert each token to an integer and store the results

@@ -18,6 +18,7 @@
 			"CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
 			"AL_BUILD_TESTS": "ON",
 			"AL_USE_CLANG_TOOLS": "ON",
+			"AL_RUN_CLANG_FORMAT": "ON",
 			"AL_RUN_CLANG_TIDY": "ON"
 		},
 
@@ -26,6 +27,13 @@
 		"editor.insertSpaces": true,
 		"editor.tabSize": 4,
 		"editor.useTabStops": false,
+
+		// use tabs for cmake, code-workspace, and txt files
+		"[cmake, code-workspace, txt]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 4,
+			"editor.useTabStops": true
+		},
 
 		"foldOnOpen.disableFiles": [
 			"**/*.c"
