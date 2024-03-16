@@ -232,7 +232,9 @@ void RemovePreamble(OFFReader* reader)
         else
         {
             HandleError(
-                reader->errorContext, "OFF : Expected OFF descriptor on line %d", reader->lineNumber
+                reader->errorContext,
+                "OFF : Expected OFF descriptor on line %d",
+                reader->lineNumber
             );
         }
     }
@@ -256,7 +258,9 @@ void ReadCounts(OFFReader* reader)
     if (reader->numTokens < 3)
     {
         HandleError(
-            reader->errorContext, "OFF : Expected 3 integers on line %d", reader->lineNumber
+            reader->errorContext,
+            "OFF : Expected 3 integers on line %d",
+            reader->lineNumber
         );
     }
 
@@ -274,14 +278,18 @@ void ReadCounts(OFFReader* reader)
     if (!strToUint32(reader->tokens[1], &obj->numFaces, off_uint_base))
     {
         HandleError(
-            reader->errorContext, "OFF : Failed to parse face count on line %d", reader->lineNumber
+            reader->errorContext,
+            "OFF : Failed to parse face count on line %d",
+            reader->lineNumber
         );
     }
 
     if (!strToUint32(reader->tokens[2], &obj->numEdges, off_uint_base))
     {
         HandleError(
-            reader->errorContext, "OFF : Failed to parse edge count on line %d", reader->lineNumber
+            reader->errorContext,
+            "OFF : Failed to parse edge count on line %d",
+            reader->lineNumber
         );
     }
 
