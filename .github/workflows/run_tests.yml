@@ -1,0 +1,54 @@
+name: Testing
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install build dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: gcc cmake ninja-build
+          version: 1.0
+
+      - name: Cache build directory
+        uses: actions/cache@v2
+        with:
+          path: .build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B .build -G Ninja         \
+            -DCMAKE_BUILD_TYPE=Debug            \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+            -DAL_BUILD_TESTS=ON                 \
+            -DAL_USE_CLANG_TOOLS=ON             \
+            -DCMAKE_C_COMPILER=gcc              \
+            -DCMAKE_CXX_COMPILER=g++            \
+            -DAL_BUILD_DOCS=OFF
+
+      - name: Build project (Debug)
+        run: |
+          cmake --build .build --target all --config Debug
+
+      - name: Run CTest (Debug)
+        working-directory: .build
+        run: |
+          ctest -C Debug -T test
+
+      - name: Build project (Release)
+        run: |
+          cmake --build .build --target all --config Release
+
+      - name: Run CTest (Release)
+        working-directory: .build
+        run: |
+          ctest -C Release -T test
