@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  build:
+  test_debug:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,9 +20,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-build-debug-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-build-debug-
 
       - name: Configure CMake
         run: |
@@ -35,20 +35,51 @@ jobs:
             -DCMAKE_CXX_COMPILER=g++            \
             -DAL_BUILD_DOCS=OFF
 
-      - name: Build project (Debug)
+      - name: Build
         run: |
           cmake --build .build --target all --config Debug
 
-      - name: Run CTest (Debug)
+      - name: Run CTest
         working-directory: .build
         run: |
-          ctest -C Debug -T test
+          ctest -C Debug -T test --output-on-failure
 
-      - name: Build project (Release)
+  test_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install build dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: gcc cmake ninja-build
+          version: 1.0
+
+      - name: Cache build directory
+        uses: actions/cache@v2
+        with:
+          path: .build
+          key: ${{ runner.os }}-build-release-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-release-
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B .build -G Ninja         \
+            -DCMAKE_BUILD_TYPE=Release          \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+            -DAL_BUILD_TESTS=ON                 \
+            -DAL_USE_CLANG_TOOLS=ON             \
+            -DCMAKE_C_COMPILER=gcc              \
+            -DCMAKE_CXX_COMPILER=g++            \
+            -DAL_BUILD_DOCS=OFF
+
+      - name: Build
         run: |
           cmake --build .build --target all --config Release
 
-      - name: Run CTest (Release)
+      - name: Run CTest
         working-directory: .build
         run: |
-          ctest -C Release -T test
+          ctest -C Release -T test --output-on-failure
