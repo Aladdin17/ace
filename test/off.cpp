@@ -3,8 +3,13 @@
 #include <alibrary/core/error.h>
 #include <geometry/off.h>
 
-TEST_CASE("handle_error", "[off]") {
-	jmp_buf jmpbuf;
+static jmp_buf jmpbuf;
+
+TEST_CASE("handle_error", "[off]")
+{
+	// interaction between '_setjmp' and C++ object destruction is non-portable
+	// but we need to test within this context
+	#pragma warning(disable: 4611)
 	if (setjmp(jmpbuf) == 1)
 	{
 		const char* msg = GetGlobalErrorMessage();
