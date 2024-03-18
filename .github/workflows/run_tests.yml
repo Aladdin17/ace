@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  test_debug:
+  test_project:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,14 +20,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .build
-          key: ${{ runner.os }}-build-debug-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-build-debug-
+            ${{ runner.os }}-build-
 
       - name: Configure CMake
         run: |
           cmake -S . -B .build -G Ninja         \
-            -DCMAKE_BUILD_TYPE=Debug            \
             -DCMAKE_C_COMPILER=gcc              \
             -DCMAKE_CXX_COMPILER=g++            \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
@@ -35,51 +34,20 @@ jobs:
             -DAL_BUILD_TESTS=ON                 \
             -DAL_USE_CLANG_TOOLS=OFF
 
-      - name: Build
+      - name: Build (Debug)
         run: |
           cmake --build .build --target all --config Debug
 
-      - name: Run CTest
+      - name: Run CTest (Debug)
         working-directory: .build
         run: |
           ctest -C Debug -T test --output-on-failure
 
-  test_release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install build dependencies
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: gcc cmake ninja-build
-          version: 1.0
-
-      - name: Cache build directory
-        uses: actions/cache@v2
-        with:
-          path: .build
-          key: ${{ runner.os }}-build-release-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-release-
-
-      - name: Configure CMake
-        run: |
-          cmake -S . -B .build -G Ninja         \
-            -DCMAKE_BUILD_TYPE=Release          \
-            -DCMAKE_C_COMPILER=gcc              \
-            -DCMAKE_CXX_COMPILER=g++            \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DAL_BUILD_DOCS=OFF                 \
-            -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=OFF
-
-      - name: Build
+      - name: Build (Release)
         run: |
           cmake --build .build --target all --config Release
 
-      - name: Run CTest
+      - name: Run CTest (Release)
         working-directory: .build
         run: |
           ctest -C Release -T test --output-on-failure
