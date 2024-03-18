@@ -331,7 +331,9 @@ void AllocateVertices(OFFReader* reader)
     for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
         // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
-        obj->vertices[vi] = (Vec3){ 0.0f, 0.0f, 0.0f };
+        obj->vertices[vi] = (Vec3){
+            {0.0f, 0.0f, 0.0f}
+        };
     }
 }
 
