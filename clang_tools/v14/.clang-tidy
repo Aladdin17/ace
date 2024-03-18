@@ -1,3 +1,4 @@
+# Clang-tidy version: 14.0.0
 Checks: |
   -*,
   bugprone-*,

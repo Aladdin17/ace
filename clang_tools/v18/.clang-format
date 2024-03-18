@@ -1,3 +1,4 @@
+# Clang-format version: 14.0.0
 Language: Cpp
 BasedOnStyle: Google
 AccessModifierOffset: -1
