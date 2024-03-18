@@ -28,12 +28,12 @@ jobs:
         run: |
           cmake -S . -B .build -G Ninja         \
             -DCMAKE_BUILD_TYPE=Debug            \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=ON             \
             -DCMAKE_C_COMPILER=gcc              \
             -DCMAKE_CXX_COMPILER=g++            \
-            -DAL_BUILD_DOCS=OFF
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+            -DAL_BUILD_DOCS=OFF                 \
+            -DAL_BUILD_TESTS=ON                 \
+            -DAL_USE_CLANG_TOOLS=OFF
 
       - name: Build
         run: |
@@ -68,12 +68,12 @@ jobs:
         run: |
           cmake -S . -B .build -G Ninja         \
             -DCMAKE_BUILD_TYPE=Release          \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=ON             \
             -DCMAKE_C_COMPILER=gcc              \
             -DCMAKE_CXX_COMPILER=g++            \
-            -DAL_BUILD_DOCS=OFF
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+            -DAL_BUILD_DOCS=OFF                 \
+            -DAL_BUILD_TESTS=ON                 \
+            -DAL_USE_CLANG_TOOLS=OFF
 
       - name: Build
         run: |
