@@ -37,6 +37,15 @@ else()
 			COMMENT
 				"Running clang-format"
 		)
+
+		add_custom_target(
+			check-clang-format
+			COMMAND ${CLANG_FORMAT_EXE}
+				--dry-run
+				--Werror
+				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/.clang-format
+				${FORMAT_SOURCE_FILES}
+		)
 	endif()
 endif()
 
@@ -68,6 +77,15 @@ else()
 				-p ${CMAKE_BINARY_DIR}
 			COMMENT
 				"Running clang-tidy"
+		)
+
+		add_custom_target(
+			check-clang-tidy
+			COMMAND ${CLANG_TIDY_EXE}
+				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
+				--warnings-as-errors='*'
+				${TIDY_SOURCE_FILES}
+				-p ${CMAKE_BINARY_DIR}
 		)
 	endif()
 endif()
