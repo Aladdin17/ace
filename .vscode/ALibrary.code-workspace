@@ -5,6 +5,25 @@
 		}
 	],
 	"settings": {
+		// use tabs for cmake, code-workspace, and txt
+		"[plaintext]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 4,
+			"editor.useTabStops": true
+		},
+
+		"[cmake]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 4,
+			"editor.useTabStops": true
+		},
+
+		"[jsonc]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 4,
+			"editor.useTabStops": true
+		},
+
 		"cmake.preferredGenerators": [
 			"Ninja",
 			"Visual Studio 17 2022"
@@ -28,13 +47,6 @@
 		"editor.tabSize": 4,
 		"editor.useTabStops": false,
 		"editor.renderWhitespace": "selection",
-
-		// use tabs for cmake, code-workspace, and txt files
-		"[cmake, code-workspace, txt]": {
-			"editor.insertSpaces": false,
-			"editor.tabSize": 4,
-			"editor.useTabStops": true
-		},
 
 		"foldOnOpen.disableFiles": [
 			"**/*.c"
