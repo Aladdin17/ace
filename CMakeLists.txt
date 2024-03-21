@@ -157,6 +157,8 @@ if( AL_BUILD_DOCS )
 		set( DOXYGEN_TYPEDEF_HIDES_STRUCT YES )
 		set( DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md" )
 		set( DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/docs" )
+		set( DOXYGEN_CALL_GRAPH YES )
+		set( DOXYGEN_CALLER_GRAPH YES )
 
 		# add doxygen target and link to project build
 		message( STATUS "Doxygen - Run on build" )
