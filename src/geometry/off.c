@@ -54,7 +54,7 @@ OFF* OFFImportFile(FILE* stream)
     {
         // func returns true if on success so we must negate this
         OFFReaderFunction func = readerFunc[fi];
-        parseFailed = !func(&reader);
+        parseFailed            = !func(&reader);
     }
 
     // cleanup resources if an error occurs
