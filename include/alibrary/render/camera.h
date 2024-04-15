@@ -116,7 +116,7 @@ void camera_set_position(Camera* camera, Vec3 position);
 /**
  * \brief Set the movement speed of the camera.
  * \param camera The camera.
- * \param speed The movement step.
+ * \param step The movement step.
  */
 void camera_set_movement_step(Camera* camera, float step);
 
@@ -136,7 +136,13 @@ void camera_set_movement_step(Camera* camera, float step);
  * To unset the forward bit: direction & ~CameraDirection_FORWARD
  * You can also unset all bits by setting the direction to CameraDirection_NONE.
  */
-void camera_set_movement_direction(Camera* camera, CameraDirection direction);
+void camera_set_movement_direction(Camera* camera, int direction);
+/**
+ * \brief Returns the movement direction of the camera.
+ * \param camera The camera.
+ * \return The movement direction bitfield.
+ */
+int  camera_get_movement_direction(Camera* camera);
 
 #ifdef __cplusplus
 }

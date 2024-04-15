@@ -20,7 +20,9 @@ struct Camera
 
 Camera* camera_create(void)
 {
-    return (Camera*) malloc(sizeof(Camera));
+    Camera* camera = (Camera*) malloc(sizeof(Camera));
+    camera_init(camera);
+    return camera;
 }
 
 void camera_destroy(Camera* camera)
@@ -31,9 +33,12 @@ void camera_destroy(Camera* camera)
 void camera_init(Camera* camera)
 {
     const float initialYaw  = -90.0f;  // face towards negative z-axis
-    const float initialStep = 2.5f;    // units
+    const float initialStep = 0.5f;    // units
 
     camera->position          = (Vec3){ 0.0f, 0.0f, 0.0f };
+    camera->up                = (Vec3){ 0.0f, 1.0f, 0.0f };
+    camera->right             = (Vec3){ 1.0f, 0.0f, 0.0f };
+    camera->front             = (Vec3){ 0.0f, 0.0f, -1.0f };
     camera->yaw               = initialYaw;
     camera->pitch             = 0.0f;
     camera->movementDirection = CameraDirection_NONE;
@@ -43,17 +48,27 @@ void camera_init(Camera* camera)
 
 void camera_update_orientation(Camera* camera)
 {
+    // convert to radians
+    const float pi          = 3.14159265359f;
+    const float half_circle = 180.0f;
+    float       yaw         = camera->yaw * pi / half_circle;
+    float       pitch       = camera->pitch * pi / half_circle;
+
     // generate front vector
     Vec3 front;
-    front.x = cosf(camera->yaw) * cosf(camera->pitch);
-    front.y = sinf(camera->pitch);
-    front.z = sinf(camera->yaw) * cosf(camera->pitch);
+    front.x = cosf(yaw) * cosf(pitch);
+    front.y = sinf(pitch);
+    front.z = sinf(yaw) * cosf(pitch);
     front   = Vec3Normalize(&front);
 
     // generate right and up vectors
-    Vec3 up    = { 0.0f, 1.0f, 0.0f };
-    Vec3 right = Vec3Cross(&front, &up);
-    right      = Vec3Normalize(&right);
+    Vec3* up    = &camera->up;
+    Vec3  right = Vec3Cross(&front, up);
+    right       = Vec3Normalize(&right);
+
+    // update camera
+    camera->front = front;
+    camera->right = right;
 }
 
 void camera_update_position(Camera* camera)
@@ -63,40 +78,44 @@ void camera_update_position(Camera* camera)
         return;
     }
 
+    Vec3 movement = { 0.0f, 0.0f, 0.0f };
+
     if ( camera->movementDirection & CameraDirection_FORWARD )
     {
-        Vec3 step        = Vec3Scale(&camera->front, camera->movementStep);
-        camera->position = Vec3Add(&camera->position, &step);
+        movement = Vec3Add(&movement, &camera->front);
     }
 
     if ( camera->movementDirection & CameraDirection_BACKWARD )
     {
-        Vec3 step        = Vec3Scale(&camera->front, camera->movementStep);
-        camera->position = Vec3Sub(&camera->position, &step);
+        movement = Vec3Sub(&movement, &camera->front);
     }
 
     if ( camera->movementDirection & CameraDirection_LEFT )
     {
-        Vec3 step        = Vec3Scale(&camera->right, camera->movementStep);
-        camera->position = Vec3Sub(&camera->position, &step);
+        movement = Vec3Sub(&movement, &camera->right);
     }
 
     if ( camera->movementDirection & CameraDirection_RIGHT )
     {
-        Vec3 step        = Vec3Scale(&camera->right, camera->movementStep);
-        camera->position = Vec3Add(&camera->position, &step);
+        movement = Vec3Add(&movement, &camera->right);
     }
 
     if ( camera->movementDirection & CameraDirection_UP )
     {
-        Vec3 step        = Vec3Scale(&camera->up, camera->movementStep);
-        camera->position = Vec3Add(&camera->position, &step);
+        movement = Vec3Add(&movement, &camera->up);
     }
 
     if ( camera->movementDirection & CameraDirection_DOWN )
     {
-        Vec3 step        = Vec3Scale(&camera->up, camera->movementStep);
-        camera->position = Vec3Sub(&camera->position, &step);
+        movement = Vec3Sub(&movement, &camera->up);
+    }
+
+    // apply resulting movement
+    movement = Vec3Normalize(&movement);
+    if ( !Vec3IsNaN(&movement) )
+    {
+        movement         = Vec3Scale(&movement, camera->movementStep);
+        camera->position = Vec3Add(&camera->position, &movement);
     }
 }
 
@@ -138,14 +157,15 @@ float camera_get_movement_step(const Camera* camera)
 void camera_set_yaw(Camera* camera, float yaw)
 {
     const float maxAngle = 180.0f;
+    const float offset   = 360.0f;
 
     if ( yaw >= maxAngle )
     {
-        yaw -= maxAngle;
+        yaw -= offset;
     }
-    else if ( yaw < maxAngle )
+    else if ( yaw <= -maxAngle )
     {
-        yaw += maxAngle;
+        yaw += offset;
     }
 
     camera->yaw = yaw;
@@ -159,7 +179,7 @@ void camera_set_pitch(Camera* camera, float pitch)
     {
         pitch = maxAngle;
     }
-    else if ( pitch <= -maxAngle )
+    else if ( pitch < -maxAngle )
     {
         pitch = -maxAngle;
     }
@@ -177,7 +197,12 @@ void camera_set_movement_step(Camera* camera, float step)
     camera->movementStep = step;
 }
 
-void camera_set_movement_direction(Camera* camera, CameraDirection direction)
+void camera_set_movement_direction(Camera* camera, int direction)
 {
     camera->movementDirection = direction;
+}
+
+int camera_get_movement_direction(Camera* camera)
+{
+    return camera->movementDirection;
 }
