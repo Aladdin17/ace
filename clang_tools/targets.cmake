@@ -14,7 +14,7 @@ else()
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
-	set( CLANG_FORMAT_MIN_VERSION "18.0.0" )
+	set( CLANG_FORMAT_MIN_VERSION "14.0.0" )
 	string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" CLANG_FORMAT_VERSION ${CLANG_FORMAT_VERSION_OUTPUT})
 	if( CLANG_FORMAT_VERSION VERSION_LESS ${CLANG_FORMAT_MIN_VERSION} )
 		message( STATUS "Clang-format version must be at least ${CLANG_FORMAT_MIN_VERSION}, found ${CLANG_FORMAT_VERSION}" )
@@ -32,10 +32,19 @@ else()
 			clang-format
 			COMMAND ${CLANG_FORMAT_EXE}
 				-i
-				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/.clang-format
+				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-format
 				${FORMAT_SOURCE_FILES}
 			COMMENT
 				"Running clang-format"
+		)
+
+		add_custom_target(
+			check-clang-format
+			COMMAND ${CLANG_FORMAT_EXE}
+				--dry-run
+				--Werror
+				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-format
+				${FORMAT_SOURCE_FILES}
 		)
 	endif()
 endif()
@@ -63,11 +72,20 @@ else()
 		add_custom_target(
 			clang-tidy
 			COMMAND ${CLANG_TIDY_EXE}
-				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/.clang-tidy
+				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-tidy
 				${TIDY_SOURCE_FILES}
 				-p ${CMAKE_BINARY_DIR}
 			COMMENT
 				"Running clang-tidy"
+		)
+
+		add_custom_target(
+			check-clang-tidy
+			COMMAND ${CLANG_TIDY_EXE}
+				--config-file=${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-tidy
+				--warnings-as-errors='*'
+				${TIDY_SOURCE_FILES}
+				-p ${CMAKE_BINARY_DIR}
 		)
 	endif()
 endif()

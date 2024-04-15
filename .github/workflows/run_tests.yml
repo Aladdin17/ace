@@ -13,7 +13,7 @@ jobs:
       - name: Install build dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcc cmake ninja-build
+          packages: gcc cmake ninja-build clang-format clang-tidy
           version: 1.0
 
       - name: Cache build directory
@@ -32,7 +32,7 @@ jobs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
             -DAL_BUILD_DOCS=OFF                 \
             -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=OFF
+            -DAL_USE_CLANG_TOOLS=ON
 
       - name: Build (Debug)
         run: |
@@ -51,3 +51,11 @@ jobs:
         working-directory: .build
         run: |
           ctest -C Release -T test --output-on-failure
+
+      - name: Check Code Formatting (Clang-format)
+        run: |
+          cmake --build .build --target check-clang-format
+
+      - name: Perform Static Linting (Clang-tidy)
+        run: |
+          cmake --build .build --target check-clang-tidy

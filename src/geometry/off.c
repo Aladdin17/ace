@@ -41,19 +41,24 @@ OFF* OFFImportFile(FILE* stream)
     // setup OFFReader object
     OFFReader reader = { .stream = stream, .lineNumber = 0, .hasHeader = false, .obj = NULL };
 
-    // setup error handling context
-    if ( setjmp(reader.errorContext) == 0 )
+    // setup the function calls
+    typedef bool (*OFFReaderFunction)(OFFReader*);
+    static const OFFReaderFunction readerFunc[] = { InitialiseOFF,    RemovePreamble,  ReadCounts,
+                                                    AllocateVertices, AllocateFaces,   ReadVertices,
+                                                    ReadFaces,        ValidateFileTail };
+
+    // call each function in the array
+    const size_t numFunctions = sizeof(readerFunc) / sizeof(OFFReaderFunction);
+    bool         parseFailed  = false;
+    for ( size_t fi = 0; fi < numFunctions && !parseFailed; ++fi )
     {
-        InitialiseOFF(&reader);
-        RemovePreamble(&reader);
-        ReadCounts(&reader);
-        AllocateVertices(&reader);
-        AllocateFaces(&reader);
-        ReadVertices(&reader);
-        ReadFaces(&reader);
-        ValidateFileTail(&reader);
+        // func returns true if on success so we must negate this
+        OFFReaderFunction func = readerFunc[fi];
+        parseFailed            = !func(&reader);
     }
-    else  // cleanup resources if an error occurs
+
+    // cleanup resources if an error occurs
+    if ( parseFailed )
     {
         // this will set the pointer to NULL
         OFFDestroy(&reader.obj);
@@ -190,25 +195,25 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
 // Setup and Teardown
 //--------------------------------------------------------------------------------------------------
 
-void RemovePreamble(OFFReader* reader)
+bool RemovePreamble(OFFReader* reader)
 {
     // read the first line of the file
     if ( !SeekToNextLine(reader) )
     {
-        HandleError(reader->errorContext, "OFF : File is empty");
+        WriteGlobalErrorMessage("OFF : File is empty");
+        return false;
     }
 
     // check if the line is the OFF descriptor
     reader->numTokens = tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
     if ( reader->numTokens == 0 )
     {
-        // this should never happen...
-        HandleError(
-            reader->errorContext,
+        WriteGlobalErrorMessage(
             "OFF : tokeniseString failed when reading OFF descriptor on line %d, contact the "
             "developer",
             reader->lineNumber
         );
+        return false;
     }
 
     if ( !isdigit(*reader->tokens[0]) )
@@ -220,32 +225,32 @@ void RemovePreamble(OFFReader* reader)
             // check that trailing characters are commented out
             if ( reader->numTokens > 1 && *reader->tokens[1] != '#' )
             {
-                HandleError(
-                    reader->errorContext,
+                WriteGlobalErrorMessage(
                     "OFF : Unexpected characters after OFF descriptor on line %d",
                     reader->lineNumber
                 );
+                return false;
             }
         }
         else
         {
-            HandleError(
-                reader->errorContext,
-                "OFF : Expected OFF descriptor on line %d",
-                reader->lineNumber
-            );
+            WriteGlobalErrorMessage("OFF : Expected OFF descriptor on line %d", reader->lineNumber);
+            return false;
         }
     }
+
+    return true;
 }
 
-void ReadCounts(OFFReader* reader)
+bool ReadCounts(OFFReader* reader)
 {
     // if the last buffered line was the header, we need to read the next line
     if ( reader->hasHeader )
     {
         if ( !SeekToNextLine(reader) )
         {
-            HandleError(reader->errorContext, "OFF : Unexpected EOF after OFF descriptor");
+            WriteGlobalErrorMessage("OFF : Unexpected EOF after OFF descriptor");
+            return false;
         }
 
         reader->numTokens =
@@ -255,59 +260,53 @@ void ReadCounts(OFFReader* reader)
     // there needs to be at least 3 tokens for the vertex, face, and edge counts
     if ( reader->numTokens < 3 )
     {
-        HandleError(
-            reader->errorContext,
-            "OFF : Expected 3 integers on line %d",
-            reader->lineNumber
-        );
+        WriteGlobalErrorMessage("OFF : Expected 3 integers on line %d", reader->lineNumber);
+        return false;
     }
 
     // attempt to convert each token to an integer and store the results
     OFF* obj = reader->obj;
     if ( !strToUint32(reader->tokens[0], &obj->numVertices, off_uint_base) )
     {
-        HandleError(
-            reader->errorContext,
+        WriteGlobalErrorMessage(
             "OFF : Failed to parse vertex count on line %d",
             reader->lineNumber
         );
+        return false;
     }
 
     if ( !strToUint32(reader->tokens[1], &obj->numFaces, off_uint_base) )
     {
-        HandleError(
-            reader->errorContext,
-            "OFF : Failed to parse face count on line %d",
-            reader->lineNumber
-        );
+        WriteGlobalErrorMessage("OFF : Failed to parse face count on line %d", reader->lineNumber);
+        return false;
     }
 
     if ( !strToUint32(reader->tokens[2], &obj->numEdges, off_uint_base) )
     {
-        HandleError(
-            reader->errorContext,
-            "OFF : Failed to parse edge count on line %d",
-            reader->lineNumber
-        );
+        WriteGlobalErrorMessage("OFF : Failed to parse edge count on line %d", reader->lineNumber);
+        return false;
     }
 
     // check that trailing characters are commented out
     if ( reader->numTokens > 3 && *reader->tokens[3] != '#' )
     {
-        HandleError(
-            reader->errorContext,
+        WriteGlobalErrorMessage(
             "OFF : Unexpected characters after counts on line %d",
             reader->lineNumber
         );
+        return false;
     }
+
+    return true;
 }
 
-void InitialiseOFF(OFFReader* reader)
+bool InitialiseOFF(OFFReader* reader)
 {
     reader->obj = (OFF*) malloc(sizeof(OFF));
     if ( reader->obj == NULL )
     {
-        HandleError(reader->errorContext, "OFF : Failed to allocate memory for the OFF object");
+        WriteGlobalErrorMessage("OFF : Failed to allocate memory for the OFF object");
+        return false;
     }
 
     // initialise the object fields
@@ -317,42 +316,51 @@ void InitialiseOFF(OFFReader* reader)
     obj->numEdges    = 0;
     obj->vertices    = NULL;
     obj->faces       = NULL;
+
+    return true;
 }
 
-void AllocateVertices(OFFReader* reader)
+bool AllocateVertices(OFFReader* reader)
 {
     OFF* obj      = reader->obj;
     obj->vertices = (Vec3*) malloc(sizeof(Vec3) * obj->numVertices);
     if ( obj->vertices == NULL )
     {
-        HandleError(reader->errorContext, "OFF : Failed to allocate memory for vertices");
+        WriteGlobalErrorMessage("OFF : Failed to allocate memory for vertices");
+        return false;
     }
 
     for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
-        // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
-        obj->vertices[vi] = (Vec3){ 0.0f, 0.0f, 0.0f };
+        obj->vertices[vi] = (Vec3){
+            {0.0f, 0.0f, 0.0f}
+        };
     }
+
+    return true;
 }
 
-void AllocateFaces(OFFReader* reader)
+bool AllocateFaces(OFFReader* reader)
 {
     OFF* obj   = reader->obj;
     obj->faces = (OFFFace*) malloc(sizeof(OFFFace) * obj->numFaces);
     if ( obj->faces == NULL )
     {
-        HandleError(reader->errorContext, "OFF : Failed to allocate memory for faces");
+        WriteGlobalErrorMessage("OFF : Failed to allocate memory for faces");
+        return false;
     }
 
     for ( uint32_t fi = 0; fi < obj->numFaces; ++fi )
     {
         OFFFace* face  = &obj->faces[fi];
-        face->vertices = NULL;  // NOLINT(clang-analyzer-core.NullDereference)
+        face->vertices = NULL;
         face->type     = OFFFaceType_UNDEFINED;
     }
+
+    return true;
 }
 
-void ReadVertices(OFFReader* reader)
+bool ReadVertices(OFFReader* reader)
 {
     OFF* obj = reader->obj;
 
@@ -360,7 +368,8 @@ void ReadVertices(OFFReader* reader)
     {
         if ( !SeekToNextLine(reader) )
         {
-            HandleError(reader->errorContext, "OFF : Unexpected end of file when reading vertices");
+            WriteGlobalErrorMessage("OFF : Unexpected end of file when reading vertices");
+            return false;
         }
 
         // tokenise the line and check that there are at least 3 tokens
@@ -368,55 +377,57 @@ void ReadVertices(OFFReader* reader)
             tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
         if ( reader->numTokens < 3 )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Expected 3 floats (vertex) on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         // convert and validate the vertex coordinates
         Vec3* vertex = &obj->vertices[vi];
         if ( !strToFloat(reader->tokens[0], &vertex->x) )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Failed to parse x coordinate on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         if ( !strToFloat(reader->tokens[1], &vertex->y) )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Failed to parse y coordinate on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         if ( !strToFloat(reader->tokens[2], &vertex->z) )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Failed to parse z coordinate on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         // check that trailing characters are commented out
         if ( reader->numTokens > 3 && *reader->tokens[3] != '#' )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Unexpected characters after vertex on line %d",
                 reader->lineNumber
             );
+            return false;
         }
     }
+
+    return true;
 }
 
-void ReadFaces(OFFReader* reader)
+bool ReadFaces(OFFReader* reader)
 {
     OFF* obj = reader->obj;
 
@@ -424,7 +435,8 @@ void ReadFaces(OFFReader* reader)
     {
         if ( !SeekToNextLine(reader) )
         {
-            HandleError(reader->errorContext, "OFF : Unexpected end of file when reading faces");
+            WriteGlobalErrorMessage("OFF : Unexpected end of file when reading faces");
+            return false;
         }
 
         // tokenise the line and check that there are at least 4 tokens
@@ -432,11 +444,11 @@ void ReadFaces(OFFReader* reader)
             tokeniseString(reader->line, reader->tokens, OFF_MAX_LINE_TOKENS, " \t");
         if ( reader->numTokens < 4 )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Expected at least 4 integers (face) on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         // convert and validate the number of vertices in the face
@@ -444,16 +456,15 @@ void ReadFaces(OFFReader* reader)
         if ( !strToUint32(reader->tokens[0], &numVertices, off_uint_base) ||
              numVertices < OFFFaceType_MIN || numVertices > OFFFaceType_MAX )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Failed to parse vertex count on line %d",
                 reader->lineNumber
             );
+            return false;
         }
 
         // set the type of the face and allocate memory for the vertices
         OFFFace* face  = &obj->faces[fi];
-        // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
         face->type     = (OFFFaceType) numVertices;
         face->vertices = (uint32_t*) malloc(sizeof(uint32_t) * numVertices);
 
@@ -463,24 +474,26 @@ void ReadFaces(OFFReader* reader)
             uint32_t* vertex = &face->vertices[vi];
             if ( !strToUint32(reader->tokens[vi + 1], vertex, off_uint_base) )
             {
-                HandleError(
-                    reader->errorContext,
+                WriteGlobalErrorMessage(
                     "OFF : Failed to parse vertex index on line %d",
                     reader->lineNumber
                 );
+                return false;
             }
         }
 
         // check that trailing characters are commented out
         if ( reader->numTokens > (numVertices + 1) && *reader->tokens[numVertices + 1] != '#' )
         {
-            HandleError(
-                reader->errorContext,
+            WriteGlobalErrorMessage(
                 "OFF : Unexpected characters after face on line %d",
                 reader->lineNumber
             );
+            return false;
         }
     }
+
+    return true;
 }
 
 void DestroyOFFFace(OFFFace* face)
@@ -501,15 +514,6 @@ void DestroyOFFFace(OFFFace* face)
 //--------------------------------------------------------------------------------------------------
 // Utilities
 //--------------------------------------------------------------------------------------------------
-
-void HandleError(jmp_buf buf, const char* fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    WriteGlobalErrorMessageVA(fmt, args);
-    va_end(args);
-    longjmp(buf, 1);
-}
 
 bool SeekToNextLine(OFFReader* file)
 {
@@ -540,15 +544,17 @@ bool ShouldIgnoreLine(const char* line)
     return *cp == '#' || *cp == '\r' || *cp == '\n';
 }
 
-void ValidateFileTail(OFFReader* reader)
+bool ValidateFileTail(OFFReader* reader)
 {
     // check for extra invalid lines at end of file
     if ( SeekToNextLine(reader) )
     {
-        HandleError(
-            reader->errorContext,
+        WriteGlobalErrorMessage(
             "OFF : Unexpected characters after faces on line %d",
             reader->lineNumber
         );
+        return false;
     }
+
+    return true;
 }

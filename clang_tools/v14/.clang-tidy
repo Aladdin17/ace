@@ -1,3 +1,4 @@
+# Clang-tidy version: 14.0.0
 Checks: |
   -*,
   bugprone-*,
@@ -10,8 +11,10 @@ Checks: |
   readability-*,
   -readability-uppercase-literal-suffix
 CheckOptions:
-  readability-identifier-length.MinimumParameterNameLength: 0
-  readability-identifier-length.MinimumVariableNameLength: 2
+  - key: readability-identifier-length.MinimumParameterNameLength
+    value: 0
+  - key: readability-identifier-length.MinimumVariableNameLength
+    value: 2
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 FormatStyle: 'none'
