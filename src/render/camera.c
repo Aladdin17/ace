@@ -59,12 +59,12 @@ void camera_update_orientation(Camera* camera)
     front.x = cosf(yaw) * cosf(pitch);
     front.y = sinf(pitch);
     front.z = sinf(yaw) * cosf(pitch);
-    front   = Vec3Normalize(&front);
+    front   = vec3_normalize(&front);
 
     // generate right and up vectors
     Vec3* up    = &camera->up;
-    Vec3  right = Vec3Cross(&front, up);
-    right       = Vec3Normalize(&right);
+    Vec3  right = vec3_cross(&front, up);
+    right       = vec3_normalize(&right);
 
     // update camera
     camera->front = front;
@@ -82,40 +82,40 @@ void camera_update_position(Camera* camera)
 
     if ( camera->movementDirection & CameraDirection_FORWARD )
     {
-        movement = Vec3Add(&movement, &camera->front);
+        movement = vec3_add(&movement, &camera->front);
     }
 
     if ( camera->movementDirection & CameraDirection_BACKWARD )
     {
-        movement = Vec3Sub(&movement, &camera->front);
+        movement = vec3_sub(&movement, &camera->front);
     }
 
     if ( camera->movementDirection & CameraDirection_LEFT )
     {
-        movement = Vec3Sub(&movement, &camera->right);
+        movement = vec3_sub(&movement, &camera->right);
     }
 
     if ( camera->movementDirection & CameraDirection_RIGHT )
     {
-        movement = Vec3Add(&movement, &camera->right);
+        movement = vec3_add(&movement, &camera->right);
     }
 
     if ( camera->movementDirection & CameraDirection_UP )
     {
-        movement = Vec3Add(&movement, &camera->up);
+        movement = vec3_add(&movement, &camera->up);
     }
 
     if ( camera->movementDirection & CameraDirection_DOWN )
     {
-        movement = Vec3Sub(&movement, &camera->up);
+        movement = vec3_sub(&movement, &camera->up);
     }
 
     // apply resulting movement
-    movement = Vec3Normalize(&movement);
-    if ( !Vec3IsNaN(&movement) )
+    movement = vec3_normalize(&movement);
+    if ( !vec3_is_nan(&movement) )
     {
-        movement         = Vec3Scale(&movement, camera->movementStep);
-        camera->position = Vec3Add(&camera->position, &movement);
+        movement         = vec3_scale(&movement, camera->movementStep);
+        camera->position = vec3_add(&camera->position, &movement);
     }
 }
 
