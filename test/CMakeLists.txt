@@ -3,5 +3,5 @@ target_sources(
 	${PROJECT_NAME}_test
 	PRIVATE
 		off.cpp
-		vec3.cpp
+		vec3_test.cpp
 )
