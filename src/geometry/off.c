@@ -151,21 +151,21 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     Vec3* vertices = obj->vertices;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        centroid = Vec3Add(&centroid, &vertices[vi]);
+        centroid = vec3_add(&centroid, &vertices[vi]);
     }
-    centroid = Vec3Scale(&centroid, 1.0f / (float) numVertices);
+    centroid = vec3_scale(&centroid, 1.0f / (float) numVertices);
 
     // translate the vertices to the origin
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        vertices[vi] = Vec3Sub(&vertices[vi], &centroid);
+        vertices[vi] = vec3_sub(&vertices[vi], &centroid);
     }
 
     // find the maximum vertex magnitude
-    float maxMagnitude = Vec3Lenth(vertices);
+    float maxMagnitude = vec3_magnitude(vertices);
     for ( uint32_t vi = 1; vi < numVertices; ++vi )
     {
-        float magnitude = Vec3Lenth(&vertices[vi]);
+        float magnitude = vec3_magnitude(&vertices[vi]);
         if ( magnitude > maxMagnitude )
         {
             maxMagnitude = magnitude;
@@ -176,7 +176,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     float scale = 1.0f / maxMagnitude;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        vertices[vi] = Vec3Scale(&vertices[vi], scale);
+        vertices[vi] = vec3_scale(&vertices[vi], scale);
     }
 
     // allows for the mesh itself to fit within the unit sphere if the sphere is
@@ -186,7 +186,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
         // translate the vertices back to the centroid
         for ( uint32_t vi = 0; vi < numVertices; ++vi )
         {
-            vertices[vi] = Vec3Add(&vertices[vi], &centroid);
+            vertices[vi] = vec3_add(&vertices[vi], &centroid);
         }
     }
 }
