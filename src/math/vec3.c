@@ -74,7 +74,7 @@ float vec3_magnitude(const Vec3* v)
 
 Vec3 vec3_normalize(const Vec3* v)
 {
-    // guard against zero or NaN vectors
+    // normalization of a zero or NaN vector is undefined
     if ( vec3_is_nan(v) || vec3_is_zero(v) )
     {
         return vec3_nan();
