@@ -55,7 +55,7 @@ typedef struct OFF
     uint32_t numVertices;  ///< The number of vertices in the object.
     uint32_t numFaces;     ///< The number of faces in the object.
     uint32_t numEdges;     ///< The number of edges in the object (not used).
-    Vec3*    vertices;     ///< The vertices in the object.
+    vec3*    vertices;     ///< The vertices in the object.
     OFFFace* faces;        ///< The faces in the object.
 } OFF;
 

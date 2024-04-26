@@ -8,12 +8,12 @@
 
 struct Camera
 {
-    Vec3  position;
+    vec3  position;
     float yaw;
     float pitch;
-    Vec3  front;
-    Vec3  right;
-    Vec3  up;
+    vec3  front;
+    vec3  right;
+    vec3  up;
     int   movementDirection;
     float movementStep;
 };
@@ -35,10 +35,10 @@ void camera_init(Camera* camera)
     const float initialYaw  = -90.0f;  // face towards negative z-axis
     const float initialStep = 0.5f;    // units
 
-    camera->position          = (Vec3){ 0.0f, 0.0f, 0.0f };
-    camera->up                = (Vec3){ 0.0f, 1.0f, 0.0f };
-    camera->right             = (Vec3){ 1.0f, 0.0f, 0.0f };
-    camera->front             = (Vec3){ 0.0f, 0.0f, -1.0f };
+    camera->position          = (vec3){ 0.0f, 0.0f, 0.0f };
+    camera->up                = (vec3){ 0.0f, 1.0f, 0.0f };
+    camera->right             = (vec3){ 1.0f, 0.0f, 0.0f };
+    camera->front             = (vec3){ 0.0f, 0.0f, -1.0f };
     camera->yaw               = initialYaw;
     camera->pitch             = 0.0f;
     camera->movementDirection = CameraDirection_NONE;
@@ -55,15 +55,15 @@ void camera_update_orientation(Camera* camera)
     float       pitch       = camera->pitch * pi / half_circle;
 
     // generate front vector
-    Vec3 front;
+    vec3 front;
     front.x = cosf(yaw) * cosf(pitch);
     front.y = sinf(pitch);
     front.z = sinf(yaw) * cosf(pitch);
     front   = vec3_normalize(&front);
 
     // generate right and up vectors
-    Vec3* up    = &camera->up;
-    Vec3  right = vec3_cross(&front, up);
+    vec3* up    = &camera->up;
+    vec3  right = vec3_cross(&front, up);
     right       = vec3_normalize(&right);
 
     // update camera
@@ -78,7 +78,7 @@ void camera_update_position(Camera* camera)
         return;
     }
 
-    Vec3 movement = { 0.0f, 0.0f, 0.0f };
+    vec3 movement = { 0.0f, 0.0f, 0.0f };
 
     if ( camera->movementDirection & CameraDirection_FORWARD )
     {
@@ -119,17 +119,17 @@ void camera_update_position(Camera* camera)
     }
 }
 
-Vec3 camera_get_front(const Camera* camera)
+vec3 camera_get_front(const Camera* camera)
 {
     return camera->front;
 }
 
-Vec3 camera_get_right(const Camera* camera)
+vec3 camera_get_right(const Camera* camera)
 {
     return camera->right;
 }
 
-Vec3 camera_get_up(const Camera* camera)
+vec3 camera_get_up(const Camera* camera)
 {
     return camera->up;
 }
@@ -144,7 +144,7 @@ float camera_get_pitch(const Camera* camera)
     return camera->pitch;
 }
 
-Vec3 camera_get_position(const Camera* camera)
+vec3 camera_get_position(const Camera* camera)
 {
     return camera->position;
 }
@@ -187,7 +187,7 @@ void camera_set_pitch(Camera* camera, float pitch)
     camera->pitch = pitch;
 }
 
-void camera_set_position(Camera* camera, Vec3 position)
+void camera_set_position(Camera* camera, vec3 position)
 {
     camera->position = position;
 }

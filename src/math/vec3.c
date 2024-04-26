@@ -6,73 +6,73 @@
 #include <alibrary/math/vec3.h>
 #include <math.h>
 
-Vec3 vec3_zero(void)
+vec3 vec3_zero(void)
 {
-    return (Vec3){ 0.0f, 0.0f, 0.0f };
+    return (vec3){ 0.0f, 0.0f, 0.0f };
 }
 
-Vec3 vec3_nan(void)
+vec3 vec3_nan(void)
 {
-    return (Vec3){ NAN, NAN, NAN };
+    return (vec3){ NAN, NAN, NAN };
 }
 
-bool vec3_is_zero(const Vec3* v)
+bool vec3_is_zero(const vec3* v)
 {
     return vec3_magnitude(v) <= AL_EPSILON;
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-bool vec3_is_nan(const Vec3* v)
+bool vec3_is_nan(const vec3* v)
 {
     return (isnan(v->x) || isnan(v->y) || isnan(v->z));
 }
 
-Vec3 vec3_add(const Vec3* a, const Vec3* b)
+vec3 vec3_add(const vec3* a, const vec3* b)
 {
-    return (Vec3){
+    return (vec3){
         {a->x + b->x, a->y + b->y, a->z + b->z}
     };
 }
 
-Vec3 vec3_sub(const Vec3* a, const Vec3* b)
+vec3 vec3_sub(const vec3* a, const vec3* b)
 {
-    return (Vec3){
+    return (vec3){
         {a->x - b->x, a->y - b->y, a->z - b->z}
     };
 }
 
-Vec3 vec3_negate(const Vec3* v)
+vec3 vec3_negate(const vec3* v)
 {
-    return (Vec3){
+    return (vec3){
         {-v->x, -v->y, -v->z}
     };
 }
 
-Vec3 vec3_scale(const Vec3* v, float scalar)
+vec3 vec3_scale(const vec3* v, float scalar)
 {
-    return (Vec3){
+    return (vec3){
         {v->x * scalar, v->y * scalar, v->z * scalar}
     };
 }
 
-float vec3_dot(const Vec3* a, const Vec3* b)
+float vec3_dot(const vec3* a, const vec3* b)
 {
     return (a->x * b->x + a->y * b->y + a->z * b->z);
 }
 
-Vec3 vec3_cross(const Vec3* a, const Vec3* b)
+vec3 vec3_cross(const vec3* a, const vec3* b)
 {
-    return (Vec3){
+    return (vec3){
         {a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x}
     };
 }
 
-float vec3_magnitude(const Vec3* v)
+float vec3_magnitude(const vec3* v)
 {
     return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
 }
 
-Vec3 vec3_normalize(const Vec3* v)
+vec3 vec3_normalize(const vec3* v)
 {
     // normalization of a zero or NaN vector is undefined
     if ( vec3_is_nan(v) || vec3_is_zero(v) )
@@ -89,7 +89,7 @@ Vec3 vec3_normalize(const Vec3* v)
 // Utility functions
 //--------------------------------------------------------------------------------------------------
 
-float vec3_angle(const Vec3* a, const Vec3* b)
+float vec3_angle(const vec3* a, const vec3* b)
 {
     // guard against NaN vectors
     if ( vec3_is_nan(a) || vec3_is_nan(b) )
@@ -112,7 +112,7 @@ float vec3_angle(const Vec3* a, const Vec3* b)
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-Vec3 vec3_reflect(const Vec3* incoming, const Vec3* normal)
+vec3 vec3_reflect(const vec3* incoming, const vec3* normal)
 {
     // to reflect a vector v about a normal n, we want to project v onto n
     // and then subtract the projection from v twice, which is the same as
@@ -126,7 +126,7 @@ Vec3 vec3_reflect(const Vec3* incoming, const Vec3* normal)
     }
     // normalize the normal to ensure the projection is correct and
     // return a NaN vector if the normal is zero
-    Vec3 n_normalized = vec3_normalize(normal);
+    vec3 n_normalized = vec3_normalize(normal);
     if ( vec3_is_nan(&n_normalized) )
     {
         return vec3_nan();
@@ -137,6 +137,6 @@ Vec3 vec3_reflect(const Vec3* incoming, const Vec3* normal)
 
     // calculate the projection of v onto n
     float projection = vec3_dot(incoming, &n_normalized);
-    Vec3  scaled_n   = vec3_scale(&n_normalized, projection_modifier * projection);
+    vec3  scaled_n   = vec3_scale(&n_normalized, projection_modifier * projection);
     return vec3_sub(incoming, &scaled_n);
 }

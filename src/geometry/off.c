@@ -75,7 +75,7 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
     {
         for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
         {
-            Vec3* vertex = &obj->vertices[vi];
+            vec3* vertex = &obj->vertices[vi];
             fprintf(
                 stream,
                 "%.*f %.*f %.*f\n",
@@ -147,8 +147,8 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     }
 
     // find the centroid of the mesh
-    Vec3  centroid = { 0.0f, 0.0f, 0.0f };
-    Vec3* vertices = obj->vertices;
+    vec3  centroid = { 0.0f, 0.0f, 0.0f };
+    vec3* vertices = obj->vertices;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
         centroid = vec3_add(&centroid, &vertices[vi]);
@@ -323,7 +323,7 @@ bool InitialiseOFF(OFFReader* reader)
 bool AllocateVertices(OFFReader* reader)
 {
     OFF* obj      = reader->obj;
-    obj->vertices = (Vec3*) malloc(sizeof(Vec3) * obj->numVertices);
+    obj->vertices = (vec3*) malloc(sizeof(vec3) * obj->numVertices);
     if ( obj->vertices == NULL )
     {
         WriteGlobalErrorMessage("OFF : Failed to allocate memory for vertices");
@@ -332,7 +332,7 @@ bool AllocateVertices(OFFReader* reader)
 
     for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
-        obj->vertices[vi] = (Vec3){
+        obj->vertices[vi] = (vec3){
             {0.0f, 0.0f, 0.0f}
         };
     }
@@ -385,7 +385,7 @@ bool ReadVertices(OFFReader* reader)
         }
 
         // convert and validate the vertex coordinates
-        Vec3* vertex = &obj->vertices[vi];
+        vec3* vertex = &obj->vertices[vi];
         if ( !strToFloat(reader->tokens[0], &vertex->x) )
         {
             WriteGlobalErrorMessage(

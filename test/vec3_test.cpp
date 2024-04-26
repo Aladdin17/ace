@@ -4,12 +4,12 @@
 #include <catch2/matchers/catch_matchers_predicate.hpp>
 #include <alibrary/math/vec3.h>
 
-TEST_CASE("Vec3 operations", "[vec3]") {
-    Vec3 a = {1.0f, 2.0f, 3.0f};
-    Vec3 b = {4.0f, 5.0f, 6.0f};
-    Vec3 nan = vec3_nan();
-    Vec3 zero = vec3_zero();
-    Vec3 result;
+TEST_CASE("vec3 operations", "[vec3]") {
+    vec3 a = {1.0f, 2.0f, 3.0f};
+    vec3 b = {4.0f, 5.0f, 6.0f};
+    vec3 nan = vec3_nan();
+    vec3 zero = vec3_zero();
+    vec3 result;
 
     SECTION("vec3_zero") {
         REQUIRE_THAT(zero.x,
@@ -36,17 +36,17 @@ TEST_CASE("Vec3 operations", "[vec3]") {
     }
 
     SECTION("vec3_is_zero") {
-        Vec3 non_zero = { 0.0f, 0.0f, 1.0f };
-        Vec3 negative_non_zero = { 0.0f, 0.0f, -1.0f };
+        vec3 non_zero = { 0.0f, 0.0f, 1.0f };
+        vec3 negative_non_zero = { 0.0f, 0.0f, -1.0f };
         REQUIRE(vec3_is_zero(&zero) == true);
         REQUIRE(vec3_is_zero(&non_zero) == false);
         REQUIRE(vec3_is_zero(&negative_non_zero) == false);
     }
 
     SECTION("vec3_is_nan") {
-        Vec3 nan_1 = {NAN, 0.0f, 0.0f};
-        Vec3 nan_2 = {0.0f, NAN, 0.0f};
-        Vec3 nan_3 = {0.0f, 0.0f, NAN};
+        vec3 nan_1 = {NAN, 0.0f, 0.0f};
+        vec3 nan_2 = {0.0f, NAN, 0.0f};
+        vec3 nan_3 = {0.0f, 0.0f, NAN};
         REQUIRE(vec3_is_nan(&nan) == true);
         REQUIRE(vec3_is_nan(&nan_1) == true);
         REQUIRE(vec3_is_nan(&nan_2) == true);
@@ -120,9 +120,9 @@ TEST_CASE("Vec3 operations", "[vec3]") {
 
     SECTION("vec3_dot") {
         float dot;
-        Vec3 first = { 1.0f, 0.0f, 0.0f };
-        Vec3 second = { 0.0f, 1.0f, 0.0f };
-        Vec3 third = { -1.0f, 0.0f, 0.0f };
+        vec3 first = { 1.0f, 0.0f, 0.0f };
+        vec3 second = { 0.0f, 1.0f, 0.0f };
+        vec3 third = { -1.0f, 0.0f, 0.0f };
 
         // Dot product of perpendicular vectors is 0
         dot = vec3_dot(&first, &second);
@@ -168,13 +168,13 @@ TEST_CASE("Vec3 operations", "[vec3]") {
         // guard nan vectors
         result = vec3_normalize(&nan);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
 
         // guard zero vectors
         result = vec3_normalize(&zero);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
 
         // check valid vector
@@ -196,8 +196,8 @@ TEST_CASE("Vec3 operations", "[vec3]") {
 
 TEST_CASE("vec3 utilities angle", "[vec3]") {
     SECTION("Zero magnitude vectors") {
-        Vec3 a = {0.0f, 0.0f, 0.0f};
-        Vec3 b = {1.0f, 0.0f, 0.0f};
+        vec3 a = {0.0f, 0.0f, 0.0f};
+        vec3 b = {1.0f, 0.0f, 0.0f};
         float angle = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(angle,
             Catch::Matchers::Predicate<float>([](float x) { return isnan(x); }, "NaN")
@@ -210,8 +210,8 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
     }
 
     SECTION("NaN vectors") {
-        Vec3 a = {NAN, 0.0f, 0.0f};
-        Vec3 b = {1.0f, 0.0f, 0.0f};
+        vec3 a = {NAN, 0.0f, 0.0f};
+        vec3 b = {1.0f, 0.0f, 0.0f};
         float angle = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(angle,
             Catch::Matchers::Predicate<float>([](float x) { return isnan(x); }, "NaN")
@@ -224,8 +224,8 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
     }
 
     SECTION("90 degrees angle") {
-        Vec3 a = {1.0f, 0.0f, 0.0f};
-        Vec3 b = {0.0f, 1.0f, 0.0f};
+        vec3 a = {1.0f, 0.0f, 0.0f};
+        vec3 b = {0.0f, 1.0f, 0.0f};
         float result = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(90.0f, AL_EPSILON) ||
@@ -234,8 +234,8 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
     }
 
     SECTION("45 degrees angle") {
-        Vec3 a = {1.0f, 1.0f, 0.0f};
-        Vec3 b = {1.0f, 0.0f, 0.0f};
+        vec3 a = {1.0f, 1.0f, 0.0f};
+        vec3 b = {1.0f, 0.0f, 0.0f};
         float result = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(45.0f, AL_EPSILON) ||
@@ -244,8 +244,8 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
     }
 
     SECTION("0 degrees angle") {
-        Vec3 a = {1.0f, 0.0f, 0.0f};
-        Vec3 b = {1.0f, 0.0f, 0.0f};
+        vec3 a = {1.0f, 0.0f, 0.0f};
+        vec3 b = {1.0f, 0.0f, 0.0f};
         float result = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(0.0f, AL_EPSILON) ||
@@ -254,8 +254,8 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
     }
 
     SECTION("'-90' degrees angle") {
-        Vec3 a = {1.0f, 0.0f, 0.0f};
-        Vec3 b = {0.0f, -1.0f, 0.0f};
+        vec3 a = {1.0f, 0.0f, 0.0f};
+        vec3 b = {0.0f, -1.0f, 0.0f};
         float result = al_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(90.0f, AL_EPSILON) ||
@@ -266,45 +266,45 @@ TEST_CASE("vec3 utilities angle", "[vec3]") {
 
 TEST_CASE("vec3 utilities reflect", "[vec3]") {
     SECTION("NaN normal vector") {
-        Vec3 n = vec3_nan();
-        Vec3 v = {1.0f, 0.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 n = vec3_nan();
+        vec3 v = {1.0f, 0.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
     }
 
     SECTION("NaN incoming vector") {
-        Vec3 n = {1.0f, 0.0f, 0.0f};
-        Vec3 v = vec3_nan();
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 n = {1.0f, 0.0f, 0.0f};
+        vec3 v = vec3_nan();
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
     }
 
     SECTION("Reflect a zero normal vector") {
-        Vec3 v = {1.0f, 0.0f, 0.0f};
-        Vec3 n = {0.0f, 0.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 v = {1.0f, 0.0f, 0.0f};
+        vec3 n = {0.0f, 0.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
     }
 
     SECTION("Reflect a zero incoming vector") {
-        Vec3 v = {0.0f, 0.0f, 0.0f};
-        Vec3 n = {1.0f, 0.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 v = {0.0f, 0.0f, 0.0f};
+        vec3 n = {1.0f, 0.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result,
-            Catch::Matchers::Predicate<Vec3>([](Vec3 v) { return vec3_is_nan(&v); }, "NaN")
+            Catch::Matchers::Predicate<vec3>([](vec3 v) { return vec3_is_nan(&v); }, "NaN")
         );
     }
 
     SECTION("Reflect a perpendicular vector") {
-        Vec3 v = {1.0f, 0.0f, 0.0f};
-        Vec3 n = {0.0f, 1.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 v = {1.0f, 0.0f, 0.0f};
+        vec3 n = {0.0f, 1.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result.x,
             Catch::Matchers::WithinRel(1.0f, AL_EPSILON) ||
             Catch::Matchers::WithinAbs(1.0f, AL_EPSILON)
@@ -320,9 +320,9 @@ TEST_CASE("vec3 utilities reflect", "[vec3]") {
     }
 
     SECTION("Reflect a parallel vector") {
-        Vec3 v = {1.0f, 0.0f, 0.0f};
-        Vec3 n = {1.0f, 0.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 v = {1.0f, 0.0f, 0.0f};
+        vec3 n = {1.0f, 0.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result.x,
             Catch::Matchers::WithinRel(-1.0f, AL_EPSILON) ||
             Catch::Matchers::WithinAbs(-1.0f, AL_EPSILON)
@@ -338,9 +338,9 @@ TEST_CASE("vec3 utilities reflect", "[vec3]") {
     }
 
     SECTION("Reflecting a vector") {
-        Vec3 v = {1.0f, 1.0f, 0.0f};
-        Vec3 n = {0.0f, 1.0f, 0.0f};
-        Vec3 result = vec3_reflect(&v, &n);
+        vec3 v = {1.0f, 1.0f, 0.0f};
+        vec3 n = {0.0f, 1.0f, 0.0f};
+        vec3 result = vec3_reflect(&v, &n);
         REQUIRE_THAT(result.x,
             Catch::Matchers::WithinRel(1.0f, AL_EPSILON) ||
             Catch::Matchers::WithinAbs(1.0f, AL_EPSILON)
