@@ -32,6 +32,14 @@ float al_deg_to_rad(float degrees);
  * \return The angle in degrees.
  */
 float al_rad_to_deg(float radians);
+/**
+ * \brief Clamps a value between a minimum and maximum value.
+ * \param[in] value The value to clamp.
+ * \param[in] min The minimum value.
+ * \param[in] max The maximum value.
+ * \return The clamped value.
+ */
+float al_clamp(float value, float min, float max);
 
 #ifdef __cplusplus
 }

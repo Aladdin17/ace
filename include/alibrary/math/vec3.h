@@ -57,6 +57,16 @@ bool  vec3_is_zero(const vec3* v);
  */
 bool  vec3_is_nan(const vec3* v);
 /**
+ * \brief Checks if two vectors are equal.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \retval true if all of the components of the vectors are equal, false otherwise.
+ * \retval false if one or more of the components of the vectors are not equal.
+ * \retval false if either vector has NaN components.
+ * \note This function uses \ref AL_EPSILON as the epsilon value for floating point comparisons.
+ */
+bool  vec3_is_equal(const vec3* a, const vec3* b);
+/**
  * \brief Adds two vectors: a + b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -134,6 +144,32 @@ float vec3_angle(const vec3* a, const vec3* b);
  * If either vector is of zero length or NaN, the returned vector will have NaN components.
  */
 vec3  vec3_reflect(const vec3* incoming, const vec3* normal);
+/**
+ * \brief Calculate the Euclidean distance between two vectors.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \return The distance between the two vectors.
+ * \details
+ * If either vector is of NaN, the returned distance will be NaN.
+ */
+float vec3_distance(const vec3* a, const vec3* b);
+/**
+ * \brief Linearly interpolate between two vectors.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \param[in] delta The interpolation factor.
+ * \return The interpolated vector.
+ */
+vec3  vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor);
+/**
+ * \brief Project a vector onto another vector.
+ * \param[in] a The vector to project.
+ * \param[in] b The vector to project onto.
+ * \return The projected vector, a onto b.
+ * \details
+ * If either vector is of zero length or NaN, the returned vector will have NaN components.
+ */
+vec3  vec3_project(const vec3* a, const vec3* b);
 
 #ifdef __cplusplus
 }

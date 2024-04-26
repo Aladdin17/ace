@@ -77,7 +77,7 @@ if( AL_BUILD_TESTS )
 	set_target_properties(
 		${PROJECT_NAME}_test
 		PROPERTIES
-			CXX_STANDARD 11
+			CXX_STANDARD 17
 			CXX_STANDARD_REQUIRED ON
 	)
 

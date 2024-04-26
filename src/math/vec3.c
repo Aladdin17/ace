@@ -27,6 +27,12 @@ bool vec3_is_nan(const vec3* v)
     return (isnan(v->x) || isnan(v->y) || isnan(v->z));
 }
 
+bool vec3_is_equal(const vec3* a, const vec3* b)
+{
+    vec3 diff = vec3_sub(a, b);
+    return vec3_is_zero(&diff);
+}
+
 vec3 vec3_add(const vec3* a, const vec3* b)
 {
     return (vec3){
@@ -139,4 +145,44 @@ vec3 vec3_reflect(const vec3* incoming, const vec3* normal)
     float projection = vec3_dot(incoming, &n_normalized);
     vec3  scaled_n   = vec3_scale(&n_normalized, projection_modifier * projection);
     return vec3_sub(incoming, &scaled_n);
+}
+
+float vec3_distance(const vec3* a, const vec3* b)
+{
+    vec3 diff = vec3_sub(a, b);
+    return vec3_magnitude(&diff);
+}
+
+vec3 vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor)
+{
+    // clamp the interpolation_factor between 0 and 1
+    interpolation_factor = al_clamp(interpolation_factor, 0.0f, 1.0f);
+
+    // calculate the linear interpolation
+    vec3 diff  = vec3_sub(b, a);
+    vec3 delta = vec3_scale(&diff, interpolation_factor);
+    return vec3_add(a, &delta);
+}
+
+vec3 vec3_project(const vec3* a, const vec3* b)
+{
+    // guard against NaN vectors
+    if ( vec3_is_nan(a) || vec3_is_nan(b) )
+    {
+        return vec3_nan();
+    }
+
+    // guard against zero vectors
+    if ( vec3_is_zero(a) || vec3_is_zero(b) )
+    {
+        return vec3_nan();
+    }
+
+    // the projection can be derived by calculating the dot product of a and b
+    // and then scaling b by the dot product divided by the magnitude of b squared
+    // projection = (a . b) / |b|^2 * b
+    float dot                       = vec3_dot(a, b);
+    float mag_b                     = vec3_magnitude(b);
+    float inverse_magnitude_squared = 1.0f / (mag_b * mag_b);
+    return vec3_scale(b, dot * inverse_magnitude_squared);
 }

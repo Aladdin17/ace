@@ -14,3 +14,8 @@ float al_rad_to_deg(float radians)
 {
     return radians * AL_DEG_RAD_SCALAR / AL_PI;
 }
+
+float al_clamp(float value, float min, float max)
+{
+    return value < min ? min : value > max ? max : value;
+}
