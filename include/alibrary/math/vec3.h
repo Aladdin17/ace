@@ -47,7 +47,7 @@ Vec3  vec3_nan(void);
  * \param[in] v The vector.
  * \retval true if all of the components of the vector are zero, false otherwise.
  * \retval false one or more of the components of the vector are non-zero.
- * \note This function uses AL_EPSILON as the epsilon value for floating point comparisons.
+ * \note This function uses \ref AL_EPSILON as the epsilon value for floating point comparisons.
  */
 bool  vec3_is_zero(const Vec3* v);
 /**
@@ -107,8 +107,8 @@ float vec3_magnitude(const Vec3* v);
  * \brief Normalizes a vector.
  * \param[in] v The vector.
  * \return The normalized vector.
- * \note If the length of the vector is 0, the components of the returned vector are NaN.
- * \see Vec3IsNaN
+ * \details
+ * If the vector is of zero length or NaN, the returned vector will have NaN components.
  */
 Vec3  vec3_normalize(const Vec3* v);
 
@@ -121,6 +121,8 @@ Vec3  vec3_normalize(const Vec3* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \return The angle between the two vectors in radians.
+ * \details
+ * If either vector is of zero length or NaN, the returned angle will be NaN.
  */
 float vec3_angle(const Vec3* a, const Vec3* b);
 /**
@@ -128,7 +130,8 @@ float vec3_angle(const Vec3* a, const Vec3* b);
  * \param[in] v The vector to reflect.
  * \param[in] n The normal vector.
  * \return The reflected vector.
- * \note The returned vector will be NaN if either the vector or normal are zero or nan vectors.
+ * \details
+ * If either vector is of zero length or NaN, the returned vector will have NaN components.
  */
 Vec3  vec3_reflect(const Vec3* incoming, const Vec3* normal);
 
