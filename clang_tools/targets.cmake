@@ -14,7 +14,7 @@ else()
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
-	set( CLANG_FORMAT_MIN_VERSION "14.0.0" )
+	set( CLANG_FORMAT_MIN_VERSION "18.0.0" )
 	string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" CLANG_FORMAT_VERSION ${CLANG_FORMAT_VERSION_OUTPUT})
 	if( CLANG_FORMAT_VERSION VERSION_LESS ${CLANG_FORMAT_MIN_VERSION} )
 		message( STATUS "Clang-format version must be at least ${CLANG_FORMAT_MIN_VERSION}, found ${CLANG_FORMAT_VERSION}" )
@@ -32,7 +32,7 @@ else()
 			clang-format
 			COMMAND ${CLANG_FORMAT_EXE}
 				-i
-				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-format
+				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v18/.clang-format
 				${FORMAT_SOURCE_FILES}
 			COMMENT
 				"Running clang-format"
@@ -43,7 +43,7 @@ else()
 			COMMAND ${CLANG_FORMAT_EXE}
 				--dry-run
 				--Werror
-				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v14/.clang-format
+				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v18/.clang-format
 				${FORMAT_SOURCE_FILES}
 		)
 	endif()

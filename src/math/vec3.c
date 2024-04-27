@@ -36,30 +36,22 @@ bool vec3_is_equal(const vec3* a, const vec3* b)
 
 vec3 vec3_add(const vec3* a, const vec3* b)
 {
-    return (vec3){
-        {a->x + b->x, a->y + b->y, a->z + b->z}
-    };
+    return (vec3){ a->x + b->x, a->y + b->y, a->z + b->z };
 }
 
 vec3 vec3_sub(const vec3* a, const vec3* b)
 {
-    return (vec3){
-        {a->x - b->x, a->y - b->y, a->z - b->z}
-    };
+    return (vec3){ a->x - b->x, a->y - b->y, a->z - b->z };
 }
 
 vec3 vec3_negate(const vec3* v)
 {
-    return (vec3){
-        {-v->x, -v->y, -v->z}
-    };
+    return (vec3){ -v->x, -v->y, -v->z };
 }
 
 vec3 vec3_scale(const vec3* v, float scalar)
 {
-    return (vec3){
-        {v->x * scalar, v->y * scalar, v->z * scalar}
-    };
+    return (vec3){ v->x * scalar, v->y * scalar, v->z * scalar };
 }
 
 float vec3_dot(const vec3* a, const vec3* b)
@@ -69,9 +61,8 @@ float vec3_dot(const vec3* a, const vec3* b)
 
 vec3 vec3_cross(const vec3* a, const vec3* b)
 {
-    return (vec3){
-        {a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x}
-    };
+    return (vec3
+    ){ a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x };
 }
 
 float vec3_magnitude(const vec3* v)
