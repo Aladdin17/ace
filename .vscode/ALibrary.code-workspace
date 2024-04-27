@@ -58,6 +58,9 @@
 
 		"files.exclude": {
 			"docs/": false
+		},
+		"files.associations": {
+			"tuple": "cpp"
 		}
 	}
 }
