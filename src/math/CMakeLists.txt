@@ -8,4 +8,5 @@ target_sources(
 		math.c
 		vec3.c
 		vec3_ext.c
+		vec4.c
 )
