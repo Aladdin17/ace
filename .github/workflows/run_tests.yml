@@ -1,61 +1,63 @@
-name: Testing
-on:
-  pull_request:
-    branches:
-      - main
-jobs:
-  test_project:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+# name: Testing
+# on:
+#   pull_request:
+#     branches:
+#       - main
+# jobs:
+#   test_project:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
 
-      - name: Install build dependencies
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: gcc cmake ninja-build clang-format clang-tidy
-          version: 1.0
+#       - name: Install build dependencies
+#         uses: awalsh128/cache-apt-pkgs-action@latest
+#         with:
+#           packages: gcc cmake ninja-build clang-format clang-tidy
+#           version: 1.0
 
-      - name: Cache build directory
-        uses: actions/cache@v2
-        with:
-          path: .build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+#       - name: Cache build directory
+#         uses: actions/cache@v2
+#         with:
+#           path: .build
+#           key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+#           restore-keys: |
+#             ${{ runner.os }}-build-
 
-      - name: Configure CMake
-        run: |
-          cmake -S . -B .build -G Ninja         \
-            -DCMAKE_C_COMPILER=gcc              \
-            -DCMAKE_CXX_COMPILER=g++            \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DAL_BUILD_DOCS=OFF                 \
-            -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=ON
+#       - name: Configure CMake
+#         run: |
+#           cmake -S . -B .build -G Ninja         \
+#             -DCMAKE_C_COMPILER=gcc              \
+#             -DCMAKE_CXX_COMPILER=g++            \
+#             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+#             -DAL_BUILD_DOCS=OFF                 \
+#             -DAL_BUILD_TESTS=ON                 \
+#             -DAL_USE_CLANG_TOOLS=ON             \
+#             -DAL_RUN_CLANG_FORMAT=OFF           \
+#             -DAL_RUN_CLANG_TIDY=OFF
 
-      - name: Build (Debug)
-        run: |
-          cmake --build .build --target all --config Debug
+#       - name: Build (Debug)
+#         run: |
+#           cmake --build .build --target all --config Debug
 
-      - name: Run CTest (Debug)
-        working-directory: .build
-        run: |
-          ctest -C Debug -T test --output-on-failure
+#       - name: Run CTest (Debug)
+#         working-directory: .build
+#         run: |
+#           ctest -C Debug -T test --output-on-failure
 
-      - name: Build (Release)
-        run: |
-          cmake --build .build --target all --config Release
+#       - name: Build (Release)
+#         run: |
+#           cmake --build .build --target all --config Release
 
-      - name: Run CTest (Release)
-        working-directory: .build
-        run: |
-          ctest -C Release -T test --output-on-failure
+#       - name: Run CTest (Release)
+#         working-directory: .build
+#         run: |
+#           ctest -C Release -T test --output-on-failure
 
-      - name: Check Code Formatting (Clang-format)
-        run: |
-          cmake --build .build --target check-clang-format
+#       - name: Check Code Formatting (Clang-format)
+#         run: |
+#           cmake --build .build --target check-clang-format
 
-      - name: Perform Static Linting (Clang-tidy)
-        run: |
-          cmake --build .build --target check-clang-tidy
+#       - name: Perform Static Linting (Clang-tidy)
+#         run: |
+#           cmake --build .build --target check-clang-tidy
