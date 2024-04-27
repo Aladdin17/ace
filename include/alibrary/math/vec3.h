@@ -4,9 +4,7 @@
  * \brief 3-component vector types and functions.
  */
 #pragma once
-#include "math.h"
 #include <stdbool.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -121,55 +119,6 @@ float vec3_magnitude(const vec3* v);
  * If the vector is of zero length or NaN, the returned vector will have NaN components.
  */
 vec3  vec3_normalize(const vec3* v);
-
-//--------------------------------------------------------------------------------------------------
-// Utility functions
-//--------------------------------------------------------------------------------------------------
-
-/**
- * \brief Calculate the angle between two vectors.
- * \param[in] a The first vector.
- * \param[in] b The second vector.
- * \return The angle between the two vectors in radians.
- * \details
- * If either vector is of zero length or NaN, the returned angle will be NaN.
- */
-float vec3_angle(const vec3* a, const vec3* b);
-/**
- * \brief Calculate the reflected vector about a normal.
- * \param[in] v The vector to reflect.
- * \param[in] n The normal vector.
- * \return The reflected vector.
- * \details
- * If either vector is of zero length or NaN, the returned vector will have NaN components.
- */
-vec3  vec3_reflect(const vec3* incoming, const vec3* normal);
-/**
- * \brief Calculate the Euclidean distance between two vectors.
- * \param[in] a The first vector.
- * \param[in] b The second vector.
- * \return The distance between the two vectors.
- * \details
- * If either vector is of NaN, the returned distance will be NaN.
- */
-float vec3_distance(const vec3* a, const vec3* b);
-/**
- * \brief Linearly interpolate between two vectors.
- * \param[in] a The first vector.
- * \param[in] b The second vector.
- * \param[in] delta The interpolation factor.
- * \return The interpolated vector.
- */
-vec3  vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor);
-/**
- * \brief Project a vector onto another vector.
- * \param[in] a The vector to project.
- * \param[in] b The vector to project onto.
- * \return The projected vector, a onto b.
- * \details
- * If either vector is of zero length or NaN, the returned vector will have NaN components.
- */
-vec3  vec3_project(const vec3* a, const vec3* b);
 
 #ifdef __cplusplus
 }

@@ -4,4 +4,5 @@ target_sources(
 	PRIVATE
 		math.c
 		vec3.c
+		vec3_ext.c
 )
