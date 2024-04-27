@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 /**
+ * \ingroup vec3
  * \brief Calculate the angle between two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -26,6 +27,7 @@ extern "C" {
  */
 float vec3_angle(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Calculate the Euclidean distance between two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -35,6 +37,7 @@ float vec3_angle(const vec3* a, const vec3* b);
  */
 float vec3_distance(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Linearly interpolate between two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -43,6 +46,7 @@ float vec3_distance(const vec3* a, const vec3* b);
  */
 vec3  vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor);
 /**
+ * \ingroup vec3
  * \brief Project a vector onto another vector.
  * \param[in] a The vector to project.
  * \param[in] b The vector to project onto.
@@ -52,6 +56,7 @@ vec3  vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor);
  */
 vec3  vec3_project(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Calculate the reflected vector about a normal.
  * \param[in] v The vector to reflect.
  * \param[in] n The normal vector.
