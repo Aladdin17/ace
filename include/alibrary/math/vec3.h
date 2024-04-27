@@ -4,11 +4,16 @@
  * \brief 3-component vector types and functions.
  */
 #pragma once
+#include <limits.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+//--------------------------------------------------------------------------------------------------
+// float
+//--------------------------------------------------------------------------------------------------
 
 /**
  * \union vec3
@@ -119,6 +124,159 @@ float vec3_magnitude(const vec3* v);
  * If the vector is of zero length or NaN, the returned vector will have NaN components.
  */
 vec3  vec3_normalize(const vec3* v);
+
+//--------------------------------------------------------------------------------------------------
+// int
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * \typedef rounding_func
+ * \brief A function pointer type for rounding floats to integers.
+ */
+typedef int (*rounding_func)(float input);
+/**
+ * \def INT_NAN
+ * \brief A sentinel value for an invalid integer.
+ */
+#define INT_NAN INT_MIN
+
+/**
+ * \union ivec3
+ * \brief A 3-component vector of type int.
+ * \details
+ * A standard 3-component vector of type int which provides 'aliases' for
+ * axes, colors, and elements.
+ */
+typedef union ivec3
+{
+    struct
+    {
+        int x, y, z;
+    };
+    struct
+    {
+        int r, g, b;
+    };
+    int data[3];
+} ivec3;
+
+/**
+ * \brief Creates a vector with all components set to zero.
+ * \return A vector with all components set to zero.
+ */
+ivec3 ivec3_zero(void);
+/**
+ * \brief Creates a vector with all components set to an invalid sentinel.
+ * \return A vector with all components set to an invalid sentinel.
+ * \see INT_NAN
+ */
+ivec3 ivec3_nan(void);
+/**
+ * \brief Checks if a vector has zero components.
+ * \param[in] v The vector.
+ * \retval true if all of the components of the vector are zero.
+ * \retval false one or more of the components of the vector are non-zero.
+ */
+bool  ivec3_is_zero(const ivec3* v);
+/**
+ * \brief Checks if a vector has nan components.
+ * \param[in] v The vector.
+ * \retval true if any of the components of the vector are nan.
+ * \retval false if all of the components of the vector are valid.
+ * \see INT_NAN
+ */
+bool  ivec3_is_nan(const ivec3* v);
+/**
+ * \brief Checks if two vectors are equal.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \retval true if all of the components of the vectors are equal.
+ * \retval false if one or more of the components of the vectors are not equal.
+ */
+bool  ivec3_is_equal(const ivec3* a, const ivec3* b);
+/**
+ * \brief Adds two vectors: a + b.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \return The sum of the two vectors.
+ * \note If either vector has nan components, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ */
+ivec3 ivec3_add(const ivec3* a, const ivec3* b);
+/**
+ * \brief Subtracts two vectors: a - b.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \return The difference of the two vectors.
+ * \note If either vector has nan components, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ */
+ivec3 ivec3_sub(const ivec3* a, const ivec3* b);
+/**
+ * \brief Negates a vector.
+ * \param[in] v The vector to negate.
+ * \return The negated vector.
+ * \note If the vector has nan components, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ */
+ivec3 ivec3_negate(const ivec3* v);
+/**
+ * \brief Multiplies a vector by a scalar: a * scalar.
+ * \param[in] v The vector.
+ * \param[in] scalar The scalar.
+ * \return The scaled vector.
+ * \note If the vector has nan components, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ */
+ivec3 ivec3_scale(const ivec3* v, int scalar);
+/**
+ * \brief Divides a vector by a scalar: a / scalar.
+ * \param[in] v The vector.
+ * \param[in] scalar The scalar.
+ * \return The scaled vector.
+ * \note If the vector has nan components, the result will be the nan ivec3.
+ * \note If the scalar is zero, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ * \details
+ * This function uses integer division, so the result will be truncated.
+ * The result of this integer division is defined by the C standard to be the
+ * floor of the division. If you need a different behavior for this rounding,
+ * use \ref ivec3_divide_ext.
+ */
+ivec3 ivec3_divide(const ivec3* v, int scalar);
+/**
+ * \brief Divides a vector by a scalar: a / scalar.
+ * \param[in] v The vector.
+ * \param[in] scalar The scalar.
+ * \param[in] func A function pointer to a rounding function.
+ * \return The scaled vector.
+ * \note If the vector has nan components, the result will be the nan ivec3.
+ * \note If the scalar is zero, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ * \details
+ * This function uses a rounding function to determine the result of the division.
+ * The rounding function should take a float as input and return an integer.
+ * The result of the division is then rounded using this function.
+ * If the result of the standard C integer division is desired, use \ref ivec3_divide.
+ */
+ivec3 ivec3_divide_ext(const ivec3* v, int scalar, rounding_func func);
+/**
+ * \brief Computes the dot product of two vectors.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \return The dot product of the two vectors.
+ * \note If either vector has nan components, the result will be \ref INT_NAN.
+ */
+int   ivec3_dot(const ivec3* a, const ivec3* b);
+/**
+ * \brief Computes the cross product of two vectors: a x b.
+ * \param[in] a The first vector.
+ * \param[in] b The second vector.
+ * \return The cross product of the two vectors.
+ * \note If either vector has nan components, the result will be the nan ivec3.
+ * \see ivec3_is_nan
+ */
+ivec3 ivec3_cross(const ivec3* a, const ivec3* b);
 
 #ifdef __cplusplus
 }

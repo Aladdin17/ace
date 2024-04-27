@@ -7,6 +7,10 @@
 #include <alibrary/math/vec3.h>
 #include <math.h>
 
+//--------------------------------------------------------------------------------------------------
+// float
+//--------------------------------------------------------------------------------------------------
+
 vec3 vec3_zero(void)
 {
     return (vec3){ 0.0f, 0.0f, 0.0f };
@@ -81,4 +85,126 @@ vec3 vec3_normalize(const vec3* v)
     // calculate the inverse magnitude and scale the vector
     float invMagnitude = 1.0f / vec3_magnitude(v);
     return vec3_scale(v, invMagnitude);
+}
+
+//--------------------------------------------------------------------------------------------------
+// int
+//--------------------------------------------------------------------------------------------------
+
+ivec3 ivec3_zero(void)
+{
+    return (ivec3){ 0, 0, 0 };
+}
+
+ivec3 ivec3_nan(void)
+{
+    return (ivec3){ INT_NAN, INT_NAN, INT_NAN };
+}
+
+bool ivec3_is_zero(const ivec3* v)
+{
+    return (v->x == 0 && v->y == 0 && v->z == 0);
+}
+
+bool ivec3_is_nan(const ivec3* v)
+{
+    return (v->x == INT_NAN || v->y == INT_NAN || v->z == INT_NAN);
+}
+
+bool ivec3_is_equal(const ivec3* a, const ivec3* b)
+{
+    if ( ivec3_is_nan(a) || ivec3_is_nan(b) )
+    {
+        return false;
+    }
+
+    return (a->x == b->x && a->y == b->y && a->z == b->z);
+}
+
+ivec3 ivec3_add(const ivec3* a, const ivec3* b)
+{
+    if ( ivec3_is_nan(a) || ivec3_is_nan(b) )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3){ a->x + b->x, a->y + b->y, a->z + b->z };
+}
+
+ivec3 ivec3_sub(const ivec3* a, const ivec3* b)
+{
+    if ( ivec3_is_nan(a) || ivec3_is_nan(b) )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3){ a->x - b->x, a->y - b->y, a->z - b->z };
+}
+
+ivec3 ivec3_negate(const ivec3* v)
+{
+    if ( ivec3_is_nan(v) )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3){ -v->x, -v->y, -v->z };
+}
+
+ivec3 ivec3_scale(const ivec3* v, int scalar)
+{
+    if ( ivec3_is_nan(v) )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3){ v->x * scalar, v->y * scalar, v->z * scalar };
+}
+
+ivec3 ivec3_divide(const ivec3* v, int scalar)
+{
+    if ( ivec3_is_nan(v) || scalar == 0 )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3){ v->x / scalar, v->y / scalar, v->z / scalar };
+}
+
+ivec3 ivec3_divide_ext(const ivec3* v, int scalar, rounding_func func)
+{
+    if ( ivec3_is_nan(v) || scalar == 0 )
+    {
+        return ivec3_nan();
+    }
+
+    // convert to float
+    float scalarf = (float) scalar;
+    float xf      = (float) v->x;
+    float yf      = (float) v->y;
+    float zf      = (float) v->z;
+
+    // divide and round
+    return (ivec3){ func(xf / scalarf), func(yf / scalarf), func(zf / scalarf) };
+}
+
+int ivec3_dot(const ivec3* a, const ivec3* b)
+{
+    if ( ivec3_is_nan(a) || ivec3_is_nan(b) )
+    {
+        return INT_NAN;
+    }
+
+    return (a->x * b->x + a->y * b->y + a->z * b->z);
+}
+
+ivec3 ivec3_cross(const ivec3* a, const ivec3* b)
+{
+    if ( ivec3_is_nan(a) || ivec3_is_nan(b) )
+    {
+        return ivec3_nan();
+    }
+
+    return (ivec3
+    ){ a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x };
 }
