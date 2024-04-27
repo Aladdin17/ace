@@ -11,11 +11,21 @@
 extern "C" {
 #endif
 
+/**
+ * \defgroup vec3
+ * \brief 3-component float vector and functions.
+ */
+/**
+ * \defgroup ivec3
+ * \brief 3-component integer vector and functions.
+ */
+
 //--------------------------------------------------------------------------------------------------
 // float
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * \ingroup vec3
  * \union vec3
  * \brief A 3-component vector of type float.
  * \details
@@ -36,16 +46,19 @@ typedef union vec3
 } vec3;
 
 /**
+ * \ingroup vec3
  * \brief Creates a vector with all components set to zero.
  * \return A vector with all components set to zero.
  */
 vec3  vec3_zero(void);
 /**
+ * \ingroup vec3
  * \brief Creates a vector with all components set to NaN.
  * \return A vector with all components set to NaN.
  */
 vec3  vec3_nan(void);
 /**
+ * \ingroup vec3
  * \brief Checks if a vector has zero components.
  * \param[in] v The vector.
  * \retval true if all of the components of the vector are zero, false otherwise.
@@ -54,12 +67,14 @@ vec3  vec3_nan(void);
  */
 bool  vec3_is_zero(const vec3* v);
 /**
+ * \ingroup vec3
  * \brief Checks if a vector has NaN components.
  * \param[in] v The vector.
  * \return True if any of the components of the vector are NaN, false otherwise.
  */
 bool  vec3_is_nan(const vec3* v);
 /**
+ * \ingroup vec3
  * \brief Checks if two vectors are equal.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -70,6 +85,7 @@ bool  vec3_is_nan(const vec3* v);
  */
 bool  vec3_is_equal(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Adds two vectors: a + b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -77,6 +93,7 @@ bool  vec3_is_equal(const vec3* a, const vec3* b);
  */
 vec3  vec3_add(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Subtracts two vectors: a - b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -84,12 +101,14 @@ vec3  vec3_add(const vec3* a, const vec3* b);
  */
 vec3  vec3_sub(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Negates a vector.
  * \param[in] v The vector to negate.
  * \return The negated vector.
  */
 vec3  vec3_negate(const vec3* v);
 /**
+ * \ingroup vec3
  * \brief Multiplies a vector by a scalar: a * scalar.
  * \param[in] v The vector.
  * \param[in] scalar The scalar.
@@ -97,6 +116,7 @@ vec3  vec3_negate(const vec3* v);
  */
 vec3  vec3_scale(const vec3* v, float scalar);
 /**
+ * \ingroup vec3
  * \brief Computes the dot product of two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -104,6 +124,7 @@ vec3  vec3_scale(const vec3* v, float scalar);
  */
 float vec3_dot(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Computes the cross product of two vectors: a x b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -111,12 +132,14 @@ float vec3_dot(const vec3* a, const vec3* b);
  */
 vec3  vec3_cross(const vec3* a, const vec3* b);
 /**
+ * \ingroup vec3
  * \brief Computes the length of a vector.
  * \param[in] v The vector.
  * \return The length of the vector.
  */
 float vec3_magnitude(const vec3* v);
 /**
+ * \ingroup vec3
  * \brief Normalizes a vector.
  * \param[in] v The vector.
  * \return The normalized vector.
@@ -130,17 +153,20 @@ vec3  vec3_normalize(const vec3* v);
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * \ingroup ivec3
  * \typedef rounding_func
  * \brief A function pointer type for rounding floats to integers.
  */
 typedef int (*rounding_func)(float input);
 /**
+ * \ingroup ivec3
  * \def INT_NAN
  * \brief A sentinel value for an invalid integer.
  */
 #define INT_NAN INT_MIN
 
 /**
+ * \ingroup ivec3
  * \union ivec3
  * \brief A 3-component vector of type int.
  * \details
@@ -161,17 +187,20 @@ typedef union ivec3
 } ivec3;
 
 /**
+ * \ingroup ivec3
  * \brief Creates a vector with all components set to zero.
  * \return A vector with all components set to zero.
  */
 ivec3 ivec3_zero(void);
 /**
+ * \ingroup ivec3
  * \brief Creates a vector with all components set to an invalid sentinel.
  * \return A vector with all components set to an invalid sentinel.
  * \see INT_NAN
  */
 ivec3 ivec3_nan(void);
 /**
+ * \ingroup ivec3
  * \brief Checks if a vector has zero components.
  * \param[in] v The vector.
  * \retval true if all of the components of the vector are zero.
@@ -179,6 +208,7 @@ ivec3 ivec3_nan(void);
  */
 bool  ivec3_is_zero(const ivec3* v);
 /**
+ * \ingroup ivec3
  * \brief Checks if a vector has nan components.
  * \param[in] v The vector.
  * \retval true if any of the components of the vector are nan.
@@ -187,6 +217,7 @@ bool  ivec3_is_zero(const ivec3* v);
  */
 bool  ivec3_is_nan(const ivec3* v);
 /**
+ * \ingroup ivec3
  * \brief Checks if two vectors are equal.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -195,6 +226,7 @@ bool  ivec3_is_nan(const ivec3* v);
  */
 bool  ivec3_is_equal(const ivec3* a, const ivec3* b);
 /**
+ * \ingroup ivec3
  * \brief Adds two vectors: a + b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -204,6 +236,7 @@ bool  ivec3_is_equal(const ivec3* a, const ivec3* b);
  */
 ivec3 ivec3_add(const ivec3* a, const ivec3* b);
 /**
+ * \ingroup ivec3
  * \brief Subtracts two vectors: a - b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -213,6 +246,7 @@ ivec3 ivec3_add(const ivec3* a, const ivec3* b);
  */
 ivec3 ivec3_sub(const ivec3* a, const ivec3* b);
 /**
+ * \ingroup ivec3
  * \brief Negates a vector.
  * \param[in] v The vector to negate.
  * \return The negated vector.
@@ -221,6 +255,7 @@ ivec3 ivec3_sub(const ivec3* a, const ivec3* b);
  */
 ivec3 ivec3_negate(const ivec3* v);
 /**
+ * \ingroup ivec3
  * \brief Multiplies a vector by a scalar: a * scalar.
  * \param[in] v The vector.
  * \param[in] scalar The scalar.
@@ -230,6 +265,7 @@ ivec3 ivec3_negate(const ivec3* v);
  */
 ivec3 ivec3_scale(const ivec3* v, int scalar);
 /**
+ * \ingroup ivec3
  * \brief Divides a vector by a scalar: a / scalar.
  * \param[in] v The vector.
  * \param[in] scalar The scalar.
@@ -245,6 +281,7 @@ ivec3 ivec3_scale(const ivec3* v, int scalar);
  */
 ivec3 ivec3_divide(const ivec3* v, int scalar);
 /**
+ * \ingroup ivec3
  * \brief Divides a vector by a scalar: a / scalar.
  * \param[in] v The vector.
  * \param[in] scalar The scalar.
@@ -261,6 +298,7 @@ ivec3 ivec3_divide(const ivec3* v, int scalar);
  */
 ivec3 ivec3_divide_ext(const ivec3* v, int scalar, rounding_func func);
 /**
+ * \ingroup ivec3
  * \brief Computes the dot product of two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
@@ -269,6 +307,7 @@ ivec3 ivec3_divide_ext(const ivec3* v, int scalar, rounding_func func);
  */
 int   ivec3_dot(const ivec3* a, const ivec3* b);
 /**
+ * \ingroup ivec3
  * \brief Computes the cross product of two vectors: a x b.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
