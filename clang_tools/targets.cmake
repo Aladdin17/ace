@@ -45,6 +45,8 @@ else()
 				--Werror
 				--style=file:${CMAKE_SOURCE_DIR}/clang_tools/v18/.clang-format
 				${FORMAT_SOURCE_FILES}
+			COMMENT
+				"Checking code style with clang-format"
 		)
 	endif()
 endif()
@@ -86,6 +88,8 @@ else()
 				--warnings-as-errors='*'
 				${TIDY_SOURCE_FILES}
 				-p ${CMAKE_BINARY_DIR}
+			COMMENT
+				"Checking code with clang-tidy"
 		)
 	endif()
 endif()

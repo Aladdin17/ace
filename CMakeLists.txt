@@ -110,25 +110,27 @@ if( AL_USE_CLANG_TOOLS )
 	message( STATUS "Configuring clang tools" )
 	include( clang_tools/targets.cmake )
 
-	# add clang-format target
+	# add clang-format to project
 	if( TARGET clang-format )
 		option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
 		if ( AL_RUN_CLANG_FORMAT )
 			message( STATUS "Clang-format - Run on build" )
+			# need to add a dependency to the project to run clang-format
 			add_dependencies( ${PROJECT_NAME} clang-format )
 		endif()
 	endif()
 
-	# add clang-tidy target
-	if( TARGET clang-tidy )
+	# add clang-tidy to project
+	if( TARGET clang-tidy-internal )
 		option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
 		if( AL_RUN_CLANG_TIDY )
 			message( STATUS "Clang-tidy - Run on build" )
-			# ensure clang-format is run before clang-tidy
-			if ( TARGET clang-format AND AL_RUN_CLANG_FORMAT )
-				add_dependencies( clang-tidy clang-format )
-			endif()
-			add_dependencies( ${PROJECT_NAME} clang-tidy )
+			# need to add a post build command to run clang-tidy
+			add_custom_command(
+				TARGET ${PROJECT_NAME}
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} --build . --target clang-tidy
+			)
 		endif()
 	endif()
 endif()
