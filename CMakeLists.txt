@@ -169,7 +169,14 @@ if( AL_BUILD_DOCS )
 			${CMAKE_CURRENT_SOURCE_DIR}/include
 			${CMAKE_CURRENT_SOURCE_DIR}/src
 		)
-		add_dependencies( ${PROJECT_NAME} docs )
+
+		# add a post build command to run doxygen
+		add_custom_command(
+			TARGET ${PROJECT_NAME}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} --build . --target docs
+			COMMENT "Running doxygen on ${PROJECT_NAME}"
+		)
 	else()
 		message( "Doxygen not found, cannot build documentation" )
 	endif()
