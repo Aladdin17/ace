@@ -93,3 +93,17 @@ ac_vec3 vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
     ac_vec3 scaled_n   = ac_vec3_scale(&n_normalized, projection_modifier * projection);
     return ac_vec3_sub(incoming, &scaled_n);
 }
+
+ac_vec3 ac_vec3_mult_matrix(const ac_vec3* vec, const ac_mat3* mat)
+{
+    // guard against NaN vectors
+    if ( ac_vec3_is_nan(vec) || ac_mat3_is_nan(mat) )
+    {
+        return ac_vec3_nan();
+    }
+
+    // multiply the vector by the matrix
+    return (ac_vec3){ .x = vec->x * mat->a + vec->y * mat->b + vec->z * mat->c,
+                      .y = vec->x * mat->d + vec->y * mat->e + vec->z * mat->f,
+                      .z = vec->x * mat->g + vec->y * mat->h + vec->z * mat->i };
+}

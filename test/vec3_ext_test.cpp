@@ -266,3 +266,47 @@ TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 }
+
+TEST_CASE( "vec3_mult_matrix", "[vec3]" ) {
+    SECTION( "nan arguments" ) {
+        ac_vec3 nan_vec = ac_vec3_nan();
+        ac_mat3 nan_mat = ac_mat3_nan();
+        ac_vec3 vec = {1.0f, 1.0f, 1.0f};
+        ac_mat3 mat = ac_mat3_identity();
+
+        // vec is nan
+        ac_vec3 result = ac_vec3_mult_matrix(&nan_vec, &mat);
+        REQUIRE(ac_vec3_is_nan(&result) == true);
+
+        // mat is nan
+        result = ac_vec3_mult_matrix(&vec, &nan_mat);
+        REQUIRE(ac_vec3_is_nan(&result) == true);
+    }
+
+    SECTION( "identity matrix" ) {
+        ac_vec3 vec = {1.0f, 2.0f, 3.0f};
+        ac_mat3 mat = ac_mat3_identity();
+        ac_vec3 expected = vec;
+        ac_vec3 result = ac_vec3_mult_matrix(&vec, &mat);
+        REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
+    }
+
+    SECTION( "zero matrix" ) {
+        ac_vec3 vec = {1.0f, 2.0f, 3.0f};
+        ac_mat3 mat = ac_mat3_zero();
+        ac_vec3 expected = ac_vec3_zero();
+        ac_vec3 result = ac_vec3_mult_matrix(&vec, &mat);
+        REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
+    }
+
+    SECTION( "scaling matrix" ) {
+        ac_vec3 vec = {1.0f, 2.0f, 3.0f};
+        ac_mat3 mat = ac_mat3_identity();
+        mat.m00 = 2.0f;
+        mat.m11 = 2.0f;
+        mat.m22 = 2.0f;
+        ac_vec3 expected = {2.0f, 4.0f, 6.0f};
+        ac_vec3 result = ac_vec3_mult_matrix(&vec, &mat);
+        REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
+    }
+}
