@@ -9,29 +9,29 @@ extern "C" {
 #endif
 
 /**
- * \def AL_EPSILON
+ * \def AC_EPSILON
  * \brief An epsilon value for floating point comparisons against zero.
  */
-#define AL_EPSILON 1e-6f
+#define AC_EPSILON 1e-6f
 
 /**
- * \def AL_PI
+ * \def AC_PI
  * \brief The value of pi.
  */
-#define AL_PI 3.14159265358979323846f
+#define AC_PI 3.14159265358979323846f
 
 /**
  * \brief Converts degrees to radians.
  * \param[in] degrees The angle in degrees.
  * \return The angle in radians.
  */
-float al_deg_to_rad(float degrees);
+float ac_deg_to_rad(float degrees);
 /**
  * \brief Converts radians to degrees.
  * \param[in] radians The angle in radians.
  * \return The angle in degrees.
  */
-float al_rad_to_deg(float radians);
+float ac_rad_to_deg(float radians);
 /**
  * \brief Clamps a value between a minimum and maximum value.
  * \param[in] value The value to clamp.
@@ -39,7 +39,7 @@ float al_rad_to_deg(float radians);
  * \param[in] max The maximum value.
  * \return The clamped value.
  */
-float al_clamp(float value, float min, float max);
+float ac_clamp(float value, float min, float max);
 
 #ifdef __cplusplus
 }

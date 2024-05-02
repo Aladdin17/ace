@@ -3,7 +3,7 @@
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
-TEST_CASE( "al_deg_to_rad", "math" ) {
+TEST_CASE( "ac_deg_to_rad", "math" ) {
     auto [input, expected] = GENERATE( Catch::Generators::table<float, float>({
         { 0.0f, 0.0f },
         { 90.0f, 1.5707963267948966f },
@@ -13,12 +13,12 @@ TEST_CASE( "al_deg_to_rad", "math" ) {
     }));
 
     CAPTURE(input, expected);
-    REQUIRE_THAT( al_deg_to_rad(input),
-        Catch::Matchers::WithinRel(expected, AL_EPSILON)
+    REQUIRE_THAT( ac_deg_to_rad(input),
+        Catch::Matchers::WithinRel(expected, AC_EPSILON)
     );
 }
 
-TEST_CASE( "al_rad_to_deg", "[math]" ) {
+TEST_CASE( "ac_rad_to_deg", "[math]" ) {
     auto [input, expected] = GENERATE( Catch::Generators::table<float, float>({
         { 0.0f, 0.0f },
         { 1.5707963267948966f, 90.0f },
@@ -28,12 +28,12 @@ TEST_CASE( "al_rad_to_deg", "[math]" ) {
     }));
 
     CAPTURE(input, expected);
-    REQUIRE_THAT( al_rad_to_deg(input),
-        Catch::Matchers::WithinRel(expected, AL_EPSILON)
+    REQUIRE_THAT( ac_rad_to_deg(input),
+        Catch::Matchers::WithinRel(expected, AC_EPSILON)
     );
 }
 
-TEST_CASE( "al_clamp", "[math]" ) {
+TEST_CASE( "ac_clamp", "[math]" ) {
     auto [value, min, max, expected] = GENERATE( Catch::Generators::table<float, float, float, float>({
         { -1.0f, 0.0f, 1.0f, 0.0f },
         { 0.0f, 0.0f, 1.0f, 0.0f },
@@ -43,7 +43,7 @@ TEST_CASE( "al_clamp", "[math]" ) {
     }));
 
     CAPTURE(value, min, max, expected);
-    REQUIRE_THAT( al_clamp(value, min, max),
-        Catch::Matchers::WithinRel(expected, AL_EPSILON)
+    REQUIRE_THAT( ac_clamp(value, min, max),
+        Catch::Matchers::WithinRel(expected, AC_EPSILON)
     );
 }

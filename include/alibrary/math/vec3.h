@@ -63,7 +63,7 @@ vec3  vec3_nan(void);
  * \param[in] v The vector.
  * \retval true if all of the components of the vector are zero, false otherwise.
  * \retval false one or more of the components of the vector are non-zero.
- * \note This function uses \ref AL_EPSILON as the epsilon value for floating point comparisons.
+ * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
  */
 bool  vec3_is_zero(const vec3* v);
 /**
@@ -81,7 +81,7 @@ bool  vec3_is_nan(const vec3* v);
  * \retval true if all of the components of the vectors are equal, false otherwise.
  * \retval false if one or more of the components of the vectors are not equal.
  * \retval false if either vector has NaN components.
- * \note This function uses \ref AL_EPSILON as the epsilon value for floating point comparisons.
+ * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
  */
 bool  vec3_is_equal(const vec3* a, const vec3* b);
 /**

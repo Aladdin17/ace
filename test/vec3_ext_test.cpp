@@ -10,11 +10,11 @@ TEST_CASE( "vec3_angle", "[vec3]" ) {
         vec3 b = {1.0f, 0.0f, 0.0f};
 
         // first vector is zero
-        float angle = al_rad_to_deg(vec3_angle(&a, &b));
+        float angle = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE( isnan(angle) );
 
         // second vector is zero
-        angle = al_rad_to_deg(vec3_angle(&b, &a));
+        angle = ac_rad_to_deg(vec3_angle(&b, &a));
         REQUIRE( isnan(angle) );
     }
 
@@ -23,51 +23,51 @@ TEST_CASE( "vec3_angle", "[vec3]" ) {
         vec3 b = {1.0f, 0.0f, 0.0f};
 
         // first vector is NaN
-        float angle = al_rad_to_deg(vec3_angle(&a, &b));
+        float angle = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE( isnan(angle) );
 
         // second vector is NaN
-        angle = al_rad_to_deg(vec3_angle(&b, &a));
+        angle = ac_rad_to_deg(vec3_angle(&b, &a));
         REQUIRE( isnan(angle) );
     }
 
     SECTION( "90 degrees angle" ) {
         vec3 a = {1.0f, 0.0f, 0.0f};
         vec3 b = {0.0f, 1.0f, 0.0f};
-        float result = al_rad_to_deg(vec3_angle(&a, &b));
+        float result = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(90.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(90.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(90.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(90.0f, AC_EPSILON)
         );
     }
 
     SECTION( "45 degrees angle" ) {
         vec3 a = {1.0f, 1.0f, 0.0f};
         vec3 b = {1.0f, 0.0f, 0.0f};
-        float result = al_rad_to_deg(vec3_angle(&a, &b));
+        float result = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(45.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(45.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(45.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(45.0f, AC_EPSILON)
         );
     }
 
     SECTION( "0 degrees angle" ) {
         vec3 a = {1.0f, 0.0f, 0.0f};
         vec3 b = {1.0f, 0.0f, 0.0f};
-        float result = al_rad_to_deg(vec3_angle(&a, &b));
+        float result = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(0.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(0.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(0.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(0.0f, AC_EPSILON)
         );
     }
 
     SECTION( "-90 degrees angle" ) {
         vec3 a = {1.0f, 0.0f, 0.0f};
         vec3 b = {0.0f, -1.0f, 0.0f};
-        float result = al_rad_to_deg(vec3_angle(&a, &b));
+        float result = ac_rad_to_deg(vec3_angle(&a, &b));
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(90.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(90.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(90.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(90.0f, AC_EPSILON)
         );
     }
 }
@@ -104,8 +104,8 @@ TEST_CASE( "vec3_distance", "[vec3]" ) {
         vec3 b = {0.0f, 1.0f, 0.0f};
         float result = vec3_distance(&a, &b);
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(1.414214f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(1.414214f, AL_EPSILON)
+            Catch::Matchers::WithinRel(1.414214f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(1.414214f, AC_EPSILON)
         );
     }
 
@@ -114,8 +114,8 @@ TEST_CASE( "vec3_distance", "[vec3]" ) {
         vec3 b = {1.0f, 0.0f, 0.0f};
         float result = vec3_distance(&a, &b);
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(0.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(0.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(0.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(0.0f, AC_EPSILON)
         );
     }
 }

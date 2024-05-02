@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.9 )
 project(
-	aLibrary
+	ace
 	VERSION 0.1
 	LANGUAGES C CXX
 	DESCRIPTION "A C graphics utility library"
@@ -19,9 +19,9 @@ set_target_properties(
 target_compile_definitions(
 	${PROJECT_NAME}
 	PUBLIC
-		$<$<CONFIG:Debug>:AL_DEBUG>
-		$<$<CONFIG:RelWithDebInfo>:AL_DEBUG>
-		$<$<BOOL:${WIN32}>:AL_PLATFORM_WINDOWS>
+		$<$<CONFIG:Debug>:AC_DEBUG>
+		$<$<CONFIG:RelWithDebInfo>:AC_DEBUG>
+		$<$<BOOL:${WIN32}>:AC_PLATFORM_WINDOWS>
 )
 
 target_compile_options(
@@ -48,13 +48,13 @@ target_include_directories(
 
 add_subdirectory( src )
 
-option( AL_BUILD_TESTS "Build aLibrary test suites" OFF )
-if( AL_BUILD_TESTS )
+option( AC_BUILD_TESTS "Build ace test suites" OFF )
+if( AC_BUILD_TESTS )
 	# modify base library config for testing
 	target_compile_definitions(
 		${PROJECT_NAME}
 		PUBLIC
-			AL_NO_STATIC_FUNCTIONS # expose static functions for testing
+			AC_NO_STATIC_FUNCTIONS # expose static functions for testing
 	)
 	target_include_directories(
 		${PROJECT_NAME}
@@ -105,15 +105,15 @@ if( AL_BUILD_TESTS )
 	catch_discover_tests( ${PROJECT_NAME}_test )
 endif()
 
-option( AL_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
-if( AL_USE_CLANG_TOOLS )
+option( AC_USE_CLANG_TOOLS "Use clang tools for static analysis" OFF )
+if( AC_USE_CLANG_TOOLS )
 	message( STATUS "Configuring clang tools" )
 	include( clang_tools/targets.cmake )
 
 	# add clang-format to project
 	if( TARGET clang-format )
-		option( AL_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
-		if ( AL_RUN_CLANG_FORMAT )
+		option( AC_RUN_CLANG_FORMAT "Automatically run clang-format on build" OFF )
+		if ( AC_RUN_CLANG_FORMAT )
 			message( STATUS "Clang-format - Run on build" )
 			# need to add a dependency to the project to run clang-format
 			add_dependencies( ${PROJECT_NAME} clang-format )
@@ -122,8 +122,8 @@ if( AL_USE_CLANG_TOOLS )
 
 	# add clang-tidy to project
 	if( TARGET clang-tidy-internal )
-		option( AL_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
-		if( AL_RUN_CLANG_TIDY )
+		option( AC_RUN_CLANG_TIDY "Automatically run clang-tidy on build" OFF )
+		if( AC_RUN_CLANG_TIDY )
 			message( STATUS "Clang-tidy - Run on build" )
 			# need to add a post build command to run clang-tidy
 			add_custom_command(
@@ -135,8 +135,8 @@ if( AL_USE_CLANG_TOOLS )
 	endif()
 endif()
 
-option( AL_BUILD_DOCS "Build aLibrary documentation" ON )
-if( AL_BUILD_DOCS )
+option( AC_BUILD_DOCS "Build ace documentation" ON )
+if( AC_BUILD_DOCS )
 	find_package(
 		Doxygen
 		OPTIONAL_COMPONENTS dot

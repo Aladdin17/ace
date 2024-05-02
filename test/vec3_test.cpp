@@ -238,8 +238,8 @@ TEST_CASE( "vec3_magnitude", "[vec3]" ) {
         vec3 unit = {1.0f, 0.0f, 0.0f};
         float result = vec3_magnitude(&unit);
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(1.0f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(1.0f, AL_EPSILON)
+            Catch::Matchers::WithinRel(1.0f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(1.0f, AC_EPSILON)
         );
     }
 
@@ -247,8 +247,8 @@ TEST_CASE( "vec3_magnitude", "[vec3]" ) {
         vec3 v = {1.0f, 1.0f, 1.0f};
         float result = vec3_magnitude(&v);
         REQUIRE_THAT(result,
-            Catch::Matchers::WithinRel(1.732051f, AL_EPSILON) ||
-            Catch::Matchers::WithinAbs(1.732051f, AL_EPSILON)
+            Catch::Matchers::WithinRel(1.732051f, AC_EPSILON) ||
+            Catch::Matchers::WithinAbs(1.732051f, AC_EPSILON)
         );
     }
 }

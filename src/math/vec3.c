@@ -23,7 +23,7 @@ vec3 vec3_nan(void)
 
 bool vec3_is_zero(const vec3* v)
 {
-    return vec3_magnitude(v) <= AL_EPSILON;
+    return vec3_magnitude(v) <= AC_EPSILON;
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)

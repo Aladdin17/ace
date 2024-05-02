@@ -33,7 +33,7 @@ float vec3_distance(const vec3* a, const vec3* b)
 vec3 vec3_lerp(const vec3* a, const vec3* b, float interpolation_factor)
 {
     // clamp the interpolation_factor between 0 and 1
-    interpolation_factor = al_clamp(interpolation_factor, 0.0f, 1.0f);
+    interpolation_factor = ac_clamp(interpolation_factor, 0.0f, 1.0f);
 
     // calculate the linear interpolation
     vec3 diff  = vec3_sub(b, a);

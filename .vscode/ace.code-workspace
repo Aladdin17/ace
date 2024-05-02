@@ -35,10 +35,10 @@
 			"CMAKE_C_COMPILER": "cl.exe",
 			"CMAKE_CXX_COMPILER": "cl.exe",
 			"CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-			"AL_BUILD_TESTS": "ON",
-			"AL_USE_CLANG_TOOLS": "ON",
-			"AL_RUN_CLANG_FORMAT": "ON",
-			"AL_RUN_CLANG_TIDY": "ON"
+			"AC_BUILD_TESTS": "ON",
+			"AC_USE_CLANG_TOOLS": "ON",
+			"AC_RUN_CLANG_FORMAT": "ON",
+			"AC_RUN_CLANG_TIDY": "ON"
 		},
 
 		// set indentation format
