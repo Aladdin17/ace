@@ -4,6 +4,7 @@ target_sources(
 	PRIVATE
 		mat2.c
 		mat3.c
+		mat4.c
 		math.c
 		vec3.c
 		vec3_ext.c
