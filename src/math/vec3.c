@@ -71,20 +71,20 @@ ac_vec3 ac_vec3_cross(const ac_vec3* a, const ac_vec3* b)
 
 float ac_vec3_magnitude(const ac_vec3* v)
 {
-    return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
+    return sqrtf(ac_vec3_dot(v, v));
 }
 
 ac_vec3 ac_vec3_normalize(const ac_vec3* v)
 {
-    // normalization of a zero or NaN vector is undefined
-    if ( ac_vec3_is_nan(v) || ac_vec3_is_zero(v) )
+    float magnitude = ac_vec3_magnitude(v);
+    if ( magnitude <= AC_EPSILON )
     {
         return ac_vec3_nan();
     }
 
     // calculate the inverse magnitude and scale the vector
-    float invMagnitude = 1.0f / ac_vec3_magnitude(v);
-    return ac_vec3_scale(v, invMagnitude);
+    float inv_magnitude = 1.0f / magnitude;
+    return ac_vec3_scale(v, inv_magnitude);
 }
 
 //--------------------------------------------------------------------------------------------------
