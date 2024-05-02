@@ -4,9 +4,9 @@
  * \brief OFF functions and structures implementation.
  */
 #include "off.h"
-#include <alibrary/core/error.h>
-#include <alibrary/core/string.h>
-#include <alibrary/math/vec3.h>
+#include <ace/core/error.h>
+#include <ace/core/string.h>
+#include <ace/math/vec3.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -75,7 +75,7 @@ void OFFExportFile(OFF* obj, FILE* stream, int precision)
     {
         for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
         {
-            vec3* vertex = &obj->vertices[vi];
+            ac_vec3* vertex = &obj->vertices[vi];
             fprintf(
                 stream,
                 "%.*f %.*f %.*f\n",
@@ -147,25 +147,25 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     }
 
     // find the centroid of the mesh
-    vec3  centroid = { 0.0f, 0.0f, 0.0f };
-    vec3* vertices = obj->vertices;
+    ac_vec3  centroid = { 0.0f, 0.0f, 0.0f };
+    ac_vec3* vertices = obj->vertices;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        centroid = vec3_add(&centroid, &vertices[vi]);
+        centroid = ac_vec3_add(&centroid, &vertices[vi]);
     }
-    centroid = vec3_scale(&centroid, 1.0f / (float) numVertices);
+    centroid = ac_vec3_scale(&centroid, 1.0f / (float) numVertices);
 
     // translate the vertices to the origin
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        vertices[vi] = vec3_sub(&vertices[vi], &centroid);
+        vertices[vi] = ac_vec3_sub(&vertices[vi], &centroid);
     }
 
     // find the maximum vertex magnitude
-    float maxMagnitude = vec3_magnitude(vertices);
+    float maxMagnitude = ac_vec3_magnitude(vertices);
     for ( uint32_t vi = 1; vi < numVertices; ++vi )
     {
-        float magnitude = vec3_magnitude(&vertices[vi]);
+        float magnitude = ac_vec3_magnitude(&vertices[vi]);
         if ( magnitude > maxMagnitude )
         {
             maxMagnitude = magnitude;
@@ -176,7 +176,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
     float scale = 1.0f / maxMagnitude;
     for ( uint32_t vi = 0; vi < numVertices; ++vi )
     {
-        vertices[vi] = vec3_scale(&vertices[vi], scale);
+        vertices[vi] = ac_vec3_scale(&vertices[vi], scale);
     }
 
     // allows for the mesh itself to fit within the unit sphere if the sphere is
@@ -186,7 +186,7 @@ void OFFNormalise(OFF* obj, bool alignToOrigin)
         // translate the vertices back to the centroid
         for ( uint32_t vi = 0; vi < numVertices; ++vi )
         {
-            vertices[vi] = vec3_add(&vertices[vi], &centroid);
+            vertices[vi] = ac_vec3_add(&vertices[vi], &centroid);
         }
     }
 }
@@ -323,7 +323,7 @@ bool InitialiseOFF(OFFReader* reader)
 bool AllocateVertices(OFFReader* reader)
 {
     OFF* obj      = reader->obj;
-    obj->vertices = (vec3*) malloc(sizeof(vec3) * obj->numVertices);
+    obj->vertices = (ac_vec3*) malloc(sizeof(ac_vec3) * obj->numVertices);
     if ( obj->vertices == NULL )
     {
         WriteGlobalErrorMessage("OFF : Failed to allocate memory for vertices");
@@ -332,7 +332,7 @@ bool AllocateVertices(OFFReader* reader)
 
     for ( uint32_t vi = 0; vi < obj->numVertices; ++vi )
     {
-        obj->vertices[vi] = (vec3){ 0.0f, 0.0f, 0.0f };
+        obj->vertices[vi] = (ac_vec3){ 0.0f, 0.0f, 0.0f };
     }
 
     return true;
@@ -383,7 +383,7 @@ bool ReadVertices(OFFReader* reader)
         }
 
         // convert and validate the vertex coordinates
-        vec3* vertex = &obj->vertices[vi];
+        ac_vec3* vertex = &obj->vertices[vi];
         if ( !strToFloat(reader->tokens[0], &vertex->x) )
         {
             WriteGlobalErrorMessage(

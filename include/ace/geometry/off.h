@@ -4,7 +4,7 @@
  * \brief OFF functions and structures.
  */
 #pragma once
-#include <alibrary/math/vec3.h>
+#include <ace/math/vec3.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -55,7 +55,7 @@ typedef struct OFF
     uint32_t numVertices;  ///< The number of vertices in the object.
     uint32_t numFaces;     ///< The number of faces in the object.
     uint32_t numEdges;     ///< The number of edges in the object (not used).
-    vec3*    vertices;     ///< The vertices in the object.
+    ac_vec3* vertices;     ///< The vertices in the object.
     OFFFace* faces;        ///< The faces in the object.
 } OFF;
 

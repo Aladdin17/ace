@@ -30,9 +30,9 @@ jobs:
             -DCMAKE_C_COMPILER=gcc              \
             -DCMAKE_CXX_COMPILER=g++            \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DAL_BUILD_DOCS=OFF                 \
-            -DAL_BUILD_TESTS=ON                 \
-            -DAL_USE_CLANG_TOOLS=OFF
+            -DAC_BUILD_DOCS=OFF                 \
+            -DAC_BUILD_TESTS=ON                 \
+            -DAC_USE_CLANG_TOOLS=OFF
 
       - name: Build (Debug)
         run: |

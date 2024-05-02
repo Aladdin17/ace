@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#ifdef AL_NO_STATIC_FUNCTIONS
+#ifdef AC_NO_STATIC_FUNCTIONS
     #define INTERNAL
 #else
     #define INTERNAL static
