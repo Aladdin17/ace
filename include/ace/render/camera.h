@@ -54,44 +54,44 @@ void    camera_update_position(Camera* camera);
  * \param camera The camera.
  * \return The front vector.
  */
-vec3 camera_get_front(const Camera* camera);
+ac_vec3 camera_get_front(const Camera* camera);
 /**
  * \brief Get the right vector of the camera.
  * \param camera The camera.
  * \return The right vector.
  */
-vec3 camera_get_right(const Camera* camera);
+ac_vec3 camera_get_right(const Camera* camera);
 /**
  * \brief Get the up vector of the camera.
  * \param camera The camera.
  * \return The up vector.
  */
-vec3 camera_get_up(const Camera* camera);
+ac_vec3 camera_get_up(const Camera* camera);
 
 /**
  * \brief Get the yaw of the camera.
  * \param camera The camera.
  * \return The yaw.
  */
-float camera_get_yaw(const Camera* camera);
+float   camera_get_yaw(const Camera* camera);
 /**
  * \brief Get the pitch of the camera.
  * \param camera The camera.
  * \return The pitch.
  */
-float camera_get_pitch(const Camera* camera);
+float   camera_get_pitch(const Camera* camera);
 /**
  * \brief Get the position of the camera.
  * \param camera The camera.
  * \return The position.
  */
-vec3  camera_get_position(const Camera* camera);
+ac_vec3 camera_get_position(const Camera* camera);
 /**
  * \brief Get the movement speed of the camera.
  * \param camera The camera.
  * \return The movement step.
  */
-float camera_get_movement_step(const Camera* camera);
+float   camera_get_movement_step(const Camera* camera);
 
 /**
  * \brief Set the yaw of the camera.
@@ -112,7 +112,7 @@ void camera_set_pitch(Camera* camera, float pitch);
  * \param camera The camera.
  * \param position The position.
  */
-void camera_set_position(Camera* camera, vec3 position);
+void camera_set_position(Camera* camera, ac_vec3 position);
 /**
  * \brief Set the movement speed of the camera.
  * \param camera The camera.
