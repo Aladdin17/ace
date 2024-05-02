@@ -3,8 +3,8 @@
  * \author Christien Alden
  * \brief 3-component vector types and functions implementation.
  */
-#include <alibrary/math/math.h>
-#include <alibrary/math/vec3.h>
+#include <ace/math/math.h>
+#include <ace/math/vec3.h>
 #include <math.h>
 
 //--------------------------------------------------------------------------------------------------

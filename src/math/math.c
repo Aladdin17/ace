@@ -2,7 +2,7 @@
  * \file
  * \brief Math functions implementation.
  */
-#include <alibrary/math/math.h>
+#include <ace/math/math.h>
 #define AC_DEG_RAD_SCALAR 180.0f
 
 float ac_deg_to_rad(float degrees)

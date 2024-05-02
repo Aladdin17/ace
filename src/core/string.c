@@ -3,7 +3,7 @@
  * \author Christien Alden
  * \brief String manipulation functions implementation.
  */
-#include <alibrary/core/string.h>
+#include <ace/core/string.h>
 #include <stdlib.h>
 #include <string.h>
 

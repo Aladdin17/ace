@@ -2,7 +2,7 @@
  * \file
  * \brief A camera class for rendering.
  */
-#include <alibrary/render/camera.h>
+#include <ace/render/camera.h>
 #include <math.h>
 #include <stdlib.h>
 

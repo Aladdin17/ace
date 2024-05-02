@@ -3,7 +3,7 @@
  * \author Christien Alden
  * \brief Error message system implementation.
  */
-#include <alibrary/core/error.h>
+#include <ace/core/error.h>
 #include <stdio.h>
 
 static char global_error_message[ERROR_MESSAGE_SIZE] = { '\0' };
