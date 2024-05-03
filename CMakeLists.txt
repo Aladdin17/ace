@@ -166,6 +166,7 @@ if( AC_BUILD_DOCS )
 		set( DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/docs" )
 		set( DOXYGEN_CALL_GRAPH YES )
 		set( DOXYGEN_CALLER_GRAPH YES )
+		set( DOXYGEN_WARN_LOGFILE "${CMAKE_SOURCE_DIR}/docs/doxygen_warnings.log" )
 
 		# add doxygen target and link to project build
 		message( STATUS "Doxygen - Run on build" )
