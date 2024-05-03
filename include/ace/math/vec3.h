@@ -79,9 +79,9 @@ bool    ac_vec3_is_nan(const ac_vec3* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \retval true if all of the components of the vectors are equal, false otherwise.
- * \retval false if one or more of the components of the vectors are not equal.
- * \retval false if either vector has NaN components.
- * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
+ * \retval false if one or more of the components of the vectors are not equal, or if either vector
+ * has NaN components. \note This function uses \ref AC_EPSILON as the epsilon value for floating
+ * point comparisons.
  */
 bool    ac_vec3_is_equal(const ac_vec3* a, const ac_vec3* b);
 /**
@@ -216,7 +216,7 @@ bool     ac_ivec3_is_invalid(const ac_ivec3* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \retval true if all of the components of the vectors are equal.
- * \retval false if one or more of the components of the vectors are not equal.
+ * \retval false if one or more of the components of the vectors are not equal, or invalid.
  */
 bool     ac_ivec3_is_equal(const ac_ivec3* a, const ac_ivec3* b);
 /**

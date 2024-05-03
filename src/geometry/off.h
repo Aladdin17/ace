@@ -4,7 +4,7 @@
  * \brief OFF internal functions and structures.
  * \remark
  * This file contains internal declarations and should not be included directly;
- * include \ref alibrary/geometry/off.h instead. The file has been made available
+ * include \ref ace/geometry/off.h instead. The file has been made available
  * for the purpose of documentation and testing.
  */
 #pragma once

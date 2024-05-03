@@ -42,7 +42,7 @@ float   ac_vec3_distance(const ac_vec3* a, const ac_vec3* b);
  * \brief Linearly interpolate between two vectors.
  * \param[in] a The first vector.
  * \param[in] b The second vector.
- * \param[in] delta The interpolation factor.
+ * \param[in] interpolation_factor The amount to interpolate between the two vectors.
  * \return The interpolated vector.
  */
 ac_vec3 ac_vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor);
@@ -59,8 +59,8 @@ ac_vec3 ac_vec3_project(const ac_vec3* a, const ac_vec3* b);
 /**
  * \ingroup vec3
  * \brief Calculate the reflected vector about a normal.
- * \param[in] v The vector to reflect.
- * \param[in] n The normal vector.
+ * \param[in] incoming The vector to reflect.
+ * \param[in] normal The normal vector.
  * \return The reflected vector.
  * \details
  * If either vector is of zero length or NaN, the returned vector will have NaN components.

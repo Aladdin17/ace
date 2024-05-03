@@ -27,7 +27,7 @@ extern "C" {
  * \union ac_mat2
  * \brief A 2x2 matrix in column-major order.
  * \details
- * Accessing the elements of the matrix using the \ref data member will give
+ * Accessing the elements of the matrix using the data member will give
  * the elements in column-major order.
  *
  * Accessing the elements using any of the other members will give the elements
@@ -156,7 +156,7 @@ ac_mat2 ac_mat2_mult_matrix(const ac_mat2* a, const ac_mat2* b);
 /**
  * \ingroup mat2
  * \brief Adds a scalar to each element of a matrix, m + scalar.
- * \param[in] m The matrix.
+ * \param[in] a The matrix.
  * \param[in] scalar The scalar value.
  * \return The matrix with the scalar added to each element.
  */
@@ -164,7 +164,7 @@ ac_mat2 ac_mat2_add_scalar(const ac_mat2* a, float scalar);
 /**
  * \ingroup mat2
  * \brief Subtracts a scalar from each element of a matrix, m - scalar.
- * \param[in] m The matrix.
+ * \param[in] a The matrix.
  * \param[in] scalar The scalar value.
  * \return The matrix with the scalar subtracted from each element.
  */
@@ -172,7 +172,7 @@ ac_mat2 ac_mat2_sub_scalar(const ac_mat2* a, float scalar);
 /**
  * \ingroup mat2
  * \brief Multiplies each element of a matrix by a scalar, m * scalar.
- * \param[in] m The matrix.
+ * \param[in] a The matrix.
  * \param[in] scalar The scalar value.
  * \return The matrix with each element multiplied by the scalar.
  */
@@ -252,6 +252,7 @@ ac_mat2 ac_mat2_cofactor_matrix(const ac_mat2* m);
  * \code{.unparsed}
  * | a, b |  ->  | d, -b |
  * | c, d |      | -c, a |
+ * \endcode
  */
 ac_mat2 ac_mat2_adjugate(const ac_mat2* m);
 /**
