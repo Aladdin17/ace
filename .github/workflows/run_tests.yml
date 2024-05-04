@@ -10,10 +10,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Initialize Git submodules
+        run: git submodule update --init --recursive
+
+      - name: Update submodules
+        run: git submodule update --remote --recursive
+
       - name: Install build dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcc cmake ninja-build clang-format clang-tidy
+          packages: gcc libgl1-mesa-dev libglu1-mesa-dev cmake ninja-build clang-format clang-tidy
           version: 1.0
 
       - name: Cache build directory
