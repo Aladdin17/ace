@@ -47,6 +47,10 @@ target_include_directories(
 )
 
 add_subdirectory( src )
+add_subdirectory( vendor )
+
+# link to the freeglut library
+target_link_libraries( ${PROJECT_NAME} PRIVATE freeglut_static )
 
 option( AC_BUILD_TESTS "Build ace test suites" OFF )
 if( AC_BUILD_TESTS )
