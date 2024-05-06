@@ -103,7 +103,8 @@ ac_vec3 ac_vec3_mult_matrix(const ac_vec3* vec, const ac_mat3* mat)
     }
 
     // multiply the vector by the matrix
-    return (ac_vec3){ .x = vec->x * mat->a + vec->y * mat->b + vec->z * mat->c,
-                      .y = vec->x * mat->d + vec->y * mat->e + vec->z * mat->f,
-                      .z = vec->x * mat->g + vec->y * mat->h + vec->z * mat->i };
+    // this is wrong... fix it
+    return (ac_vec3){ .x = vec->x * mat->a + vec->y * mat->d + vec->z * mat->g,
+                      .y = vec->x * mat->b + vec->y * mat->e + vec->z * mat->h,
+                      .z = vec->x * mat->c + vec->y * mat->f + vec->z * mat->i };
 }
