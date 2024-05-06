@@ -72,17 +72,17 @@ TEST_CASE( "ac_vec3_angle", "[ac_vec3]" ) {
     }
 }
 
-TEST_CASE( "vec3_distance", "[ac_vec3]" ) {
+TEST_CASE( "ac_vec3_distance", "[ac_vec3]" ) {
     SECTION( "nan vectors" ) {
         ac_vec3 nan = ac_vec3_nan();
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is NaN
-        float result = vec3_distance(&nan, &v);
+        float result = ac_vec3_distance(&nan, &v);
         REQUIRE(isnan(result));
 
         // second vector is NaN
-        result = vec3_distance(&v, &nan);
+        result = ac_vec3_distance(&v, &nan);
         REQUIRE(isnan(result));
     }
 
@@ -91,18 +91,18 @@ TEST_CASE( "vec3_distance", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is zero
-        float result = vec3_distance(&zero, &v);
+        float result = ac_vec3_distance(&zero, &v);
         REQUIRE(result == 1.0f);
 
         // second vector is zero
-        result = vec3_distance(&v, &zero);
+        result = ac_vec3_distance(&v, &zero);
         REQUIRE(result == 1.0f);
     }
 
     SECTION( "non-zero vectors" ) {
         ac_vec3 a = {1.0f, 0.0f, 0.0f};
         ac_vec3 b = {0.0f, 1.0f, 0.0f};
-        float result = vec3_distance(&a, &b);
+        float result = ac_vec3_distance(&a, &b);
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(1.414214f, AC_EPSILON) ||
             Catch::Matchers::WithinAbs(1.414214f, AC_EPSILON)
@@ -112,7 +112,7 @@ TEST_CASE( "vec3_distance", "[ac_vec3]" ) {
     SECTION( "identical vectors" ) {
         ac_vec3 a = {1.0f, 0.0f, 0.0f};
         ac_vec3 b = {1.0f, 0.0f, 0.0f};
-        float result = vec3_distance(&a, &b);
+        float result = ac_vec3_distance(&a, &b);
         REQUIRE_THAT(result,
             Catch::Matchers::WithinRel(0.0f, AC_EPSILON) ||
             Catch::Matchers::WithinAbs(0.0f, AC_EPSILON)
@@ -120,62 +120,62 @@ TEST_CASE( "vec3_distance", "[ac_vec3]" ) {
     }
 }
 
-TEST_CASE( "vec3_lerp", "ac_vec3" ) {
+TEST_CASE( "ac_vec3_lerp", "ac_vec3" ) {
     ac_vec3 a = {1.0f, 0.0f, 0.0f};
     ac_vec3 b = {0.0f, 1.0f, 0.0f};
     ac_vec3 result;
 
     SECTION( "zero interpolation factor" ) {
         ac_vec3 expected = a;
-        result = vec3_lerp(&a, &b, 0.0f);
+        result = ac_vec3_lerp(&a, &b, 0.0f);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "full interpolation factor" ) {
         ac_vec3 expected = b;
-        result = vec3_lerp(&a, &b, 1.0f);
+        result = ac_vec3_lerp(&a, &b, 1.0f);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "half interpolation factor" ) {
         ac_vec3 expected = {0.5f, 0.5f, 0.0f};
-        result = vec3_lerp(&a, &b, 0.5f);
+        result = ac_vec3_lerp(&a, &b, 0.5f);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "negative interpolation factor" ) {
         ac_vec3 expected = a;
-        result = vec3_lerp(&a, &b, -0.5f);
+        result = ac_vec3_lerp(&a, &b, -0.5f);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "interpolation factor greater than 1" ) {
         ac_vec3 expected = b;
-        result = vec3_lerp(&a, &b, 2.0f);
+        result = ac_vec3_lerp(&a, &b, 2.0f);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "nan vectors" ) {
         ac_vec3 nan = ac_vec3_nan();
-        result = vec3_lerp(&nan, &b, 0.5f);
+        result = ac_vec3_lerp(&nan, &b, 0.5f);
         REQUIRE(ac_vec3_is_nan(&result) == true);
 
-        result = vec3_lerp(&a, &nan, 0.5f);
+        result = ac_vec3_lerp(&a, &nan, 0.5f);
         REQUIRE(ac_vec3_is_nan(&result) == true);
     }
 }
 
-TEST_CASE( "vec3_project", "[ac_vec3]" ) {
+TEST_CASE( "ac_vec3_project", "[ac_vec3]" ) {
     SECTION( "nan vectors" ) {
         ac_vec3 nan = ac_vec3_nan();
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is NaN
-        ac_vec3 result = vec3_project(&nan, &v);
+        ac_vec3 result = ac_vec3_project(&nan, &v);
         REQUIRE(ac_vec3_is_nan(&result) == true);
 
         // second vector is NaN
-        result = vec3_project(&v, &nan);
+        result = ac_vec3_project(&v, &nan);
         REQUIRE(ac_vec3_is_nan(&result) == true);
     }
 
@@ -184,25 +184,25 @@ TEST_CASE( "vec3_project", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is zero
-        ac_vec3 result = vec3_project(&zero, &v);
+        ac_vec3 result = ac_vec3_project(&zero, &v);
         REQUIRE(ac_vec3_is_nan(&result) == true);
 
         // second vector is zero
-        result = vec3_project(&v, &zero);
+        result = ac_vec3_project(&v, &zero);
         REQUIRE(ac_vec3_is_nan(&result) == true);
     }
 
     SECTION( "parallel vectors" ) {
         ac_vec3 a = {1.0f, 0.0f, 0.0f};
         ac_vec3 b = {1.0f, 0.0f, 0.0f};
-        ac_vec3 result = vec3_project(&a, &b);
+        ac_vec3 result = ac_vec3_project(&a, &b);
         REQUIRE(ac_vec3_is_equal(&result, &a) == true);
     }
 
     SECTION( "perpendicular vectors" ) {
         ac_vec3 a = {1.0f, 0.0f, 0.0f};
         ac_vec3 b = {0.0f, 1.0f, 0.0f};
-        ac_vec3 result = vec3_project(&a, &b);
+        ac_vec3 result = ac_vec3_project(&a, &b);
         REQUIRE(ac_vec3_is_zero(&result) == true);
     }
 
@@ -210,22 +210,22 @@ TEST_CASE( "vec3_project", "[ac_vec3]" ) {
         ac_vec3 a = {1.0f, 1.0f, 0.0f};
         ac_vec3 b = {1.0f, 0.0f, 0.0f};
         ac_vec3 expected = {1.0f, 0.0f, 0.0f};
-        ac_vec3 result = vec3_project(&a, &b);
+        ac_vec3 result = ac_vec3_project(&a, &b);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 }
 
-TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
+TEST_CASE( "ac_vec3_reflect", "[ac_vec3]" ) {
     SECTION( "nan vectors" ) {
         ac_vec3 nan = ac_vec3_nan();
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is NaN
-        ac_vec3 result = vec3_reflect(&nan, &v);
+        ac_vec3 result = ac_vec3_reflect(&nan, &v);
         REQUIRE(ac_vec3_is_nan(&result) == true);
 
         // second vector is NaN
-        result = vec3_reflect(&v, &nan);
+        result = ac_vec3_reflect(&v, &nan);
         REQUIRE(ac_vec3_is_nan(&result) == true);
     }
 
@@ -234,11 +234,11 @@ TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
 
         // first vector is zero
-        ac_vec3 result = vec3_reflect(&zero, &v);
+        ac_vec3 result = ac_vec3_reflect(&zero, &v);
         REQUIRE(ac_vec3_is_nan(&result) == true);
 
         // second vector is zero
-        result = vec3_reflect(&v, &zero);
+        result = ac_vec3_reflect(&v, &zero);
         REQUIRE(ac_vec3_is_nan(&result) == true);
     }
 
@@ -246,7 +246,7 @@ TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
         ac_vec3 n = {0.0f, 1.0f, 0.0f};
         ac_vec3 expected = {1.0f, 0.0f, 0.0f};
-        ac_vec3 result = vec3_reflect(&v, &n);
+        ac_vec3 result = ac_vec3_reflect(&v, &n);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
@@ -254,7 +254,7 @@ TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 0.0f, 0.0f};
         ac_vec3 n = {1.0f, 0.0f, 0.0f};
         ac_vec3 expected = {-1.0f, 0.0f, 0.0f};
-        ac_vec3 result = vec3_reflect(&v, &n);
+        ac_vec3 result = ac_vec3_reflect(&v, &n);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 
@@ -262,7 +262,7 @@ TEST_CASE( "vec3_reflect", "[ac_vec3]" ) {
         ac_vec3 v = {1.0f, 1.0f, 0.0f};
         ac_vec3 n = {0.0f, 1.0f, 0.0f};
         ac_vec3 expected = {1.0f, -1.0f, 0.0f};
-        ac_vec3 result = vec3_reflect(&v, &n);
+        ac_vec3 result = ac_vec3_reflect(&v, &n);
         REQUIRE(ac_vec3_is_equal(&result, &expected) == true);
     }
 }

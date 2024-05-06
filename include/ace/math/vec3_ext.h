@@ -36,7 +36,7 @@ float   ac_vec3_angle(const ac_vec3* a, const ac_vec3* b);
  * \details
  * If either vector is of NaN, the returned distance will be NaN.
  */
-float   vec3_distance(const ac_vec3* a, const ac_vec3* b);
+float   ac_vec3_distance(const ac_vec3* a, const ac_vec3* b);
 /**
  * \ingroup vec3
  * \brief Linearly interpolate between two vectors.
@@ -45,7 +45,7 @@ float   vec3_distance(const ac_vec3* a, const ac_vec3* b);
  * \param[in] delta The interpolation factor.
  * \return The interpolated vector.
  */
-ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor);
+ac_vec3 ac_vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor);
 /**
  * \ingroup vec3
  * \brief Project a vector onto another vector.
@@ -55,7 +55,7 @@ ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor
  * \details
  * If either vector is of zero length or NaN, the returned vector will have NaN components.
  */
-ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b);
+ac_vec3 ac_vec3_project(const ac_vec3* a, const ac_vec3* b);
 /**
  * \ingroup vec3
  * \brief Calculate the reflected vector about a normal.
@@ -65,7 +65,7 @@ ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b);
  * \details
  * If either vector is of zero length or NaN, the returned vector will have NaN components.
  */
-ac_vec3 vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal);
+ac_vec3 ac_vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal);
 /**
  * \ingroup vec3
  * \brief Calculates a vector that has been multiplied by a matrix.

@@ -24,13 +24,13 @@ float ac_vec3_angle(const ac_vec3* a, const ac_vec3* b)
     return acosf(dot / (magA * magB));
 }
 
-float vec3_distance(const ac_vec3* a, const ac_vec3* b)
+float ac_vec3_distance(const ac_vec3* a, const ac_vec3* b)
 {
     ac_vec3 diff = ac_vec3_sub(a, b);
     return ac_vec3_magnitude(&diff);
 }
 
-ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor)
+ac_vec3 ac_vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor)
 {
     // clamp the interpolation_factor between 0 and 1
     interpolation_factor = ac_clamp(interpolation_factor, 0.0f, 1.0f);
@@ -41,7 +41,7 @@ ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor
     return ac_vec3_add(a, &delta);
 }
 
-ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b)
+ac_vec3 ac_vec3_project(const ac_vec3* a, const ac_vec3* b)
 {
     // guard against NaN vectors
     if ( ac_vec3_is_nan(a) || ac_vec3_is_nan(b) )
@@ -65,7 +65,7 @@ ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b)
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-ac_vec3 vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
+ac_vec3 ac_vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
 {
     // to reflect a vector v about a normal n, we want to project v onto n
     // and then subtract the projection from v twice, which is the same as
