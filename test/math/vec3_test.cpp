@@ -502,17 +502,17 @@ TEST_CASE( "ac_ivec3_divide", "[ac_vec3]" ) {
     }
 }
 
-int round_func_up(float value)
+static int round_func_up(float value)
 {
     return (int)ceilf(value);
 }
 
-int round_func_down(float value)
+static int round_func_down(float value)
 {
     return (int)floorf(value);
 }
 
-int round_func_nearest(float value)
+static int round_func_nearest(float value)
 {
     return (int)roundf(value);
 }
