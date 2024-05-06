@@ -6,6 +6,7 @@ target_sources(
 		mat3.c
 		mat4.c
 		math.c
+		vec2.c
 		vec3.c
 		vec3_ext.c
 		vec4.c
