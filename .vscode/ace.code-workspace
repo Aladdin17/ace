@@ -45,22 +45,6 @@
 		"editor.detectIndentation": false,
 		"editor.insertSpaces": true,
 		"editor.tabSize": 4,
-		"editor.useTabStops": false,
-		"editor.renderWhitespace": "selection",
-
-		"foldOnOpen.disableFiles": [
-			"**/*.c"
-		],
-
-		"foldOnOpen.targets": [
-			"AllBlockComments"
-		],
-
-		"files.exclude": {
-			"docs/": false
-		},
-		"files.associations": {
-			"tuple": "cpp"
-		}
+		"editor.useTabStops": false
 	}
 }
