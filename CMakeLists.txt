@@ -7,6 +7,7 @@ project(
 )
 
 set( CMAKE_POLICY_DEFAULT_CMP0076 NEW )
+set( CMAKE_POLICY_DEFAULT_CMP0077 NEW )
 
 add_library( ${PROJECT_NAME} STATIC )
 set_target_properties(
@@ -47,6 +48,10 @@ target_include_directories(
 )
 
 add_subdirectory( src )
+add_subdirectory( vendor )
+
+# link to the freeglut library
+target_link_libraries( ${PROJECT_NAME} PRIVATE freeglut_static )
 
 option( AC_BUILD_TESTS "Build ace test suites" OFF )
 if( AC_BUILD_TESTS )
