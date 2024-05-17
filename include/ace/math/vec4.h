@@ -63,7 +63,7 @@ ac_vec4 ac_vec4_nan(void);
  * \param[in] v The vector.
  * \retval true if all of the components of the vector are zero, false otherwise.
  * \retval false one or more of the components of the vector are non-zero.
- * \note This function uses \ref AL_EPSILON as the epsilon value for floating point comparisons.
+ * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
  */
 bool    ac_vec4_is_zero(const ac_vec4* v);
 /**
@@ -79,9 +79,9 @@ bool    ac_vec4_is_nan(const ac_vec4* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \retval true if all of the components of the vectors are equal, false otherwise.
- * \retval false if one or more of the components of the vectors are not equal.
- * \retval false if either vector has NaN components.
- * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
+ * \retval false if one or more of the components of the vectors are not equal, or if either vector
+ * has NaN components. \note This function uses \ref AC_EPSILON as the epsilon value for floating
+ * point comparisons.
  */
 bool    ac_vec4_is_equal(const ac_vec4* a, const ac_vec4* b);
 /**
@@ -208,7 +208,7 @@ bool     ac_ivec4_is_invalid(const ac_ivec4* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \retval true if all of the components of the vectors are equal.
- * \retval false if one or more of the components of the vectors are not equal.
+ * \retval false if one or more of the components of the vectors are not equal or invalid.
  */
 bool     ac_ivec4_is_equal(const ac_ivec4* a, const ac_ivec4* b);
 /**

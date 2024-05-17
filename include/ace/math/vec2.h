@@ -79,9 +79,9 @@ bool    ac_vec2_is_nan(const ac_vec2* v);
  * \param[in] a The first vector.
  * \param[in] b The second vector.
  * \retval true if all of the components of the vectors are equal, false otherwise.
- * \retval false if one or more of the components of the vectors are not equal.
- * \retval false if either vector has NaN components.
- * \note This function uses \ref AC_EPSILON as the epsilon value for floating point comparisons.
+ * \retval false if one or more of the components of the vectors are not equal or if either vector
+ * has NaN components. \note This function uses \ref AC_EPSILON as the epsilon value for floating
+ * point comparisons.
  */
 bool    ac_vec2_is_equal(const ac_vec2* a, const ac_vec2* b);
 /**

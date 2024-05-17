@@ -27,7 +27,7 @@ extern "C" {
  * \union ac_mat4
  * \brief A 4x4 matrix in column-major order.
  * \details
- * Accessing the elements of the matrix using the \ref data member will give
+ * Accessing the elements of the matrix using the data member will give
  * the elements in column-major order.
  *
  * Accessing the elements using any of the other members will give the elements
