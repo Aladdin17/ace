@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-struct camera
+struct ac_camera
 {
     ac_vec3 position;
     float   yaw;
@@ -18,19 +18,19 @@ struct camera
     float   movement_step;
 };
 
-camera* camera_create(void)
+ac_camera* ac_camera_create(void)
 {
-    camera* cam = (camera*) malloc(sizeof(camera));
-    camera_init(cam);
+    ac_camera* cam = (ac_camera*) malloc(sizeof(ac_camera));
+    ac_camera_init(cam);
     return cam;
 }
 
-void camera_destroy(camera* cam)
+void ac_camera_destroy(ac_camera* cam)
 {
     free(cam);
 }
 
-void camera_init(camera* cam)
+void ac_camera_init(ac_camera* cam)
 {
     const float initial_yaw  = -90.0f;  // face towards negative z-axis
     const float initial_step = 0.5f;    // units
@@ -41,12 +41,12 @@ void camera_init(camera* cam)
     cam->front              = (ac_vec3){ 0.0f, 0.0f, -1.0f };
     cam->yaw                = initial_yaw;
     cam->pitch              = 0.0f;
-    cam->movement_direction = camera_direction_none;
+    cam->movement_direction = ac_camera_direction_none;
     cam->movement_step      = initial_step;
-    camera_update_orientation(cam);
+    ac_camera_update_orientation(cam);
 }
 
-void camera_update_orientation(camera* cam)
+void ac_camera_update_orientation(ac_camera* cam)
 {
     // convert to radians
     const float pi          = 3.14159265359f;
@@ -71,7 +71,7 @@ void camera_update_orientation(camera* cam)
     cam->right = right;
 }
 
-void camera_update_position(camera* cam)
+void ac_camera_update_position(ac_camera* cam)
 {
     if ( cam->movement_direction == 0 )
     {
@@ -80,32 +80,32 @@ void camera_update_position(camera* cam)
 
     ac_vec3 movement = { 0.0f, 0.0f, 0.0f };
 
-    if ( cam->movement_direction & camera_direction_forward )
+    if ( cam->movement_direction & ac_camera_direction_forward )
     {
         movement = ac_vec3_add(&movement, &cam->front);
     }
 
-    if ( cam->movement_direction & camera_direction_backward )
+    if ( cam->movement_direction & ac_camera_direction_backward )
     {
         movement = ac_vec3_sub(&movement, &cam->front);
     }
 
-    if ( cam->movement_direction & camera_direction_left )
+    if ( cam->movement_direction & ac_camera_direction_left )
     {
         movement = ac_vec3_sub(&movement, &cam->right);
     }
 
-    if ( cam->movement_direction & camera_direction_right )
+    if ( cam->movement_direction & ac_camera_direction_right )
     {
         movement = ac_vec3_add(&movement, &cam->right);
     }
 
-    if ( cam->movement_direction & camera_direction_up )
+    if ( cam->movement_direction & ac_camera_direction_up )
     {
         movement = ac_vec3_add(&movement, &cam->up);
     }
 
-    if ( cam->movement_direction & camera_direction_down )
+    if ( cam->movement_direction & ac_camera_direction_down )
     {
         movement = ac_vec3_sub(&movement, &cam->up);
     }
@@ -119,47 +119,47 @@ void camera_update_position(camera* cam)
     }
 }
 
-ac_vec3 camera_get_front(const camera* cam)
+ac_vec3 ac_camera_get_front(const ac_camera* cam)
 {
     return cam->front;
 }
 
-ac_vec3 camera_get_right(const camera* cam)
+ac_vec3 ac_camera_get_right(const ac_camera* cam)
 {
     return cam->right;
 }
 
-ac_vec3 camera_get_up(const camera* cam)
+ac_vec3 ac_camera_get_up(const ac_camera* cam)
 {
     return cam->up;
 }
 
-float camera_get_yaw(const camera* cam)
+float ac_camera_get_yaw(const ac_camera* cam)
 {
     return cam->yaw;
 }
 
-float camera_get_pitch(const camera* cam)
+float ac_camera_get_pitch(const ac_camera* cam)
 {
     return cam->pitch;
 }
 
-ac_vec3 camera_get_position(const camera* cam)
+ac_vec3 ac_camera_get_position(const ac_camera* cam)
 {
     return cam->position;
 }
 
-float camera_get_movement_step(const camera* cam)
+float ac_camera_get_movement_step(const ac_camera* cam)
 {
     return cam->movement_step;
 }
 
-int camera_get_movement_direction(const camera* cam)
+int ac_camera_get_movement_direction(const ac_camera* cam)
 {
     return cam->movement_direction;
 }
 
-void camera_set_yaw(camera* cam, float yaw)
+void ac_camera_set_yaw(ac_camera* cam, float yaw)
 {
     const float max_angle = 180.0f;
     const float offset    = 360.0f;
@@ -176,7 +176,7 @@ void camera_set_yaw(camera* cam, float yaw)
     cam->yaw = yaw;
 }
 
-void camera_set_pitch(camera* cam, float pitch)
+void ac_camera_set_pitch(ac_camera* cam, float pitch)
 {
     const float max_angle = 89.0f;
 
@@ -192,17 +192,17 @@ void camera_set_pitch(camera* cam, float pitch)
     cam->pitch = pitch;
 }
 
-void camera_set_position(camera* cam, ac_vec3 position)
+void ac_camera_set_position(ac_camera* cam, ac_vec3 position)
 {
     cam->position = position;
 }
 
-void camera_set_movement_step(camera* cam, float step)
+void ac_camera_set_movement_step(ac_camera* cam, float step)
 {
     cam->movement_step = step;
 }
 
-void camera_set_movement_direction(camera* cam, int direction)
+void ac_camera_set_movement_direction(ac_camera* cam, int direction)
 {
     cam->movement_direction = direction;
 }
