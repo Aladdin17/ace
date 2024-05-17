@@ -3,6 +3,7 @@
  * \brief Generic math functions and constants.
  */
 #pragma once
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,12 +14,11 @@ extern "C" {
  * \brief An epsilon value for floating point comparisons against zero.
  */
 #define AC_EPSILON 1e-6f
-
 /**
  * \def AC_PI
  * \brief The value of pi.
  */
-#define AC_PI 3.14159265358979323846f
+#define AC_PI      3.14159265358979323846f
 
 /**
  * \brief Converts degrees to radians.
@@ -40,6 +40,20 @@ float ac_rad_to_deg(float radians);
  * \return The clamped value.
  */
 float ac_clamp(float value, float min, float max);
+/**
+ * \brief Compares two floating point numbers.
+ * \param[in] a The first number.
+ * \param[in] b The second number.
+ * \param[in] epsilon The epsilon value for comparison.
+ * \retval true if the numbers are equal within the epsilon value.
+ * \retval false if the numbers are not equal within the epsilon value.
+ * \details
+ * The function implements the following comparison:
+ * \code{.c}
+ * fabsf(a - b) <= epsilon
+ * \endcode
+ */
+bool  ac_float_compare(float a, float b, float epsilon);
 
 #ifdef __cplusplus
 }

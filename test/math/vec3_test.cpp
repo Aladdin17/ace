@@ -502,17 +502,17 @@ TEST_CASE( "ac_ivec3_divide", "[ac_vec3]" ) {
     }
 }
 
-int round_func_up(float value)
+static int round_func_up(float value)
 {
     return (int)ceilf(value);
 }
 
-int round_func_down(float value)
+static int round_func_down(float value)
 {
     return (int)floorf(value);
 }
 
-int round_func_nearest(float value)
+static int round_func_nearest(float value)
 {
     return (int)roundf(value);
 }
@@ -540,18 +540,21 @@ TEST_CASE( "ac_ivec3_divide_ext", "[ac_vec3]" ) {
         ac_ivec3 v = {5, 10, 14};
         ac_ivec3 expected = {2, 4, 5};
         ac_ivec3 result = ac_ivec3_divide_ext(&v, 3, round_func_up);
+        REQUIRE(ac_ivec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "round down" ) {
         ac_ivec3 v = {5, 10, 14};
         ac_ivec3 expected = {1, 3, 4};
         ac_ivec3 result = ac_ivec3_divide_ext(&v, 3, round_func_down);
+        REQUIRE(ac_ivec3_is_equal(&result, &expected) == true);
     }
 
     SECTION( "round nearest" ) {
         ac_ivec3 v = {5, 10, 14};
         ac_ivec3 expected = {2, 3, 5};
         ac_ivec3 result = ac_ivec3_divide_ext(&v, 3, round_func_nearest);
+        REQUIRE(ac_ivec3_is_equal(&result, &expected) == true);
     }
 }
 

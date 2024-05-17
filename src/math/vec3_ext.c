@@ -24,13 +24,13 @@ float ac_vec3_angle(const ac_vec3* a, const ac_vec3* b)
     return acosf(dot / (magA * magB));
 }
 
-float vec3_distance(const ac_vec3* a, const ac_vec3* b)
+float ac_vec3_distance(const ac_vec3* a, const ac_vec3* b)
 {
     ac_vec3 diff = ac_vec3_sub(a, b);
     return ac_vec3_magnitude(&diff);
 }
 
-ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor)
+ac_vec3 ac_vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor)
 {
     // clamp the interpolation_factor between 0 and 1
     interpolation_factor = ac_clamp(interpolation_factor, 0.0f, 1.0f);
@@ -41,7 +41,7 @@ ac_vec3 vec3_lerp(const ac_vec3* a, const ac_vec3* b, float interpolation_factor
     return ac_vec3_add(a, &delta);
 }
 
-ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b)
+ac_vec3 ac_vec3_project(const ac_vec3* a, const ac_vec3* b)
 {
     // guard against NaN vectors
     if ( ac_vec3_is_nan(a) || ac_vec3_is_nan(b) )
@@ -65,7 +65,7 @@ ac_vec3 vec3_project(const ac_vec3* a, const ac_vec3* b)
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-ac_vec3 vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
+ac_vec3 ac_vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
 {
     // to reflect a vector v about a normal n, we want to project v onto n
     // and then subtract the projection from v twice, which is the same as
@@ -92,4 +92,18 @@ ac_vec3 vec3_reflect(const ac_vec3* incoming, const ac_vec3* normal)
     float   projection = ac_vec3_dot(incoming, &n_normalized);
     ac_vec3 scaled_n   = ac_vec3_scale(&n_normalized, projection_modifier * projection);
     return ac_vec3_sub(incoming, &scaled_n);
+}
+
+ac_vec3 ac_vec3_mult_matrix(const ac_vec3* vec, const ac_mat3* mat)
+{
+    // guard against NaN vectors
+    if ( ac_vec3_is_nan(vec) || ac_mat3_is_nan(mat) )
+    {
+        return ac_vec3_nan();
+    }
+
+    // multiply the vector by the matrix
+    return (ac_vec3){ .x = vec->x * mat->a + vec->y * mat->d + vec->z * mat->g,
+                      .y = vec->x * mat->b + vec->y * mat->e + vec->z * mat->h,
+                      .z = vec->x * mat->c + vec->y * mat->f + vec->z * mat->i };
 }

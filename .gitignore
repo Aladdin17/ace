@@ -1,2 +1,7 @@
+# Directories
 .build/
+build/
 docs/
+
+# Personal vscode settings
+.vscode/settings.json
