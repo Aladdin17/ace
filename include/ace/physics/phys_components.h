@@ -4,35 +4,35 @@
  */
 #pragma once
 
-#include "phys_primitives.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
+ * \enum ColliderType
+ * \brief Enumeration for the types of colliders.
+ */
+enum ColliderType
+{
+    SPHERE, /**< \brief Sphere collider type. */
+    AABB,   /**< \brief Axis-aligned bounding box collider type. */
+};
+
+/**
  * \struct Collider
  * \brief Structure to hold the collider data.
  */
-typedef struct {
-  enum ColliderType type; /**< \brief The type of the collider. */
-  void *data;             /**< \brief The data of the collider. */
+typedef struct
+{
+    enum ColliderType type; /**< \brief The type of the collider. */
+    void*             data; /**< \brief The data of the collider. */
 } Collider;
-
-/**
- * \struct PhysConfig
- * \brief Structure to hold the configuration for a physical object.
- */
-typedef struct {
-  unsigned int flags; /**< \brief Flags to configure the behavior of the
-                         physical object. */
-} PhysConfig;
 
 /**
  * \typedef PhysCallBack
  * \brief Typedef for a callback function.
  */
-typedef void (*PhysCallBack)(int);
+typedef void (*PhysCallBack)(void);
 
 #ifdef __cplusplus
 }

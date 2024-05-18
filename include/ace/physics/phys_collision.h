@@ -4,26 +4,12 @@
  */
 #pragma once
 
+#include "geometry/intersection.h"
 #include "phys_components.h"
-#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * \brief Structure to hold the result of a collision check.
- */
-typedef struct {
-  bool collided; /**< \brief Flag indicating if a collision occurred. */
-  ac_vec3
-      contactNormal; /**< \brief The normal vector at the point of contact. */
-  float penetrationDepth; /**< \brief The depth of penetration during the
-                             collision. */
-  ac_vec3
-      contactPoint; /**< \brief The point of contact during the collision. */
-
-} CollisionResult;
 
 /**
  * \brief Checks for collision between two colliders.
@@ -33,8 +19,9 @@ typedef struct {
  * \param p2 The position of the second collider.
  * \return The result of the collision check.
  */
-CollisionResult check_collision(Collider *c1, ac_vec3 *const p1, Collider *c2,
-                                ac_vec3 *const p2);
+IntersectionResult check_collision(
+    Collider* c1, ac_vec3* const p1, Collider* c2, ac_vec3* const p2
+);
 
 /**
  * \brief Resolves a collision between two objects.
@@ -48,9 +35,17 @@ CollisionResult check_collision(Collider *c1, ac_vec3 *const p1, Collider *c2,
  * \param m2 The mass of the second object.
  * \param s2 The static flag of the second object.
  */
-void resolve_collision(CollisionResult *info, ac_vec3 *pos1, ac_vec3 *v1,
-                       float m1, bool s1, ac_vec3 *pos2, ac_vec3 *v2, float m2,
-                       bool s2);
+void resolve_collision(
+    IntersectionResult* info,
+    ac_vec3*            pos1,
+    ac_vec3*            v1,
+    float               m1,
+    bool                s1,
+    ac_vec3*            pos2,
+    ac_vec3*            v2,
+    float               m2,
+    bool                s2
+);
 
 #ifdef __cplusplus
 }
