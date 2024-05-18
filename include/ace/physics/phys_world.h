@@ -43,8 +43,9 @@ typedef struct {
   unsigned numStaticEntities;  /**< \brief The number of static entities. */
   unsigned numDynamicEntities; /**< \brief The number of dynamic entities. */
 
-  ac_vec3 gravity;     /**< \brief The gravity of the world. */
-  float airResistance; /**< \brief The air resistance of the world. */
+  ac_vec3 gravity;          /**< \brief The gravity of the world. */
+  float airResistance;      /**< \brief The air resistance of the world. */
+  float velocityThreshhold; /**< \brief The velocity threshold of the world*/
 
   float accumulator; /**< \brief The accumulator for the world. */
   float timeStep;    /**< \brief The time step for the world. */

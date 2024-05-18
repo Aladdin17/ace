@@ -13,9 +13,10 @@ void phys_init_world(PhysWorld *world) {
   world->gravity.x = 0.0f;
   world->gravity.z = 0.0f;
   world->gravity.y = -9.8f;
-  world->airResistance = 0.1f;
+  world->airResistance = 0.3f;
+  world->velocityThreshhold = 0.075f;
 
-  world->timeStep = 1.0f / 500.0f;
+  world->timeStep = 1.0f / 120.0f;
 
   memset(world->positions, 0, sizeof(void *) * AC_MAX_PHYS_ENTS);
   memset(world->velocities, 0, sizeof(ac_vec3) * AC_MAX_PHYS_ENTS);
@@ -120,32 +121,47 @@ void update_collisions(PhysWorld *world) {
   }
 }
 
-void update_movements(PhysWorld *world) // might make this verlet if I have time
-{
+void update_movements(PhysWorld *world) { // semi implicit euler
   for (unsigned i = 0; i < world->numDynamicEntities; i++) {
+    unsigned entityIndex = world->dynamicEntities[i];
 
-    // apply gravity
-    world->velocities[world->dynamicEntities[i]].x +=
-        world->gravity.x * world->timeStep;
-    world->velocities[world->dynamicEntities[i]].y +=
-        world->gravity.y * world->timeStep;
-    world->velocities[world->dynamicEntities[i]].z +=
-        world->gravity.z * world->timeStep;
+    // update positions based on velocity and half gravity * timeStep^2
+    world->positions[entityIndex]->x +=
+        world->velocities[entityIndex].x * world->timeStep +
+        0.5f * world->gravity.x * world->timeStep *
+            world->timeStep; // gravity (x)
 
-    // apply air resistance
-    world->velocities[world->dynamicEntities[i]].x *=
+    world->positions[entityIndex]->y +=
+        world->velocities[entityIndex].y * world->timeStep +
+        0.5f * world->gravity.y * world->timeStep *
+            world->timeStep; // gravity (y)
+
+    world->positions[entityIndex]->z +=
+        world->velocities[entityIndex].z * world->timeStep +
+        0.5f * world->gravity.z * world->timeStep *
+            world->timeStep; // gravity (z)
+
+    // update velocities based on gravity and air resistance
+    world->velocities[entityIndex].x +=
+        world->gravity.x * world->timeStep; // gravity (x)
+    world->velocities[entityIndex].y +=
+        world->gravity.y * world->timeStep; // gravity (y)
+    world->velocities[entityIndex].z +=
+        world->gravity.z * world->timeStep; // gravity (z)
+
+    world->velocities[entityIndex].x *=
         1.0f - (world->airResistance * world->timeStep);
-    world->velocities[world->dynamicEntities[i]].y *=
+    world->velocities[entityIndex].y *=
         1.0f - (world->airResistance * world->timeStep);
-    world->velocities[world->dynamicEntities[i]].z *=
+    world->velocities[entityIndex].z *=
         1.0f - (world->airResistance * world->timeStep);
 
-    // update positions
-    world->positions[world->dynamicEntities[i]]->x +=
-        world->velocities[world->dynamicEntities[i]].x * world->timeStep;
-    world->positions[world->dynamicEntities[i]]->y +=
-        world->velocities[world->dynamicEntities[i]].y * world->timeStep;
-    world->positions[world->dynamicEntities[i]]->z +=
-        world->velocities[world->dynamicEntities[i]].z * world->timeStep;
+    // "sleep" entities under the threshold and directly set velocities to 0
+    if (ac_vec3_magnitude(&world->velocities[entityIndex]) <
+        world->velocityThreshhold) {
+      world->velocities[entityIndex].x = 0.0f;
+      world->velocities[entityIndex].y = 0.0f;
+      world->velocities[entityIndex].z = 0.0f;
+    }
   }
 }
