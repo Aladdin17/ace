@@ -45,6 +45,16 @@
 		"editor.detectIndentation": false,
 		"editor.insertSpaces": true,
 		"editor.tabSize": 4,
-		"editor.useTabStops": false
+		"editor.useTabStops": false,
+		"files.associations": {
+			"array": "c",
+			"ranges": "c",
+			"span": "c",
+			"vector": "c",
+			"xstring": "c",
+			"xutility": "c",
+			"stdbool.h": "c",
+			"intersection.h": "c"
+		}
 	}
 }

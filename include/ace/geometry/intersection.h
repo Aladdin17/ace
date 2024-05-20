@@ -1,5 +1,6 @@
 #pragma once
 #include "../math/vec3.h"
+#include "../physics/phys_components.h"
 #include "shapes.h"
 #include <stdbool.h>
 
@@ -31,7 +32,7 @@ typedef struct
  * intersection.
  */
 IntersectionResult sphere_sphere(
-    Sphere sphere1, const ac_vec3* const p1, Sphere sphere2, const ac_vec3* const p2
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 );
 
 /**
@@ -47,7 +48,11 @@ IntersectionResult sphere_sphere(
  * intersection.
  */
 IntersectionResult sphere_AABB(
-    Sphere sphere, const ac_vec3* const p1, AABB* aabbHalfExtents, const ac_vec3* const p2
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
+);
+
+IntersectionResult AABB_sphere(
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 );
 
 #ifdef __cplusplus

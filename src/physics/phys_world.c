@@ -81,14 +81,11 @@ void phys_update(PhysWorld* world, float deltaTime)
 {
     world->accumulator += deltaTime;
 
-    int i = 0;
-
     while ( world->accumulator >= world->timeStep )
     {
         update_movements(world);
         update_collisions(world);
         world->accumulator -= world->timeStep;
-        i++;
     }
 }
 

@@ -1,10 +1,14 @@
 #include <ace/geometry/intersection.h>
 #include <math.h>
+#
 
 IntersectionResult sphere_sphere(
-    Sphere sphere1, const ac_vec3* const p1, Sphere sphere2, const ac_vec3* const p2
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 )
 {
+    Sphere* sphere1 = (Sphere*) c1->data;
+    Sphere* sphere2 = (Sphere*) c2->data;
+
     IntersectionResult ret;
     ret.intersected = 0;
 
@@ -12,7 +16,7 @@ IntersectionResult sphere_sphere(
 
     float dist = ac_vec3_magnitude(&diffVec);
 
-    ret.intersected = (sphere1.radius + sphere2.radius) > dist;
+    ret.intersected = (sphere1->radius + sphere2->radius) > dist;
 
     if ( ret.intersected )
     {
@@ -20,7 +24,7 @@ IntersectionResult sphere_sphere(
         ret.contactNormal = ac_vec3_sub(p2, p1);
         ret.contactNormal = ac_vec3_normalize(&ret.contactNormal);
 
-        float rT             = (sphere1.radius + sphere2.radius);
+        float rT             = (sphere1->radius + sphere2->radius);
         // pen depth
         ret.penetrationDepth = rT - dist;
 
@@ -30,8 +34,8 @@ IntersectionResult sphere_sphere(
         // get contact of each sphere then set final as mid point between
         ac_vec3 contact1, contact2;
 
-        contact1 = ac_vec3_scale(&ret.contactNormal, (sphere1.radius * ratio));
-        contact2 = ac_vec3_scale(&ret.contactNormal, (sphere2.radius * ratio));
+        contact1 = ac_vec3_scale(&ret.contactNormal, (sphere1->radius * ratio));
+        contact2 = ac_vec3_scale(&ret.contactNormal, (sphere2->radius * ratio));
 
         ret.contactPoint = ac_vec3_add(&contact1, &contact2);
         ret.contactPoint = ac_vec3_scale(&ret.contactPoint, 0.5f);  // get middle point with / 2
@@ -40,9 +44,12 @@ IntersectionResult sphere_sphere(
 }
 
 IntersectionResult sphere_AABB(
-    Sphere sphere, const ac_vec3* const p1, AABB* aabbHalfExtents, const ac_vec3* const p2
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 )
 {
+    Sphere* sphere          = (Sphere*) c1->data;
+    AABB*   aabbHalfExtents = (AABB*) c2->data;
+
     // https://stackoverflow.com/questions/28343716/sphere-intersection-test-of-aabb
 
     IntersectionResult ret;
@@ -62,7 +69,7 @@ IntersectionResult sphere_AABB(
     ac_vec3 diffVec = ac_vec3_sub(p1, &closestPoint);
 
     float distSquared         = ac_vec3_dot(&diffVec, &diffVec);
-    float sphereRadiusSquared = sphere.radius * sphere.radius;
+    float sphereRadiusSquared = sphere->radius * sphere->radius;
 
     ret.intersected = (distSquared <= sphereRadiusSquared);
     if ( ret.intersected )
@@ -70,12 +77,19 @@ IntersectionResult sphere_AABB(
         float dist           = sqrtf(distSquared);
         // contact normal
         ret.contactNormal    = ac_vec3_scale(&diffVec, 1.0f / dist);
-        ret.penetrationDepth = sphere.radius - dist;
+        ret.penetrationDepth = sphere->radius - dist;
         // contact point
         ret.contactPoint     = ac_vec3_scale(&ret.contactNormal, ret.penetrationDepth);
         ret.contactPoint     = ac_vec3_add(&ret.contactPoint, &closestPoint);
     }
     return ret;
+}
+
+IntersectionResult AABB_sphere(
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
+)
+{
+    return sphere_AABB(c2, p2, c1, p1);
 }
 
 // IntersectionResult // we dont need to implement

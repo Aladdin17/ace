@@ -1,21 +1,27 @@
 #include "phys_collision.h"
 #include <math.h>
+typedef IntersectionResult (*collision_detection_func)(
+    const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
+);
+static const collision_detection_func collisionDetectionFunctions[2][2] = {
+    // sphere,       aabb
+    { sphere_sphere,   AABB_sphere }, // sphere
+    {   sphere_AABB, sphere_sphere }  // aabb
+};
 
 IntersectionResult check_collision(Collider* c1, ac_vec3* const p1, Collider* c2, ac_vec3* const p2)
 {
-    // there is definitely a better way to do this
-    if ( c1->type == c2->type )
+    collision_detection_func func = collisionDetectionFunctions[c1->type][c2->type];
+    if ( func == NULL )
     {
-        if ( c1->type == SPHERE )
-            return sphere_sphere(*(Sphere*) c1->data, p1, *(Sphere*) c2->data, p2);
-        // else
-        //   return AABB_AABB((AABB *)c1->data, p1, (AABB *)c2->data, p2);
+        // no collision detection function exists
+        return (IntersectionResult){ .intersected      = false,
+                                     .contactNormal    = ac_vec3_nan(),
+                                     .penetrationDepth = NAN,
+                                     .contactPoint     = ac_vec3_nan() };
     }
 
-    if ( c1->type == SPHERE )
-        return sphere_AABB(*(Sphere*) c1->data, p1, (AABB*) c2->data, p2);
-    else
-        return sphere_AABB(*(Sphere*) c2->data, p2, (AABB*) c1->data, p1);
+    return func(c1, p1, c2, p2);
 }
 
 void resolve_collision(

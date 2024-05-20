@@ -14,8 +14,8 @@ extern "C" {
  */
 enum ColliderType
 {
-    SPHERE, /**< \brief Sphere collider type. */
-    AABB,   /**< \brief Axis-aligned bounding box collider type. */
+    SPHERE_C, /**< \brief Sphere collider type. */
+    AABB_C,   /**< \brief Axis-aligned bounding box collider type. */
 };
 
 /**
@@ -32,7 +32,7 @@ typedef struct
  * \typedef PhysCallBack
  * \brief Typedef for a callback function.
  */
-typedef void (*PhysCallBack)(void);
+typedef void (*PhysCallBack)(unsigned, unsigned);
 
 #ifdef __cplusplus
 }
