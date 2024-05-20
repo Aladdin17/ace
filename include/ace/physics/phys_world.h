@@ -5,6 +5,7 @@
 #pragma once
 
 #include "phys_components.h"
+#include <stdbool.h>
 
 #define AC_MAX_PHYS_ENTS  100  // should be vectors instead
 #define AC_PHYS_ERROR_ENT 2147483646
@@ -27,6 +28,8 @@ typedef struct
 
     PhysCallBack callbacks[AC_MAX_PHYS_ENTS]; /**< \brief The on contact callbacks
                                                  of the entities. */
+
+    bool sleeping[AC_MAX_PHYS_ENTS]; /**< \brief Bool used to sleep entities. (Stop updates)*/
 
     unsigned numEnts; /**< \brief The number of entities. */
 
@@ -90,6 +93,14 @@ void phys_make_entity_static(PhysWorld* world, unsigned entity);
  * \param callback The callback function to be invoked when the entity collides with another entity.
  */
 void phys_add_collision_callback(PhysWorld* world, unsigned entity, PhysCallBack callback);
+
+/**
+ * \brief Sets an entity's sleeping state. Will reset velocity.
+ * \param world Pointer to the PhysWorld structure representing the physics world.
+ * \param entity The ID of the entity to sleep.
+ * \param sleep What you want to set the entity's sleep state to.
+ */
+void phys_sleep_entity(PhysWorld* world, unsigned entity, bool sleep);
 
 /**
  * \brief Updates the physics world.

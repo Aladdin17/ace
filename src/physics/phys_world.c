@@ -22,6 +22,8 @@ void phys_init_world(PhysWorld* world)
 
     memset(world->callbacks, 0, sizeof(void*) * AC_MAX_PHYS_ENTS);
 
+    memset(world->sleeping, 0, sizeof(bool) * AC_MAX_PHYS_ENTS);
+
     memset(world->colliders, 0, sizeof(Collider) * AC_MAX_PHYS_ENTS);
 
     memset(world->staticEntities, 0, sizeof(unsigned) * AC_MAX_PHYS_ENTS);
@@ -70,6 +72,12 @@ void phys_make_entity_static(PhysWorld* world, unsigned entity)
 void phys_add_collision_callback(PhysWorld* world, unsigned entity, PhysCallBack callback)
 {
     world->callbacks[entity] = callback;
+}
+
+void phys_sleep_entity(PhysWorld* world, unsigned entity, bool sleep)
+{
+    world->sleeping[entity] = sleep;
+    world->velocities[entity] = (ac_vec3){0,0,0};
 }
 
 // update funcs
@@ -172,6 +180,9 @@ void update_movements(PhysWorld* world)
     {
         unsigned entityIndex = world->dynamicEntities[i];
 
+        if(world->sleeping[entityIndex])
+            continue;
+
         // update positions based on velocity and half gravity * timeStep^2
         world->positions[entityIndex]->x +=
             world->velocities[entityIndex].x * world->timeStep +
@@ -194,7 +205,7 @@ void update_movements(PhysWorld* world)
         world->velocities[entityIndex].y *= 1.0f - (world->airResistance * world->timeStep);
         world->velocities[entityIndex].z *= 1.0f - (world->airResistance * world->timeStep);
 
-        // "sleep" entities under the threshold and directly set velocities to 0
+        //  if under the speed threshold, set velocity to 0
         if ( ac_vec3_magnitude(&world->velocities[entityIndex]) < world->velocityThreshhold )
         {
             world->velocities[entityIndex].x = 0.0f;
