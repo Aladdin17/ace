@@ -77,7 +77,6 @@ void phys_add_collision_callback(PhysWorld* world, unsigned entity, PhysCallBack
 void phys_sleep_entity(PhysWorld* world, unsigned entity, bool sleep)
 {
     world->sleeping[entity] = sleep;
-    world->velocities[entity] = (ac_vec3){0,0,0};
 }
 
 // update funcs
