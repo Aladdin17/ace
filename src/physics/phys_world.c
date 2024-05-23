@@ -55,8 +55,6 @@ void phys_add_entity_collider(PhysWorld* world, Collider collider, unsigned enti
     }
 }
 
-// NEED TO MAKE THEES MORE ROBUST
-
 void phys_make_entity_dynamic(PhysWorld* world, unsigned entity)
 {
     world->dynamicEntities[world->numDynamicEntities] = entity;
@@ -104,70 +102,76 @@ void update_collisions(PhysWorld* world)
     for ( unsigned i = 0; i < world->numDynamicEntities; i++ )
     {
         entity1 = world->dynamicEntities[i];
-
-        // check collisions between dynamic colliders
-        for ( unsigned j = i + 1; j < world->numDynamicEntities; j++ )
+        if ( !world->sleeping[entity1] )
         {
-            entity2 = world->dynamicEntities[j];
-
-            result = check_collision(
-                &world->colliders[entity1],
-                world->positions[entity1],
-                &world->colliders[entity2],
-                world->positions[entity2]
-            );
-            if ( result.intersected )
+            // check collisions between dynamic colliders
+            for ( unsigned j = i + 1; j < world->numDynamicEntities; j++ )
             {
-                resolve_collision(
-                    &result,
-                    world->positions[entity1],
-                    &world->velocities[entity1],
-                    world->masses[entity1],
-                    0,
-                    world->positions[entity2],
-                    &world->velocities[entity2],
-                    world->masses[entity2],
-                    0
-                );
+                entity2 = world->dynamicEntities[j];
+                if ( !world->sleeping[entity2] )
+                {
+                    result = check_collision(
+                        &world->colliders[entity1],
+                        world->positions[entity1],
+                        &world->colliders[entity2],
+                        world->positions[entity2]
+                    );
+                    if ( result.intersected )
+                    {
+                        resolve_collision(
+                            &result,
+                            world->positions[entity1],
+                            &world->velocities[entity1],
+                            world->masses[entity1],
+                            0,
+                            world->positions[entity2],
+                            &world->velocities[entity2],
+                            world->masses[entity2],
+                            0
+                        );
 
-                if ( world->callbacks[entity1] )
-                    world->callbacks[entity1](entity1, entity2);
+                        if ( world->callbacks[entity1] )
+                            world->callbacks[entity1](entity1, entity2);
 
-                if ( world->callbacks[entity2] )
-                    world->callbacks[entity2](entity1, entity2);
+                        if ( world->callbacks[entity2] )
+                            world->callbacks[entity2](entity1, entity2);
+                    }
+                }
             }
-        }
 
-        // check collisions between dynamic and static colliders
-        for ( unsigned j = 0; j < world->numStaticEntities; j++ )
-        {
-            entity2 = world->staticEntities[j];
-
-            result = check_collision(
-                &world->colliders[entity1],
-                world->positions[entity1],
-                &world->colliders[entity2],
-                world->positions[entity2]
-            );
-            if ( result.intersected )
+            // check collisions between dynamic and static colliders
+            for ( unsigned j = 0; j < world->numStaticEntities; j++ )
             {
-                resolve_collision(
-                    &result,
-                    world->positions[entity1],
-                    &world->velocities[entity1],
-                    world->masses[entity1],
-                    0,
-                    world->positions[entity2],
-                    &world->velocities[entity2],
-                    world->masses[entity2],
-                    1
-                );
+                entity2 = world->staticEntities[j];
+                if ( !world->sleeping[entity2] )
+                {
+                    result = check_collision(
+                        &world->colliders[entity1],
+                        world->positions[entity1],
+                        &world->colliders[entity2],
+                        world->positions[entity2]
+                    );
+                    if ( result.intersected )
+                    {
+                        resolve_collision(
+                            &result,
+                            world->positions[entity1],
+                            &world->velocities[entity1],
+                            world->masses[entity1],
+                            0,
+                            world->positions[entity2],
+                            &world->velocities[entity2],
+                            world->masses[entity2],
+                            1
+                        );
 
-                if ( world->callbacks[entity1] )
-                    world->callbacks[entity1](entity1, entity2);
+                        if ( world->callbacks[entity1] )
+                            world->callbacks[entity1](entity1, entity2);
 
-                if ( world->callbacks[entity2] )
-                    world->callbacks[entity2](entity1, entity2);
+                        if ( world->callbacks[entity2] )
+                            world->callbacks[entity2](entity1, entity2);
+                    }
+                }
             }
         }
     }
@@ -179,7 +183,7 @@ void update_movements(PhysWorld* world)
     {
         unsigned entityIndex = world->dynamicEntities[i];
 
-        if(world->sleeping[entityIndex])
+        if ( world->sleeping[entityIndex] )
             continue;
 
         // update positions based on velocity and half gravity * timeStep^2
