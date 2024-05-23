@@ -102,76 +102,82 @@ void update_collisions(PhysWorld* world)
     for ( unsigned i = 0; i < world->numDynamicEntities; i++ )
     {
         entity1 = world->dynamicEntities[i];
-        if ( !world->sleeping[entity1] )
+        if ( world->sleeping[entity1] )
         {
-            // check collisions between dynamic colliders
-            for ( unsigned j = i + 1; j < world->numDynamicEntities; j++ )
+            continue;
+        }
+
+        // check collisions between dynamic colliders
+        for ( unsigned j = i + 1; j < world->numDynamicEntities; j++ )
+        {
+            entity2 = world->dynamicEntities[j];
+            if ( world->sleeping[entity2] )
             {
-                entity2 = world->dynamicEntities[j];
-                if ( !world->sleeping[entity2] )
-                {
-                    result = check_collision(
-                        &world->colliders[entity1],
-                        world->positions[entity1],
-                        &world->colliders[entity2],
-                        world->positions[entity2]
-                    );
-                    if ( result.intersected )
-                    {
-                        resolve_collision(
-                            &result,
-                            world->positions[entity1],
-                            &world->velocities[entity1],
-                            world->masses[entity1],
-                            0,
-                            world->positions[entity2],
-                            &world->velocities[entity2],
-                            world->masses[entity2],
-                            0
-                        );
-
-                        if ( world->callbacks[entity1] )
-                            world->callbacks[entity1](entity1, entity2);
-
-                        if ( world->callbacks[entity2] )
-                            world->callbacks[entity2](entity1, entity2);
-                    }
-                }
+                continue;
             }
 
-            // check collisions between dynamic and static colliders
-            for ( unsigned j = 0; j < world->numStaticEntities; j++ )
+            result = check_collision(
+                &world->colliders[entity1],
+                world->positions[entity1],
+                &world->colliders[entity2],
+                world->positions[entity2]
+            );
+            if ( result.intersected )
             {
-                entity2 = world->staticEntities[j];
-                if ( !world->sleeping[entity2] )
-                {
-                    result = check_collision(
-                        &world->colliders[entity1],
-                        world->positions[entity1],
-                        &world->colliders[entity2],
-                        world->positions[entity2]
-                    );
-                    if ( result.intersected )
-                    {
-                        resolve_collision(
-                            &result,
-                            world->positions[entity1],
-                            &world->velocities[entity1],
-                            world->masses[entity1],
-                            0,
-                            world->positions[entity2],
-                            &world->velocities[entity2],
-                            world->masses[entity2],
-                            1
-                        );
+                resolve_collision(
+                    &result,
+                    world->positions[entity1],
+                    &world->velocities[entity1],
+                    world->masses[entity1],
+                    0,
+                    world->positions[entity2],
+                    &world->velocities[entity2],
+                    world->masses[entity2],
+                    0
+                );
 
-                        if ( world->callbacks[entity1] )
-                            world->callbacks[entity1](entity1, entity2);
+                if ( world->callbacks[entity1] )
+                    world->callbacks[entity1](entity1, entity2);
 
-                        if ( world->callbacks[entity2] )
-                            world->callbacks[entity2](entity1, entity2);
-                    }
-                }
+                if ( world->callbacks[entity2] )
+                    world->callbacks[entity2](entity1, entity2);
+            }
+        }
+
+        // check collisions between dynamic and static colliders
+        for ( unsigned j = 0; j < world->numStaticEntities; j++ )
+        {
+            entity2 = world->staticEntities[j];
+            if ( world->sleeping[entity2] )
+            {
+                continue;
+            }
+
+            result = check_collision(
+                &world->colliders[entity1],
+                world->positions[entity1],
+                &world->colliders[entity2],
+                world->positions[entity2]
+            );
+            if ( result.intersected )
+            {
+                resolve_collision(
+                    &result,
+                    world->positions[entity1],
+                    &world->velocities[entity1],
+                    world->masses[entity1],
+                    0,
+                    world->positions[entity2],
+                    &world->velocities[entity2],
+                    world->masses[entity2],
+                    1
+                );
+
+                if ( world->callbacks[entity1] )
+                    world->callbacks[entity1](entity1, entity2);
+
+                if ( world->callbacks[entity2] )
+                    world->callbacks[entity2](entity1, entity2);
             }
         }
     }
