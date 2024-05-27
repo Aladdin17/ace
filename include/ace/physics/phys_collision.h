@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "geometry/intersection.h"
+#include "ace/geometry/intersection.h"
 #include "phys_components.h"
 
 #ifdef __cplusplus

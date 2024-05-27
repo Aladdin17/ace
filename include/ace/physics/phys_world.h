@@ -5,6 +5,8 @@
 #pragma once
 
 #include "phys_components.h"
+#include <ace/math/vec3.h>
+
 #include <stdbool.h>
 
 #define AC_MAX_PHYS_ENTS  100  // should be vectors instead
@@ -14,10 +16,6 @@
 extern "C" {
 #endif
 
-/**
- * \struct PhysWorld
- * \brief Structure to hold the data for the physics world.
- */
 typedef struct
 {
     ac_vec3* positions[AC_MAX_PHYS_ENTS];  /**< \brief The positions of the entities. */

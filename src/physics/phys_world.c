@@ -1,6 +1,6 @@
-#include "phys_world.h"
+#include "ace/physics/phys_world.h"
 #include "memory.h"
-#include "phys_collision.h"
+#include "ace/physics/phys_collision.h"
 #include "stdio.h"
 
 void phys_init_world(PhysWorld* world)

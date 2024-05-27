@@ -11,7 +11,7 @@ add_executable(${PROJECT_NAME}
     ${DEMO_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ace)
+target_link_libraries(${PROJECT_NAME} PRIVATE ace freeglut_static)
 
 set_target_properties(
     ${PROJECT_NAME}
