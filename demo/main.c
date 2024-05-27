@@ -21,7 +21,7 @@ Camera* camera;
 // balls (haha!)
 
 unsigned cueBallID;
-ac_vec3 cuePos = {0, 2, 10};
+ac_vec3 cuePos = {0, 2, 15};
 Collider ballCollider;
 
 unsigned ballIDs[10];
@@ -96,28 +96,25 @@ void init(void)
     phys_add_entity_collider(&physicsWorld, tableTopCollider, tableTopID);
 
     phys_add_entity_collider(&physicsWorld, ballCollider, cueBallID);
+
     // Set up pool ball formation
     int numRows = 4;
     float spacing = 2.f;
-    float startX = -((numRows - 1) * spacing) / 2.0f;
     float startZ = 0.0f;
     int ballIndex = 0;
 
-    for (int row = 0; row < numRows; row++)
-    {
-        for (int col = 0; col <= row; col++)
-        {
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col <= row; col++) {
             ballPositions[ballIndex] = (ac_vec3){
-                .x = startX + col * spacing,
+                .x = (col - row / 2.0f) * spacing,
                 .y = 2.f,
-                .z = startZ - row * spacing};
+                .z = startZ - row * spacing
+            };
 
             ballIDs[ballIndex] = phys_add_entity(&physicsWorld, &ballPositions[ballIndex]);
-            phys_add_entity_collider(&physicsWorld, ballCollider,
-                                     ballIDs[ballIndex]);
+            phys_add_entity_collider(&physicsWorld, ballCollider, ballIDs[ballIndex]);
             phys_make_entity_dynamic(&physicsWorld, ballIDs[ballIndex]);
-            phys_add_collision_callback(&physicsWorld, ballIDs[ballIndex],
-                                        collisionCallback);
+            phys_add_collision_callback(&physicsWorld, ballIDs[ballIndex], collisionCallback);
             ballIndex++;
         }
     }
