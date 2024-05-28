@@ -4,10 +4,11 @@ typedef IntersectionResult (*collision_detection_func)(
     const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 );
 
-static const collision_detection_func collisionDetectionFunctions[2][2] = { // 3hrs of my life was spent on finding that this indexing was wrong
+static const collision_detection_func collisionDetectionFunctions[2][2] = {
+    // 3hrs of my life was spent on finding that this indexing was wrong
     // SPHERE_C, AABB_C
     { sphere_sphere, sphere_AABB }, // SPHERE_C
-    { AABB_sphere, NULL }      // AABB_C
+    {   AABB_sphere,        NULL }  // AABB_C
 };
 
 IntersectionResult check_collision(Collider* c1, ac_vec3* const p1, Collider* c2, ac_vec3* const p2)
@@ -41,8 +42,8 @@ void resolve_collision(
 
     float impulse = ac_vec3_dot(&relativeVelocity, &info->contactNormal);
     // if objects are moving towards eachother or either entity is static
-        if ( impulse <= 0.0f || (s1 || s2) )
-        {
+    if ( impulse <= 0.0f || (s1 || s2) )
+    {
         // calculate the impulse
         float impulseScalar  = -(1.0f + 0.7f) * impulse;  // 0.8 is the coefficient of restitution
         impulseScalar       /= (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);

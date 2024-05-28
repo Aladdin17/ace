@@ -2,13 +2,13 @@ cmake_minimum_required( VERSION 3.9 )
 
 project ( ace_demo )
 
-file(GLOB DEMO_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-)
+# file(GLOB DEMO_SOURCES
+#     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+# )
 
 add_executable(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/main.c
-    ${DEMO_SOURCES}
+    # ${DEMO_SOURCES}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ace freeglut_static)
@@ -34,9 +34,8 @@ target_compile_options(
 		$<$<C_COMPILER_ID:MSVC>: /external:anglebrackets /external:W0> # disable warnings from external headers
 )
 
-# add src as an include dir too. 
+# add src as an include dir too.
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-

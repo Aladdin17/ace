@@ -6,7 +6,6 @@
 
 #include "phys_components.h"
 #include <ace/math/vec3.h>
-
 #include <stdbool.h>
 
 #define AC_MAX_PHYS_ENTS  100  // should be vectors instead
