@@ -128,6 +128,57 @@ void draw_mini_map(void)
     glPopMatrix();
 }
 
+void draw_power_bar(float percentage)
+{
+    // disable depth test for this overlay
+    glPushAttrib(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+
+    // window dimensions
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+
+    // set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0.0, width, 0.0, height);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    // calculate width of the power bar
+    float power_bar_max_width = (float) width / 4.0f;
+    float power_bar_height = (float) height / 20.0f;
+
+    // draw outline
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRectf(0.0f, 0.0f, power_bar_max_width, power_bar_height);
+
+    // draw power bar
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glRectf(0.0f, 0.0f, power_bar_max_width * percentage, power_bar_height);
+
+    // render text
+    static const char* text = "Power";
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glRasterPos2f(power_bar_max_width + 10.0f, power_bar_height / 2.0f);
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+    }
+
+
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    // restore depth test
+    glPopAttrib();
+}
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -143,9 +194,13 @@ void display(void)
     glViewport(0, 0, width, height);
     render_scene();
 
-    glClear(GL_DEPTH_BUFFER_BIT); // clear depth buffer (not color buffer)
+    glClear(GL_DEPTH_BUFFER_BIT);
+    draw_power_bar(0.5f);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3); // set the viewport to the bottom left corner
     draw_mini_map();
+
 
     glutSwapBuffers();
 }
