@@ -76,7 +76,7 @@ IntersectionResult sphere_AABB(
     {
         float dist           = sqrtf(distSquared);
         // contact normal
-        ret.contactNormal    = ac_vec3_scale(&diffVec, 1.0f / dist);
+        ret.contactNormal    = ac_vec3_scale(&diffVec, -1.0f / dist);
         ret.penetrationDepth = sphere->radius - dist;
         // contact point
         ret.contactPoint     = ac_vec3_scale(&ret.contactNormal, ret.penetrationDepth);

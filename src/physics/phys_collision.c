@@ -38,6 +38,11 @@ void resolve_collision(
     bool                s2
 )
 {
+    if ( ac_vec3_is_nan(&info->contactNormal) || ac_vec3_is_nan(&info->contactPoint) )
+    {
+        return;
+    }
+
     ac_vec3 relativeVelocity = ac_vec3_sub(v2, v1);
 
     float impulse = ac_vec3_dot(&relativeVelocity, &info->contactNormal);
@@ -45,7 +50,7 @@ void resolve_collision(
     if ( impulse <= 0.0f || (s1 || s2) )
     {
         // calculate the impulse
-        float impulseScalar  = -(1.0f + 0.7f) * impulse;  // 0.8 is the coefficient of restitution
+        float impulseScalar  = -(1.0f + 0.5f) * impulse;  // 0.8 is the coefficient of restitution
         impulseScalar       /= (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
 
         // calc velocity changes
@@ -53,7 +58,7 @@ void resolve_collision(
         velocityChange1 = ac_vec3_scale(&info->contactNormal, impulseScalar / (s1 ? 1.0f : m1));
         velocityChange2 = ac_vec3_scale(&info->contactNormal, impulseScalar / (s2 ? 1.0f : m2));
 
-        const float penetrationSlop  = 0.01f;  // max allowed overlap before depenetration
+        const float penetrationSlop  = 0.001f;  // max allowed overlap before depenetration
         float       penetrationDepth = fmaxf(info->penetrationDepth - penetrationSlop, 0.0f);
 
         // depenetration is variable on the speed. higher speed = bigger depen

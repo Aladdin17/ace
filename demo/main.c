@@ -42,13 +42,10 @@ cue_stick stick;
 
 // entities
 unsigned cueBallID;
-ac_vec3 cuePos = {0, 2, 15};
-Collider ballCollider;
-
 unsigned ballIDs[10];
-ac_vec3 ballPositions[10];
-
+Collider ballCollider;
 float ballRadius = 1; // used for all the balls so their size is uniform
+ac_vec3 default_cue_position = {0, 2, 15};
 
 // table
 
@@ -89,7 +86,8 @@ void render_scene()
     for (int i = 0; i < 10; i++)
     {
         glPushMatrix();
-        glTranslatef(ballPositions[i].x, ballPositions[i].y, ballPositions[i].z);
+        ac_vec3* pos = &physicsWorld.positions[ballIDs[i]];
+        glTranslatef(pos->x, pos->y, pos->z);
         glColor3f(0.4f, 0.1f, 0.1f);
         glutSolidSphere(1.0, 20, 20);
         glPopMatrix();
@@ -97,7 +95,8 @@ void render_scene()
 
     // draw cue ball
     glPushMatrix();
-        glTranslatef(cuePos.x, cuePos.y, cuePos.z);
+        ac_vec3* pos = &physicsWorld.positions[cueBallID];
+        glTranslatef(pos->x, pos->y, pos->z);
         glColor3f(0.8f, 0.8f, 0.8f);
         glutSolidSphere(1, 20, 20);
 
@@ -213,7 +212,7 @@ void setup_lighting(void)
 
     // Set light properties
     GLfloat light_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat light_diffuse[]  = { 1.0f, 0.4f, 0.4f, 1.0f };
+    GLfloat light_diffuse[]  = { 1.0f, 0.2f, 0.2f, 1.0f };
     GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -221,9 +220,9 @@ void setup_lighting(void)
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
     // Set spotlight parameters
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0f); // Spotlight cone angle
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.5f); // Spotlight focus
-    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0f); // Spotlight cone angle
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 4.5f); // Spotlight focus
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.8f);
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.001f);
 }
 
@@ -306,7 +305,7 @@ void opengl_init(void)
 void app_init(void)
 {
     // time
-    time.update_rate = 60; // Hz
+    time.update_rate = 120; // Hz
     time.last_frame_time = 0;
     time.current_frame_time = 0;
 
@@ -318,7 +317,8 @@ void app_init(void)
 
     // physics
     phys_init_world(&physicsWorld);
-    cueBallID = phys_add_entity(&physicsWorld, &cuePos);
+    physicsWorld.timeStep = 1.0f / time.update_rate;
+    cueBallID = phys_add_entity(&physicsWorld, &default_cue_position);
     phys_make_entity_dynamic(&physicsWorld, cueBallID);
 
     tableTopID = phys_add_entity(&physicsWorld, &tableTopPos);
@@ -341,16 +341,17 @@ void app_init(void)
 
     for (int row = 0; row < numRows; row++) {
         for (int col = 0; col <= row; col++) {
-            ballPositions[ballIndex] = (ac_vec3){
+            ac_vec3 pos = (ac_vec3){
                 .x = (col - row / 2.0f) * spacing,
                 .y = 2.f,
                 .z = startZ - row * spacing
             };
 
-            ballIDs[ballIndex] = phys_add_entity(&physicsWorld, &ballPositions[ballIndex]);
+            ballIDs[ballIndex] = phys_add_entity(&physicsWorld, &pos);
             phys_add_entity_collider(&physicsWorld, ballCollider, ballIDs[ballIndex]);
             phys_make_entity_dynamic(&physicsWorld, ballIDs[ballIndex]);
             phys_add_collision_callback(&physicsWorld, ballIDs[ballIndex], collisionCallback);
+            physicsWorld.masses[ballIndex] = 0.165f;
             ballIndex++;
         }
     }
@@ -358,7 +359,7 @@ void app_init(void)
     // stick
     stick.pitch = 0.0f;
     stick.yaw = 0.0f;
-    stick.power = 0.0f;
+    stick.power = 0.5f;
     stick.target = cueBallID;
     stick.strike = false;
 }
@@ -385,24 +386,26 @@ void app_update(int value)
         // and assuming instant impulse transfer
         // delta_v = F / m
 
-        // float force_newtons = 60.0f * stick.power; // 60N max force
-        // float mass_kg = physicsWorld.masses[stick.target];
-        // float inv_mass = 1.0f / mass_kg;
-        // float delta_v = force_newtons * inv_mass;
+        float force_newtons = 60.0f * stick.power; // 60N max force
+        float mass_kg = physicsWorld.masses[stick.target];
+        if (mass_kg > 0.0f)
+        {
+            float inv_mass = 1.0f / mass_kg;
+            float delta_velocity = force_newtons * inv_mass;
+            // float delta_v = 40.0f * stick.power; // max velocity is 5.0f
 
-        float delta_v = 40.0f * stick.power; // max velocity is 5.0f
+            // calculate direction of force based on stick orientation, yaw, and pitch
+            ac_vec3 new_velocity = (ac_vec3){
+                .x = -sinf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch)),
+                .y = sinf(ac_deg_to_rad(stick.pitch)),
+                .z = -cosf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch))
+            };
+            new_velocity = ac_vec3_normalize(&new_velocity);
+            new_velocity = ac_vec3_scale(&new_velocity, delta_velocity);
 
-        // calculate direction of force based on stick orientation, yaw, and pitch
-        ac_vec3 new_velocity = (ac_vec3){
-            .x = -sinf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch)),
-            .y = sinf(ac_deg_to_rad(stick.pitch)),
-            .z = -cosf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch))
-        };
-        new_velocity = ac_vec3_normalize(&new_velocity);
-        new_velocity = ac_vec3_scale(&new_velocity, delta_v);
-
-        // apply to cue ball
-        physicsWorld.velocities[stick.target] = new_velocity;
+            // apply to cue ball
+            physicsWorld.velocities[stick.target] = new_velocity;
+        }
 
         // reset stick power
         stick.power = 0.0f;

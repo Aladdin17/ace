@@ -17,34 +17,25 @@ extern "C" {
 
 typedef struct
 {
-    ac_vec3* positions[AC_MAX_PHYS_ENTS];  /**< \brief The positions of the entities. */
-    ac_vec3  velocities[AC_MAX_PHYS_ENTS]; /**< \brief The velocities of the
-                                              entities. */
+    ac_vec3      positions[AC_MAX_PHYS_ENTS];   ///<  The positions of the entities.
+    ac_vec3      velocities[AC_MAX_PHYS_ENTS];  ///<  The velocities of the entities.
+    float        masses[AC_MAX_PHYS_ENTS];      ///<  The masses of the entities.
+    Collider     colliders[AC_MAX_PHYS_ENTS];   ///<  The colliders of the entities.
+    unsigned     numColliders;                  ///<  The number of colliders.
+    bool         sleeping[AC_MAX_PHYS_ENTS];    ///<  Bool used to sleep entities. (Stop updates)
+    PhysCallBack callbacks[AC_MAX_PHYS_ENTS];   ///<  The on contact callbacks of the entities.
 
-    float masses[AC_MAX_PHYS_ENTS]; /**< \brief The masses of the entities. */
+    unsigned staticEntities[AC_MAX_PHYS_ENTS];   ///<  The static entities ids.
+    unsigned dynamicEntities[AC_MAX_PHYS_ENTS];  ///<  The dynamic entities ids.
+    unsigned numEnts;                            ///<  The number of entities.
+    unsigned numStaticEntities;                  ///<  The number of static entities.
+    unsigned numDynamicEntities;                 ///<  The number of dynamic entities.
 
-    PhysCallBack callbacks[AC_MAX_PHYS_ENTS]; /**< \brief The on contact callbacks
-                                                 of the entities. */
-
-    bool sleeping[AC_MAX_PHYS_ENTS]; /**< \brief Bool used to sleep entities. (Stop updates)*/
-
-    unsigned numEnts; /**< \brief The number of entities. */
-
-    Collider colliders[AC_MAX_PHYS_ENTS]; /**< \brief The colliders of the entities. */
-    unsigned numColliders;                /**< \brief The number of colliders. */
-
-    unsigned staticEntities[AC_MAX_PHYS_ENTS];  /**< \brief The static entities ids. */
-    unsigned dynamicEntities[AC_MAX_PHYS_ENTS]; /**< \brief The dynamic entities
-                                                   ids. */
-    unsigned numStaticEntities;                 /**< \brief The number of static entities. */
-    unsigned numDynamicEntities;                /**< \brief The number of dynamic entities. */
-
-    ac_vec3 gravity;            /**< \brief The gravity of the world. */
-    float   airResistance;      /**< \brief The air resistance of the world. */
-    float   velocityThreshhold; /**< \brief The velocity threshold of the world*/
-
-    float accumulator; /**< \brief The accumulator for the world. */
-    float timeStep;    /**< \brief The time step for the world. */
+    ac_vec3 gravity;             ///<  The gravity of the world.
+    float   airResistance;       ///<  The air resistance of the world.
+    float   velocityThreshhold;  ///<  The velocity threshold of the world
+    float   accumulator;         ///<  The accumulator for the world.
+    float   timeStep;            ///<  The time step for the world.
 } PhysWorld;
 
 /**
