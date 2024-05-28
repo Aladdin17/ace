@@ -122,6 +122,9 @@ void render_scene()
 
 void draw_mini_map(void)
 {
+    glPushAttrib(GL_LIGHTING);
+    glDisable(GL_LIGHTING);
+
     // set the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -145,13 +148,16 @@ void draw_mini_map(void)
     // restore the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+    glPopAttrib();
 }
 
 void draw_power_bar(float percentage)
 {
     // disable depth test for this overlay
-    glPushAttrib(GL_DEPTH_TEST);
+    glPushAttrib(GL_DEPTH_TEST | GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
 
     // window dimensions
     int width = glutGet(GLUT_WINDOW_WIDTH);
@@ -197,6 +203,30 @@ void draw_power_bar(float percentage)
     glPopAttrib();
 }
 
+void setup_lighting(void)
+{
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_NORMALIZE);
+
+    // Set light properties
+    GLfloat light_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat light_diffuse[]  = { 1.0f, 0.4f, 0.4f, 1.0f };
+    GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+    // Set spotlight parameters
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0f); // Spotlight cone angle
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.5f); // Spotlight focus
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.001f);
+}
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -205,6 +235,13 @@ void display(void)
 
     // update camera
     update_view_matrix(&camera);
+
+    // set up lighting
+    GLfloat light_position[] = { 0.0f, 30.0f, 0.0f, 1.0f };
+    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+    setup_lighting();
 
     int width = glutGet(GLUT_WINDOW_WIDTH);
     int height = glutGet(GLUT_WINDOW_HEIGHT);
