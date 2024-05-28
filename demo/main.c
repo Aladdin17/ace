@@ -55,7 +55,7 @@ float ballRadius = 1; // used for all the balls so their size is uniform
 unsigned tableTopID;
 ac_vec3 tableTopPos = {0, 0, 0};
 Collider tableTopCollider;
-ac_vec3 tableTopHalfExtents = {20, 1, 20};
+ac_vec3 tableTopHalfExtents = {10, 1, 20};
 
 // functions
 void collisionCallback(unsigned e1, unsigned e2);
@@ -126,15 +126,18 @@ void draw_mini_map(void)
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(-30, 30, -30, 30, -30, 30);
-
+    glOrtho(
+        -25, 25,
+        -15, 15,
+        0, 10
+    );
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
     gluLookAt(
-        0, 20, 0,
+        0, 10, 0,
         0, 0, 0,
-        0, 0, 1
+        -1, 0, 0
     );
     render_scene();
     glPopMatrix();
@@ -272,8 +275,8 @@ void app_init(void)
 
     // camera
     camera.radius = 100.0f;
-    camera.pitch_angle = 0.0f;
-    camera.yaw_angle = 0.0f;
+    camera.pitch_angle = 30.0f;
+    camera.yaw_angle = 90.0f;
     camera.target = (ac_vec3){0, 0, 0};
 
     // physics
