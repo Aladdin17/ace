@@ -85,7 +85,7 @@ void update_view_matrix(const orbit_camera* cam)
 
 void render_scene()
 {
-    // draw entities
+    // draw balls
     for (int i = 0; i < 10; i++)
     {
         glPushMatrix();
@@ -95,22 +95,28 @@ void render_scene()
         glPopMatrix();
     }
 
+    // draw cue ball
     glPushMatrix();
-    glTranslatef(cuePos.x, cuePos.y, cuePos.z);
-    glColor3f(0.8f, 0.8f, 0.8f);
+        glTranslatef(cuePos.x, cuePos.y, cuePos.z);
+        glColor3f(0.8f, 0.8f, 0.8f);
+        glutSolidSphere(1, 20, 20);
 
-    glutSolidSphere(1, 20, 20);
-
+        // draw cue stick, if cue ball stopped
+        glPushMatrix();
+            glColor3f(0.651f, 0.51f, 0.035f); // brown
+            glRotatef(stick.yaw, 0.0f, 1.0f, 0.0f);
+            glRotatef(stick.pitch, -1.0f, 0.0f, 0.0f);
+            glTranslatef(0.0f, 0.0f, (stick.power * 3.0f) + 1.0f);
+            glutSolidCylinder(0.2, 10.0f, 20, 20);
+        glPopMatrix();
     glPopMatrix();
 
+    // draw table
     glPushMatrix();
-
-    glTranslatef(tableTopPos.x, tableTopPos.y, tableTopPos.z);
-    glColor3f(0.1f, 0.3f, 0.1f);
-
-    glScalef(tableTopHalfExtents.x * 2.f, tableTopHalfExtents.y * 2.f, tableTopHalfExtents.z * 2.f);
-
-    glutSolidCube(1);
+        glTranslatef(tableTopPos.x, tableTopPos.y, tableTopPos.z);
+        glColor3f(0.1f, 0.3f, 0.1f);
+        glScalef(tableTopHalfExtents.x * 2.f, tableTopHalfExtents.y * 2.f, tableTopHalfExtents.z * 2.f);
+        glutSolidCube(1);
     glPopMatrix();
 }
 
@@ -270,13 +276,6 @@ void app_init(void)
     camera.yaw_angle = 0.0f;
     camera.target = (ac_vec3){0, 0, 0};
 
-    // stick
-    stick.pitch = 5.0f;
-    stick.yaw = 0.0f;
-    stick.power = 0.0f;
-    stick.target = cueBallID;
-    stick.strike = false;
-
     // physics
     phys_init_world(&physicsWorld);
     cueBallID = phys_add_entity(&physicsWorld, &cuePos);
@@ -316,7 +315,12 @@ void app_init(void)
         }
     }
 
-    physicsWorld.velocities[cueBallID].z = -20.f;
+    // stick
+    stick.pitch = 0.0f;
+    stick.yaw = 0.0f;
+    stick.power = 0.0f;
+    stick.target = cueBallID;
+    stick.strike = false;
 }
 
 void app_update(int value)
@@ -336,7 +340,29 @@ void app_update(int value)
     if (stick.strike)
     {
         // apply force to target ball
-        // todo
+        // force is between 0.0 and 1.0
+        // max strike force is set to 60N (newtons)
+        // and assuming instant impulse transfer
+        // delta_v = F / m
+
+        // float force_newtons = 60.0f * stick.power; // 60N max force
+        // float mass_kg = physicsWorld.masses[stick.target];
+        // float inv_mass = 1.0f / mass_kg;
+        // float delta_v = force_newtons * inv_mass;
+
+        float delta_v = 40.0f * stick.power; // max velocity is 5.0f
+
+        // calculate direction of force based on stick orientation, yaw, and pitch
+        ac_vec3 new_velocity = (ac_vec3){
+            .x = -sinf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch)),
+            .y = sinf(ac_deg_to_rad(stick.pitch)),
+            .z = -cosf(ac_deg_to_rad(stick.yaw)) * cosf(ac_deg_to_rad(stick.pitch))
+        };
+        new_velocity = ac_vec3_normalize(&new_velocity);
+        new_velocity = ac_vec3_scale(&new_velocity, delta_v);
+
+        // apply to cue ball
+        physicsWorld.velocities[stick.target] = new_velocity;
 
         // reset stick power
         stick.power = 0.0f;
@@ -359,6 +385,7 @@ void key_func(unsigned char key, int x, int y)
     (void) y; // nullify unused y
 
     static const float movement_step = 0.5f;
+    static const float rotation_step = 2.0f;
     switch (key)
     {
     case '=':
@@ -367,13 +394,37 @@ void key_func(unsigned char key, int x, int y)
     case '-':
         camera.radius = ac_clamp(camera.radius + movement_step, 10.0f, 100.0f);
         break;
-    case 'w':
-    case 'W':
-        stick.power = ac_clamp(stick.power + 0.01f, 0.0f, 1.0f);
-        break;
     case 's':
     case 'S':
+        stick.power = ac_clamp(stick.power + 0.01f, 0.0f, 1.0f);
+        break;
+    case 'w':
+    case 'W':
         stick.power = ac_clamp(stick.power - 0.01f, 0.0f, 1.0f);
+        break;
+    case 'a':
+    case 'A':
+        stick.yaw += rotation_step;
+        if (stick.yaw >= 360.0f)
+        {
+            stick.yaw -= 360.0f;
+        }
+        break;
+    case 'd':
+    case 'D':
+        stick.yaw -= rotation_step;
+        if (stick.yaw < 0.0f)
+        {
+            stick.yaw += 360.0f;
+        }
+        break;
+    case 'q':
+    case 'Q':
+        stick.pitch = ac_clamp(stick.pitch + rotation_step, 0.0f, 90.0f);
+        break;
+    case 'e':
+    case 'E':
+        stick.pitch = ac_clamp(stick.pitch - rotation_step, 0.0f, 90.0f);
         break;
     case ' ':
         stick.strike = true;
