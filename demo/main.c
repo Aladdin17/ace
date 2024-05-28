@@ -7,6 +7,8 @@
 #include <ace/physics/phys_world.h>
 #include <ace/geometry/shapes.h>
 #include <ace/render/camera.h>
+#include <math.h>
+#include <ace/math/math.h>
 
 typedef struct
 {
@@ -15,9 +17,18 @@ typedef struct
     int current_frame_time;
 } frame_time;
 
+typedef struct
+{
+    float radius;
+    float pitch_angle;
+    float yaw_angle;
+    ac_vec3 target;
+} orbit_camera;
+
+// camera
 PhysWorld physicsWorld;
 frame_time time;
-ac_camera* camera;
+orbit_camera camera;
 
 // entities
 unsigned cueBallID;
@@ -39,28 +50,31 @@ ac_vec3 tableTopHalfExtents = {20, 1, 20};
 // functions
 void collisionCallback(unsigned e1, unsigned e2);
 
-void display(void)
+void update_view_matrix(const orbit_camera* cam)
 {
-    // update the camera
-    ac_camera_update_orientation(camera);
-    ac_camera_update_position(camera);
+    float pitch_rad = ac_deg_to_rad(cam->pitch_angle);
+    float yaw_rad = ac_deg_to_rad(cam->yaw_angle);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    ac_vec3 up = (ac_vec3){0, 1, 0};
+    ac_vec3 radial = (ac_vec3){
+        .x = cosf(yaw_rad) * cosf(pitch_rad),
+        .y = sinf(pitch_rad),
+        .z = sinf(yaw_rad) * cosf(pitch_rad)
+    };
+    radial = ac_vec3_normalize(&radial);
+    radial = ac_vec3_scale(&radial, cam->radius);
+    ac_vec3 eye = ac_vec3_add(&cam->target, &radial);
+    ac_vec3 look_at = cam->target;
 
-
-    // setup camera
-    ac_vec3 camera_pos = ac_camera_get_position(camera);
-    ac_vec3 camera_front = ac_camera_get_front(camera);
-    ac_vec3 camera_up = ac_camera_get_up(camera);
-    ac_vec3 look_at = ac_vec3_add(&camera_pos, &camera_front);
     gluLookAt(
-        camera_pos.x, camera_pos.y, camera_pos.z,
+        eye.x, eye.y, eye.z,
         look_at.x, look_at.y, look_at.z,
-        camera_up.x, camera_up.y, camera_up.z
+        up.x, up.y, up.z
     );
+}
 
+void render_scene()
+{
     // draw entities
     for (int i = 0; i < 10; i++)
     {
@@ -87,8 +101,51 @@ void display(void)
     glScalef(tableTopHalfExtents.x * 2.f, tableTopHalfExtents.y * 2.f, tableTopHalfExtents.z * 2.f);
 
     glutSolidCube(1);
-
     glPopMatrix();
+}
+
+void draw_mini_map(void)
+{
+    // set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(-30, 30, -30, 30, -30, 30);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    gluLookAt(
+        0, 20, 0,
+        0, 0, 0,
+        0, 0, 1
+    );
+    render_scene();
+    glPopMatrix();
+
+    // restore the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    // update camera
+    update_view_matrix(&camera);
+
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+
+    glViewport(0, 0, width, height);
+    render_scene();
+
+    glClear(GL_DEPTH_BUFFER_BIT); // clear depth buffer (not color buffer)
+    glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3); // set the viewport to the bottom left corner
+    draw_mini_map();
 
     glutSwapBuffers();
 }
@@ -145,8 +202,10 @@ void app_init(void)
     time.current_frame_time = 0;
 
     // camera
-    camera = ac_camera_create();
-    ac_camera_init(camera);
+    camera.radius = 100.0f;
+    camera.pitch_angle = 0.0f;
+    camera.yaw_angle = 0.0f;
+    camera.target = (ac_vec3){0, 0, 0};
 
     // physics
     phys_init_world(&physicsWorld);
@@ -213,6 +272,57 @@ void collisionCallback(unsigned e1, unsigned e2)
   printf("entity %u collided with entity %u\n", e1, e2);
 }
 
+void key_func(unsigned int key, int x, int y)
+{
+    (void) x; // nullify unused x
+    (void) y; // nullify unused y
+
+    static const float movement_step = 0.5f;
+    switch (key)
+    {
+    case '=':
+        camera.radius = ac_clamp(camera.radius - movement_step, 10.0f, 100.0f);
+        break;
+    case '-':
+        camera.radius = ac_clamp(camera.radius + movement_step, 10.0f, 100.0f);
+        break;
+    }
+}
+
+void special_key_func(int key, int x, int y)
+{
+    (void) x; // nullify unused x
+    (void) y; // nullify unused y
+
+    static const float rotation_step = 2.0f;
+
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+        camera.pitch_angle = ac_clamp(camera.pitch_angle + rotation_step, 10.0f, 60.0f);
+        break;
+    case GLUT_KEY_DOWN:
+        camera.pitch_angle = ac_clamp(camera.pitch_angle - rotation_step, 10.0f, 60.0f);
+        break;
+    case GLUT_KEY_LEFT:
+        camera.yaw_angle += rotation_step;
+        if (camera.yaw_angle >= 0.0f)
+        {
+            camera.yaw_angle -= 360.0f;
+        }
+        break;
+    case GLUT_KEY_RIGHT:
+        camera.yaw_angle -= rotation_step;
+        if (camera.yaw_angle < 360.0f)
+        {
+            camera.yaw_angle += 360.0f;
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 int main(int argc, char **argv)
 {
     // GLUT Initialisation
@@ -226,6 +336,8 @@ int main(int argc, char **argv)
     // OpenGL Callbacks
     glutDisplayFunc(display);
     glutReshapeFunc(resize_window);
+    glutKeyboardFunc(key_func);
+    glutSpecialFunc(special_key_func);
 
     opengl_init();
     app_init();
