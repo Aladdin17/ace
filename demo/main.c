@@ -25,10 +25,20 @@ typedef struct
     ac_vec3 target;
 } orbit_camera;
 
+typedef struct
+{
+    unsigned target;
+    float pitch;
+    float yaw;
+    float power;
+    bool strike;
+} cue_stick;
+
 // camera
 PhysWorld physicsWorld;
 frame_time time;
 orbit_camera camera;
+cue_stick stick;
 
 // entities
 unsigned cueBallID;
@@ -169,7 +179,6 @@ void draw_power_bar(float percentage)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
     }
 
-
     glPopMatrix();
 
     glMatrixMode(GL_PROJECTION);
@@ -195,12 +204,11 @@ void display(void)
     render_scene();
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    draw_power_bar(0.5f);
+    draw_power_bar(stick.power);
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3); // set the viewport to the bottom left corner
     draw_mini_map();
-
 
     glutSwapBuffers();
 }
@@ -262,6 +270,13 @@ void app_init(void)
     camera.yaw_angle = 0.0f;
     camera.target = (ac_vec3){0, 0, 0};
 
+    // stick
+    stick.pitch = 5.0f;
+    stick.yaw = 0.0f;
+    stick.power = 0.0f;
+    stick.target = cueBallID;
+    stick.strike = false;
+
     // physics
     phys_init_world(&physicsWorld);
     cueBallID = phys_add_entity(&physicsWorld, &cuePos);
@@ -318,7 +333,18 @@ void app_update(int value)
     glutTimerFunc(1000 / time.update_rate, app_update, 0);
 
     // update simulation
+    if (stick.strike)
+    {
+        // apply force to target ball
+        // todo
+
+        // reset stick power
+        stick.power = 0.0f;
+        stick.strike = false;
+    }
+
     phys_update(&physicsWorld, delta_time);
+
     glutPostRedisplay();
 }
 
@@ -327,7 +353,7 @@ void collisionCallback(unsigned e1, unsigned e2)
   printf("entity %u collided with entity %u\n", e1, e2);
 }
 
-void key_func(unsigned int key, int x, int y)
+void key_func(unsigned char key, int x, int y)
 {
     (void) x; // nullify unused x
     (void) y; // nullify unused y
@@ -340,6 +366,17 @@ void key_func(unsigned int key, int x, int y)
         break;
     case '-':
         camera.radius = ac_clamp(camera.radius + movement_step, 10.0f, 100.0f);
+        break;
+    case 'w':
+    case 'W':
+        stick.power = ac_clamp(stick.power + 0.01f, 0.0f, 1.0f);
+        break;
+    case 's':
+    case 'S':
+        stick.power = ac_clamp(stick.power - 0.01f, 0.0f, 1.0f);
+        break;
+    case ' ':
+        stick.strike = true;
         break;
     }
 }
