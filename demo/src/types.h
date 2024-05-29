@@ -34,8 +34,21 @@ typedef struct pool_ball
 
 typedef struct pool_table
 {
-    unsigned physics_ids[6];           // physics id for lookup of properties
-    void (*draw)(const struct pool_table*);  // function pointer to draw the table
+    unsigned physics_ids[5];
+    float length;
+    float width;
+    float top_depth;
+    float cushion_height;
+    float cushion_width;
+    float pocket_radius;
+
+    // relative to the origin of the table
+    // which is the center of the playing surface
+    ac_vec3 pocket_centers[4];
+    ac_vec3 leg_centers[4];
+    ac_vec3 cushion_centers[4];
+
+    void (*draw)(const struct pool_table*);
 } pool_table;
 
 typedef struct pool_app

@@ -57,6 +57,7 @@ void opengl_init(void)
     );
     glMatrixMode(GL_MODELVIEW);
 }
+
 void set_projection_matrix(int width, int height)
 {
 	GLdouble fov     = 38.0;    // degrees

@@ -18,10 +18,10 @@ void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radi
     // draw stick
     glPushMatrix();
     glColor3f(0.651f, 0.51f, 0.035f); // brown
-    glRotatef(stick->yaw, 0.0f, 1.0f, 0.0f);
-    glRotatef(stick->pitch, 1.0f, 0.0f, 0.0f);
     glTranslatef(position->x, position->y, position->z); // move to cue ball
-    glTranslatef(0.0f, 0.0f, (stick->power * 3.0f) + radius); // move to end of cue ball
+    glRotatef(stick->yaw, 0.0f, 1.0f, 0.0f);
+    glRotatef(stick->pitch, -1.0f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, (stick->power) / 8.0f + radius); // move to end of cue ball
     glutSolidCylinder(0.01, 1.45f, 20, 20); // 1cm, by 1.45m
     glPopMatrix();
 }
@@ -55,15 +55,15 @@ void draw_minimap(const pool_app* app)
     glPushMatrix();
     glLoadIdentity();
     glOrtho(
-        -25, 25,
-        -15, 15,
-        0, 10
+        -2, 2,
+        -1, 1,
+        0, 2
     );
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
     gluLookAt(
-        0, 10, 0,
+        0, 2, 0,
         0, 0, 0,
         -1, 0, 0
     );

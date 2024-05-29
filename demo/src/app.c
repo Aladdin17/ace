@@ -32,20 +32,23 @@ frame_time* app_init( void )
     // external initialisations
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
-    initialise_pool_table(&app->physics_world, &app->table);
     initialise_pool_balls(&app->physics_world, app->balls, &app->num_balls);
+    initialise_pool_table(&app->physics_world, &app->table);
     initialise_cue_stick(&app->cue_stick);
     return &app->timer;
 }
 
 void app_reset( void )
 {
+    bool show_minimap = false;
     if (app)
     {
+        show_minimap = app->show_minimap;
         free(app);
     }
 
     app_init();
+    app->show_minimap = show_minimap;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -74,12 +77,14 @@ void app_update_callback( int value )
         // and assuming instant impulse transfer
         // delta_v = F / m
 
-        float force_newtons = 60.0f * app->cue_stick.power; // 60N max force
+        // float force_newtons = 60.0f * app->cue_stick.power; // 60N max force
         float mass_kg = app->physics_world.masses[app->cue_stick.target];
         if (mass_kg > 0.0f)
         {
-            float inv_mass = 1.0f / mass_kg;
-            float delta_velocity = force_newtons * inv_mass;
+            float max_velocity = 5.0f; // m/s
+
+            // float inv_mass = 1.0f / mass_kg * 1000.0f;
+            // float delta_velocity = force_newtons * inv_mass;
             // float delta_v = 40.0f * stick.power; // max velocity is 5.0f
 
             // calculate direction of force based on stick orientation, yaw, and pitch
@@ -89,7 +94,7 @@ void app_update_callback( int value )
                 .z = -cosf(ac_deg_to_rad(app->cue_stick.yaw)) * cosf(ac_deg_to_rad(app->cue_stick.pitch))
             };
             new_velocity = ac_vec3_normalize(&new_velocity);
-            new_velocity = ac_vec3_scale(&new_velocity, delta_velocity);
+            new_velocity = ac_vec3_scale(&new_velocity, max_velocity * app->cue_stick.power);
 
             // apply to cue ball
             app->physics_world.velocities[app->cue_stick.target] = new_velocity;
@@ -114,15 +119,15 @@ void app_key_callback(unsigned char key, int x, int y)
     (void) x; // nullify unused x
     (void) y; // nullify unused y
 
-    static const float movement_step = 0.5f;
+    static const float movement_step = 0.05f;
     static const float rotation_step = 2.0f;
     switch (key)
     {
     case '=':
-        app->main_camera.radius = ac_clamp(app->main_camera.radius - movement_step, 10.0f, 100.0f);
+        app->main_camera.radius = ac_clamp(app->main_camera.radius - movement_step, 1.0f, 10.0f);
         break;
     case '-':
-        app->main_camera.radius = ac_clamp(app->main_camera.radius + movement_step, 10.0f, 100.0f);
+        app->main_camera.radius = ac_clamp(app->main_camera.radius + movement_step, 1.0f, 10.0f);
         break;
     case 's':
     case 'S':
