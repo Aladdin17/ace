@@ -11,3 +11,4 @@ void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radi
 void draw_scene( const pool_app* app );
 void draw_minimap( const pool_app* app );
 void draw_powerbar( float power_ratio );
+void draw_entity_info(const pool_app* app, unsigned entity_id);

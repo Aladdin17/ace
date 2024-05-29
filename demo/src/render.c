@@ -127,3 +127,72 @@ void draw_powerbar(float power_ratio )
     // restore depth test
     glPopAttrib();
 }
+
+void draw_entity_info(const pool_app* app, unsigned entity_id)
+{
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    
+    // setup the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
+
+    // setup the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    // disable lighting and depth testing
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    PhysWorld* world = &app->physics_world;
+
+
+    if (entity_id < app->physics_world.numEnts)
+    {
+        static char * bool_string[] = {"False", "True"};
+        static char entity_buffer[256];
+        sprintf(entity_buffer, "Entity %u | Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.fm/s\n\tMass %.2f\n\tSleeping: %s",
+                entity_id,
+                "place holder",
+                world->positions[entity_id].x, world->positions[entity_id].y, world->positions[entity_id].z,
+                world->velocities[entity_id].x, world->velocities[entity_id].y, world->velocities[entity_id].z, ac_vec3_magnitude(&world->velocities[entity_id]),
+                world->masses[entity_id],
+                bool_string[world->sleeping[entity_id]]);
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glRasterPos2d(10, glutGet(GLUT_WINDOW_HEIGHT) - 30);
+
+        int line_height = 20;
+        int current_line = 0;
+
+        for (int i = 0; entity_buffer[i] != '\0'; i++)
+        {
+            if (entity_buffer[i] == '\n')
+            {
+                current_line++;
+                glRasterPos2d(10, glutGet(GLUT_WINDOW_HEIGHT) - 28 - current_line * line_height);
+            }
+            else
+            {
+                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, entity_buffer[i]);
+            }
+        }
+    }
+
+
+    // reenable lighting and depth testing
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+    // restore the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    // restore the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+}
