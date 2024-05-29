@@ -37,7 +37,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     static const ac_vec3 table_origin = {0.0f, 0.0f, 0.0f};
     static const ac_vec3 table_top_collider_origin = {0.0f, -0.025f, 0.0f};
     static const ac_vec3 table_top_half_extents = {0.455f, 0.025f, 0.91f};
-    static const ac_vec3 long_cushion_half_extents = {0.15f, 0.05f, 0.96f};
+    static const ac_vec3 long_cushion_half_extents = {0.05f, 0.05f, 0.96f};
     static const ac_vec3 short_cushion_half_extents = {0.46f, 0.05f, 0.05f};
 
     // static const ac_vec3 table_top_half_extents = {table->width / 2.0f, table->top_depth / 2.0f, table->length / 2.0f};
@@ -60,12 +60,12 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
 
     //long cushions (z-axis)
     //positive z
-    table->cushion_centers[0] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) + table->cushion_width / 2.0f,
+    table->cushion_centers[0] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) + (table->cushion_width / 2.0f),
                                           .y = table_origin.y,
                                           .z = table_origin.z};
 
     // negative z
-    table->cushion_centers[1] = (ac_vec3){.x = -(table->cushion_centers[0].x),
+    table->cushion_centers[1] = (ac_vec3){.x = table_origin.x - (table->width / 2.0f) - (table->cushion_width / 2.0f),
                                           .y = table_origin.y,
                                           .z = table_origin.z};
 

@@ -50,7 +50,7 @@ void resolve_collision(
     if ( impulse <= 0.0f || (s1 || s2) )
     {
         // calculate the impulse
-        float impulseScalar  = -(1.0f + 0.5f) * impulse;  // 0.8 is the coefficient of restitution
+        float impulseScalar  = -(1.0f + 0.8f) * impulse;  // 0.8 is the coefficient of restitution
         impulseScalar       /= (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
 
         // calc velocity changes
