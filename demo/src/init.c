@@ -9,7 +9,7 @@
 // Orbit Camera
 //--------------------------------------------------------------------------------------------------
 
-void initialise_orbit_camera( orbit_camera* camera )
+void initialise_orbit_camera(orbit_camera *camera)
 {
     camera->radius = 5.0f;
     camera->pitch_angle = 30.0f;
@@ -21,7 +21,7 @@ void initialise_orbit_camera( orbit_camera* camera )
 // Physics
 //--------------------------------------------------------------------------------------------------
 
-void initialise_physics_world( PhysWorld* world, int update_rate )
+void initialise_physics_world(PhysWorld *world, int update_rate)
 {
     phys_init_world(world);
     world->timeStep = 1.0f / update_rate;
@@ -31,38 +31,78 @@ void initialise_physics_world( PhysWorld* world, int update_rate )
 // Pool Table
 //--------------------------------------------------------------------------------------------------
 
-void initialise_pool_table( PhysWorld* world, pool_table* table )
+void initialise_pool_table(PhysWorld *world, pool_table *table)
 {
-    // we need colliders for the table-top and the cushions
-    // the dimensions are going to be hard-coded for now
-    // for a table of 2.24m x 1.12m and a height of 10cm
     // with the long side aligned with the z-axis
-    static const ac_vec3 tableTopHalfExtents = { 0.56f, 0.05f, 1.12f };
-    // static const ac_vec3 longCushionHalfExtents = { 0.05f, 0.10f, 1.12f };
-    // // added 0.1f to the width to ensure no balls get stuck in the corners
-    // static const ac_vec3 shortCushionHalfExtents = { 0.66f, 0.10f, 0.05f };
+    static const ac_vec3 table_origin = {0.0f, 0.0f, 0.0f};
+    static const ac_vec3 table_top_collider_origin = {0.0f, -0.025f, 0.0f};
+    static const ac_vec3 table_top_half_extents = {0.455f, 0.025f, 0.91f};
+    static const ac_vec3 long_cushion_half_extents = {0.15f, 0.05f, 0.96f};
+    static const ac_vec3 short_cushion_half_extents = {0.46f, 0.05f, 0.05f};
 
+    // static const ac_vec3 table_top_half_extents = {table->width / 2.0f, table->top_depth / 2.0f, table->length / 2.0f};
+    // static const ac_vec3 table_top_collider_origin = {0.0f, 0.0f, 0.0f};
+    // static const ac_vec3 long_cushion_half_extents = {table->cushion_width / 2.0f, table->cushion_height / 2.0f, table->length / 2.0f + table->cushion_width};
+    // static const ac_vec3 short_cushion_half_extents = {table->width / 2.0f + table->cushion_width, table->cushion_height / 2.0f, table->cushion_width / 2.0f};
 
-    const ac_vec3 table_top_pos = { 0.0f, -0.06f, 0.0f };
+    table->length = 1.82f;          // 0.91m half-length
+    table->width = 0.91f;           // 0.455m half-width
+    table->top_depth = 0.05f;       // 0.015m half-depth
+    table->cushion_width = 0.10f;   // 0.05m half-width
+    table->cushion_height = 0.10f;  // 0.05m half-height
 
+    
     // add the table top
-    unsigned table_top_id = phys_add_entity(world, &table_top_pos);
+    unsigned table_top_id = phys_add_entity(world, &table_top_collider_origin);
     phys_make_entity_static(world, table_top_id);
-    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &tableTopHalfExtents}, table_top_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents}, table_top_id);
+    table->physics_ids[0] = table_top_id;
 
-    // add the cushions
-    // unsigned long_cushion_id = phys_add_entity(world, &table_top_pos);
-    // phys_make_entity_static(world, long_cushion_id);
+    //long cushions (z-axis)
+    //positive z
+    table->cushion_centers[0] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) + table->cushion_width / 2.0f,
+                                          .y = table_origin.y,
+                                          .z = table_origin.z};
+
+    // negative z
+    table->cushion_centers[1] = (ac_vec3){.x = -(table->cushion_centers[0].x),
+                                          .y = table_origin.y,
+                                          .z = table_origin.z};
+
+    // short cushions (x-axis)
+    // positive x
+    table->cushion_centers[2] = (ac_vec3){.x = table_origin.x,
+                                          .y = table_origin.y,
+                                          .z = table_origin.z + (table->length / 2.0f) + table->cushion_width / 2.0f};
+
+    // negative x
+    table->cushion_centers[3] = (ac_vec3){.x = table_origin.x,
+                                          .y = table_origin.y,
+                                          .z = table_origin.z - (table->length / 2.0f) - table->cushion_width / 2.0f};
 
 
 
-    // unsigned tableID = phys_add_entity(world, &(ac_vec3){ 0.0f, 0.0f, 0.0f});
-    // phys_make_entity_static(world, tableID);
+    unsigned long_cushion_pos_id = phys_add_entity(world, &table->cushion_centers[0]);
+    phys_make_entity_static(world, long_cushion_pos_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &long_cushion_half_extents}, long_cushion_pos_id);
+    table->physics_ids[1] = long_cushion_pos_id;
 
-//     tableTopCollider.type = AABB_C;
-//     tableTopCollider.data = &tableTopHalfExtents;
+    unsigned long_cushion_neg_id = phys_add_entity(world, &table->cushion_centers[1]);
+    phys_make_entity_static(world, long_cushion_neg_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &long_cushion_half_extents}, long_cushion_neg_id);
+    table->physics_ids[2] = long_cushion_neg_id;
 
-//     phys_add_entity_collider(&physicsWorld, tableTopCollider, tableTopID);
+    unsigned short_cushion_pos_id = phys_add_entity(world, &table->cushion_centers[2]);
+    phys_make_entity_static(world, short_cushion_pos_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &short_cushion_half_extents}, short_cushion_pos_id);
+    table->physics_ids[3] = short_cushion_pos_id;
+
+    unsigned short_cushion_neg_id = phys_add_entity(world, &table->cushion_centers[3]);
+    phys_make_entity_static(world, short_cushion_neg_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &short_cushion_half_extents}, short_cushion_neg_id);
+    table->physics_ids[4] = short_cushion_neg_id;
+
+    table->draw = draw_pool_table;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -77,36 +117,35 @@ typedef struct
 } ball_info;
 
 static ball_info ball_setup[] = {
-    { {1.0f, 1.0f, 1.0f}, "Cue", 0.170f },
-    { {0.5f, 0.0f, 0.0f},   "1", 0.170f },
-    { {0.0f, 1.0f, 0.0f},   "2", 0.110f },
-    { {1.0f, 1.0f, 0.0f},   "3", 0.130f },
-    { {1.0f, 0.0f, 1.0f},   "4", 0.150f },
-    { {1.0f, 0.0f, 0.0f},   "5", 0.100f },
-    { {0.0f, 0.0f, 1.0f},   "6", 0.120f },
-    { {0.0f, 1.0f, 1.0f},   "7", 0.140f },
-    { {0.0f, 0.5f, 0.0f},   "8", 0.180f },
-    { {0.0f, 0.0f, 0.5f},   "9", 0.190f },
-    { {0.5f, 0.5f, 0.5f},  "10", 0.160f }
-};
+    {{1.0f, 1.0f, 1.0f}, "Cue", 0.170f},
+    {{0.5f, 0.0f, 0.0f}, "1", 0.170f},
+    {{0.0f, 1.0f, 0.0f}, "2", 0.110f},
+    {{1.0f, 1.0f, 0.0f}, "3", 0.130f},
+    {{1.0f, 0.0f, 1.0f}, "4", 0.150f},
+    {{1.0f, 0.0f, 0.0f}, "5", 0.100f},
+    {{0.0f, 0.0f, 1.0f}, "6", 0.120f},
+    {{0.0f, 1.0f, 1.0f}, "7", 0.140f},
+    {{0.0f, 0.5f, 0.0f}, "8", 0.180f},
+    {{0.0f, 0.0f, 0.5f}, "9", 0.190f},
+    {{0.5f, 0.5f, 0.5f}, "10", 0.160f}};
 
-void initialise_pool_balls( PhysWorld* world, pool_ball* balls, int* num_balls )
+void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int *num_balls)
 {
     // currently all balls have the same radius but can differ in mass
     static const float radius = 0.0305f;
-    static Sphere sphere_collider = { .radius = 0.0305f };
-    static const Collider collider = { .type = SPHERE_C, .data = &sphere_collider };
+    static Sphere sphere_collider = {.radius = 0.0305f};
+    static const Collider collider = {.type = SPHERE_C, .data = &sphere_collider};
 
     *num_balls = 11;
 
     // cue ball
-    unsigned ball_id = phys_add_entity(world, &(ac_vec3){ 0.0f, 0.0f, 0.85f });
+    unsigned ball_id = phys_add_entity(world, &(ac_vec3){0.0f, 0.2f, 0.55f});
     phys_add_entity_collider(world, collider, ball_id);
     phys_make_entity_dynamic(world, ball_id);
     // phys_add_collision_callback(world, ballID, collisionCallback);
     world->masses[ball_id] = ball_setup[0].mass;
 
-    ball_info* info = &ball_setup[0];
+    ball_info *info = &ball_setup[0];
     balls[0].physics_id = ball_id;
     balls[0].color = info->color;
     balls[0].radius = sphere_collider.radius;
@@ -116,16 +155,17 @@ void initialise_pool_balls( PhysWorld* world, pool_ball* balls, int* num_balls )
     // Set up pool ball formation
     int num_rows = 4;
     float spacing = radius * 1.8f;
-    float start_z = 0.0f;
+    float start_z = -0.455f;
     int ball_index = 1;
 
-    for (int row = 0; row < num_rows; ++row) {
-        for (int col = 0; col <= row; ++col) {
+    for (int row = 0; row < num_rows; ++row)
+    {
+        for (int col = 0; col <= row; ++col)
+        {
             ac_vec3 pos = (ac_vec3){
                 .x = (col - row / 2.0f) * spacing,
-                .y = 0.0f,
-                .z = start_z - row * spacing
-            };
+                .y = 0.2f,
+                .z = start_z - row * spacing};
 
             ball_id = phys_add_entity(world, &pos);
             phys_add_entity_collider(world, collider, ball_id);
@@ -145,12 +185,12 @@ void initialise_pool_balls( PhysWorld* world, pool_ball* balls, int* num_balls )
     }
 }
 
-void initialise_cue_stick( cue_stick* stick )
+void initialise_cue_stick(cue_stick *stick)
 {
     stick->pitch = 0.0f;
     stick->yaw = 0.0f;
     stick->power = 0.0f;
-    stick->target = 0;  // cue ball
+    stick->target = 0; // cue ball
     stick->strike = false;
     stick->visible = true;
     stick->draw = draw_cue_stick;

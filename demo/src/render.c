@@ -28,7 +28,7 @@ void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radi
 
 void draw_scene( const pool_app* app )
 {
-    // app->table.draw(&app->table);
+    app->table.draw(&app->table);
 
     for (int i = 0; i < app->num_balls; i++)
     {
@@ -195,4 +195,37 @@ void draw_entity_info(const pool_app* app, unsigned entity_id)
     // restore the modelview matrix
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
+}
+
+void draw_pool_table( const pool_table* table )
+{
+    // draw table surface
+    glPushMatrix();
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glTranslatef(0.0f, -table->top_depth / 2.0f, 0.0f);
+        glScalef(table->width, table->top_depth, table->length);
+        glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // draw long cushions
+    for (int i = 0; i <= 1; i++)
+    {
+        glPushMatrix();
+            glColor3f(0.65f, 0.33f, 0.16f);
+            glTranslatef(table->cushion_centers[i].x, table->cushion_centers[i].y, table->cushion_centers[i].z);
+            glScalef(table->cushion_width, table->cushion_height, table->length + (2 * table->cushion_width));
+            glutSolidCube(1.0f);
+        glPopMatrix();
+    }
+
+    // draw short cushions
+    for (int i = 2; i <= 3; ++i)
+    {
+        glPushMatrix();
+            glColor3f(0.65f, 0.33f, 0.16f);
+            glTranslatef(table->cushion_centers[i].x, table->cushion_centers[i].y, table->cushion_centers[i].z);
+            glScalef(table->width + (2 * table->cushion_width), table->cushion_height, table->cushion_width);
+            glutSolidCube(1.0f);
+        glPopMatrix();
+    }
 }
