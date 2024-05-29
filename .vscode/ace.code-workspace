@@ -55,7 +55,8 @@
 			"xutility": "c",
 			"stdbool.h": "c",
 			"intersection.h": "c",
-			"xiosbase": "c"
+			"xiosbase": "c",
+			"phys_world.h": "c"
 		}
 	}
 }

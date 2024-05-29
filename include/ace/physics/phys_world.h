@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-typedef struct
+typedef struct PhysWorld
 {
     ac_vec3      positions[AC_MAX_PHYS_ENTS];   ///<  The positions of the entities.
     ac_vec3      velocities[AC_MAX_PHYS_ENTS];  ///<  The velocities of the entities.
