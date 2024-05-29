@@ -66,7 +66,7 @@ IntersectionResult sphere_AABB(
         closestPoint.data[i] = fmaxf(Bmin.data[i], fminf(p1->data[i], Bmax.data[i]));
     }
 
-    ac_vec3 diffVec = ac_vec3_sub(p1, &closestPoint);
+    ac_vec3 diffVec = ac_vec3_sub(&closestPoint, p1);
 
     float distSquared         = ac_vec3_dot(&diffVec, &diffVec);
     float sphereRadiusSquared = sphere->radius * sphere->radius;
@@ -76,7 +76,7 @@ IntersectionResult sphere_AABB(
     {
         float dist           = sqrtf(distSquared);
         // contact normal
-        ret.contactNormal    = ac_vec3_scale(&diffVec, -1.0f / dist);
+        ret.contactNormal    = ac_vec3_scale(&diffVec, 1.0f / dist);
         ret.penetrationDepth = sphere->radius - dist;
         // contact point
         ret.contactPoint     = ac_vec3_scale(&ret.contactNormal, ret.penetrationDepth);

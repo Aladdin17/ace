@@ -228,4 +228,19 @@ void draw_pool_table( const pool_table* table )
             glutSolidCube(1.0f);
         glPopMatrix();
     }
+
+    // draw pockets
+
+    GLUquadric *quad = gluNewQuadric(); 
+    for(int i = 0; i < 4; ++i)
+    {
+        glPushMatrix();
+            glColor3f(0,0,0);
+            glTranslatef(table->pocket_centers[i].x, table->pocket_centers[i].y, table->pocket_centers[i].z);
+            glScalef(1, 1.f, 1);
+            gluSphere(quad, table->pocket_radius, 20, 20);
+        glPopMatrix();
+    }
+    gluDeleteQuadric(quad);
+
 }

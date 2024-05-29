@@ -50,6 +50,8 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     table->top_depth = 0.05f;       // 0.015m half-depth
     table->cushion_width = 0.10f;   // 0.05m half-width
     table->cushion_height = 0.10f;  // 0.05m half-height
+    
+    table->pocket_radius = table->width * 0.055; // Pocket radius is approximately 5.5% of the table width
 
     
     // add the table top
@@ -101,6 +103,30 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     phys_make_entity_static(world, short_cushion_neg_id);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &short_cushion_half_extents}, short_cushion_neg_id);
     table->physics_ids[4] = short_cushion_neg_id;
+
+
+    // add pockets
+
+    float pocket_height = table_origin.y + table->top_depth + 1;
+    //-x, -z
+    table->pocket_centers[0] = (ac_vec3){.x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
+                                          .y = pocket_height,
+                                          .z = table_origin.z - (table->length / 2.0f) + (table->pocket_radius)};
+
+    //-x, z
+    table->pocket_centers[1] = (ac_vec3){.x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
+                                          .y = pocket_height,
+                                          .z = table_origin.z + (table->length / 2.0f) - (table->pocket_radius)};
+
+    //x, z
+    table->pocket_centers[2] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
+                                          .y = pocket_height,
+                                          .z = table_origin.z + (table->length / 2.0f) - (table->pocket_radius)};
+                    
+    //x, -z
+    table->pocket_centers[3] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
+                                          .y = pocket_height,
+                                          .z = table_origin.z - (table->length / 2.0f) + (table->pocket_radius)};
 
     table->draw = draw_pool_table;
 }
