@@ -8,6 +8,7 @@ project ( ace_demo )
 
 add_executable(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/main.c
+	${CMAKE_CURRENT_SOURCE_DIR}/app.c
     # ${DEMO_SOURCES}
 )
 
