@@ -128,7 +128,7 @@ void draw_powerbar(float power_ratio )
     glPopAttrib();
 }
 
-void draw_entity_info(const pool_app* app, unsigned entity_id)
+void draw_entity_info(const pool_app* app, unsigned ball_id)
 {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
@@ -150,6 +150,7 @@ void draw_entity_info(const pool_app* app, unsigned entity_id)
 
     PhysWorld* world = &app->physics_world;
 
+    unsigned entity_id = app->balls->physics_id; //cheap and effective!
 
     if (entity_id < app->physics_world.numEnts)
     {
@@ -157,7 +158,7 @@ void draw_entity_info(const pool_app* app, unsigned entity_id)
         static char entity_buffer[256];
         sprintf(entity_buffer, "Entity %u | Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.fm/s\n\tMass %.2f\n\tSleeping: %s",
                 entity_id,
-                "place holder",
+                app->balls[app->target_entity_info].tag,
                 world->positions[entity_id].x, world->positions[entity_id].y, world->positions[entity_id].z,
                 world->velocities[entity_id].x, world->velocities[entity_id].y, world->velocities[entity_id].z, ac_vec3_magnitude(&world->velocities[entity_id]),
                 world->masses[entity_id],
@@ -201,7 +202,7 @@ void draw_pool_table( const pool_table* table )
 {
     // draw table surface
     glPushMatrix();
-        glColor3f(0.0f, 1.0f, 0.0f);
+        glColor3f(0.1f, 0.5f, 0.1f);
         glTranslatef(0.0f, -table->top_depth / 2.0f, 0.0f);
         glScalef(table->width, table->top_depth, table->length);
         glutSolidCube(1.0f);
@@ -237,7 +238,7 @@ void draw_pool_table( const pool_table* table )
         glPushMatrix();
             glColor3f(0,0,0);
             glTranslatef(table->pocket_centers[i].x, table->pocket_centers[i].y, table->pocket_centers[i].z);
-            glScalef(1, 0, 1);
+            glScalef(1.2f, 0, 1.2f);
             gluSphere(quad, table->pocket_radius, 20, 20);
         glPopMatrix();
     }

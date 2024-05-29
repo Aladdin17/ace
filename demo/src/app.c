@@ -29,6 +29,10 @@ frame_time* app_init( void )
     // show minimap
     app->show_minimap = false;
 
+    //show info
+    app->show_entity_info = false;
+    app->target_entity_info = 1;
+
     // external initialisations
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
@@ -206,9 +210,21 @@ void app_special_key_callback(int key, int x, int y)
             app->main_camera.yaw_angle += 360.0f;
         }
         break;
+    case GLUT_KEY_F12:
+        app->show_entity_info = !app->show_entity_info;
+        break;
     default:
         break;
     }
+
+    
+    if(key >= GLUT_KEY_F1 && key <= GLUT_KEY_F11)
+    {
+        app->show_entity_info;
+        app->target_entity_info = key - 1;
+        return;
+    }
+    
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -286,6 +302,11 @@ void app_render_callback( void )
     glViewport(0, 0, width, height);
     draw_scene(app);
 
+    if(app->show_entity_info)
+    {
+        draw_entity_info(app, app->target_entity_info);
+    }
+
     // draw the powerbar overlay
     draw_powerbar(app->cue_stick.power);
 
@@ -297,6 +318,8 @@ void app_render_callback( void )
         glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
         draw_minimap(app);
     }
+
+
 
     glutSwapBuffers();
 }

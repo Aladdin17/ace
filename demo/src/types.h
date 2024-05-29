@@ -63,4 +63,6 @@ typedef struct pool_app
     pool_table table;          // pool table
     PhysWorld physics_world;   // physics world
     bool show_minimap;         // show the minimap
+    bool show_entity_info;     // show info panel
+    int target_entity_info;    // entity to show
 } pool_app;
