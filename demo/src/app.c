@@ -69,6 +69,12 @@ void app_update_callback( int value )
     float delta_time = (app->timer.current_frame_time - app->timer.last_frame_time) * msec_to_sec;
     app->timer.last_frame_time = app->timer.current_frame_time;
 
+    // show cue stick when cue ball not moving
+    if(ac_vec3_magnitude(&app->physics_world.velocities[app->balls[0].physics_id]) < 0.07)
+        app->cue_stick.visible = true;
+    else // not pretty but it gets the job done
+        app->cue_stick.visible = false;
+
     // re-register timer callback
     glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
 
