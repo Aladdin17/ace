@@ -237,10 +237,23 @@ void draw_pool_table( const pool_table* table )
         glPushMatrix();
             glColor3f(0,0,0);
             glTranslatef(table->pocket_centers[i].x, table->pocket_centers[i].y, table->pocket_centers[i].z);
-            glScalef(1, 1.f, 1);
+            glScalef(1, 0, 1);
             gluSphere(quad, table->pocket_radius, 20, 20);
         glPopMatrix();
     }
     gluDeleteQuadric(quad);
+
+
+    // draw legs
+    for(int i = 0; i < 4; ++i)
+    {
+        glPushMatrix();
+            glColor3f(0.55f, 0.23f, 0.06f);
+            glTranslatef(table->leg_centers[i].x, table->leg_centers[i].y, table->leg_centers[i].z);
+            glScalef(table->cushion_width, table->leg_length, table->cushion_width);
+            glutSolidCube(1.0f);
+            glPopMatrix();
+        glPopMatrix();
+    }
 
 }

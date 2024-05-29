@@ -50,7 +50,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     table->top_depth = 0.05f;       // 0.015m half-depth
     table->cushion_width = 0.10f;   // 0.05m half-width
     table->cushion_height = 0.10f;  // 0.05m half-height
-    
+
     table->pocket_radius = table->width * 0.055; // Pocket radius is approximately 5.5% of the table width
 
     
@@ -107,26 +107,52 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
 
     // add pockets
 
-    float pocket_height = table_origin.y + table->top_depth + 1;
+    float pocket_height = table_origin.y + 0.001f;
     //-x, -z
-    table->pocket_centers[0] = (ac_vec3){.x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
+    table->pocket_centers[0] = (ac_vec3){ .x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
                                           .y = pocket_height,
                                           .z = table_origin.z - (table->length / 2.0f) + (table->pocket_radius)};
 
     //-x, z
-    table->pocket_centers[1] = (ac_vec3){.x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
+    table->pocket_centers[1] = (ac_vec3){ .x = table_origin.x - (table->width / 2.0f) + (table->pocket_radius),
                                           .y = pocket_height,
                                           .z = table_origin.z + (table->length / 2.0f) - (table->pocket_radius)};
 
     //x, z
-    table->pocket_centers[2] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
+    table->pocket_centers[2] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
                                           .y = pocket_height,
                                           .z = table_origin.z + (table->length / 2.0f) - (table->pocket_radius)};
                     
     //x, -z
-    table->pocket_centers[3] = (ac_vec3){.x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
+    table->pocket_centers[3] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
                                           .y = pocket_height,
                                           .z = table_origin.z - (table->length / 2.0f) + (table->pocket_radius)};
+
+
+
+    table->leg_length = short_cushion_half_extents.x;
+    float leg_height = table_origin.y - table->leg_length / 2.0f;
+
+    //-x, -z
+    table->leg_centers[0] = (ac_vec3){ .x = table_origin.x - (table->width / 2.0f),
+                                    .y = leg_height,
+                                    .z = table_origin.z - (table->length / 2.0f)};
+
+    //-x, z
+    table->leg_centers[1] = (ac_vec3){ .x = table_origin.x - (table->width / 2.0f),
+                                    .y = leg_height,
+                                    .z = table_origin.z + (table->length / 2.0f)};
+
+    //x, z
+    table->leg_centers[2] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f),
+                                    .y = leg_height,
+                                    .z = table_origin.z + (table->length / 2.0f)};
+
+    //x, -z
+    table->leg_centers[3] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f),
+                                    .y = leg_height,
+                                    .z = table_origin.z - (table->length / 2.0f)};
+
 
     table->draw = draw_pool_table;
 }
