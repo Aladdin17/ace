@@ -125,7 +125,7 @@ if( AC_USE_CLANG_TOOLS )
 			message( STATUS "Clang-format - Run on build" )
 			# need to add a dependency to the project to run clang-format
 			add_dependencies( ${PROJECT_NAME} clang-format )
-			add_dependencies( ace-demo clang-format )
+			add_dependencies( ace_demo clang-format )
 		endif()
 	endif()
 
@@ -141,7 +141,7 @@ if( AC_USE_CLANG_TOOLS )
 				COMMAND ${CMAKE_COMMAND} --build . --target clang-tidy
 			)
 			add_custom_command(
-				TARGET ace-demo
+				TARGET ace_demo
 				POST_BUILD
 				COMMAND ${CMAKE_COMMAND} --build . --target clang-tidy
 			)
