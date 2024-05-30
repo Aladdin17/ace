@@ -17,6 +17,30 @@
 
 pool_app* app;
 
+void ball_collision_callback(unsigned body1, unsigned body2)
+{
+    unsigned* pockets = app->table.pocket_physics_ids;
+    int num_pockets = 4;
+    for (int i = 0; i < num_pockets; ++i)
+    {
+        if (body2 == pockets[i])
+        {
+            if (body1 == 0) // cue-ball
+            {
+                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
+                app->physics_world.positions[body1] = (ac_vec3){0.0f, 0.2f, 0.55f};
+            }
+            else
+            {
+                // sleep body 1 and move to origin
+                app->physics_world.velocities[body1] = (ac_vec3){ 0.0f, -1.0f, 0.0f };
+                app->physics_world.sleeping[body1] = true;
+                app->physics_world.positions[body1] = ac_vec3_zero();
+            }
+        }
+    }
+}
+
 frame_time* app_init( void )
 {
     app = malloc(sizeof(pool_app));
@@ -37,6 +61,10 @@ frame_time* app_init( void )
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
     initialise_pool_balls(&app->physics_world, app->balls, &app->num_balls);
+    for (int i = 0; i < app->num_balls; i++)
+    {
+        phys_add_collision_callback(&app->physics_world, app->balls[i].physics_id, ball_collision_callback);
+    }
     initialise_pool_table(&app->physics_world, &app->table);
     initialise_cue_stick(&app->cue_stick);
     return &app->timer;
@@ -74,6 +102,11 @@ void app_update_callback( int value )
     bool moving = false;
     for (int i = 0; i < app->num_balls; i++)
     {
+        if (app->physics_world.sleeping[app->balls[i].physics_id])
+        {
+            continue;
+        }
+
         if (ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >= 0.07f)
         {
             moving = true;
@@ -83,7 +116,7 @@ void app_update_callback( int value )
     app->cue_stick.visible = !moving;
 
     // detect if a ball has dropped into a 'pocket'
-    const float y_threshold = -0.5f;
+    const float y_threshold = -2.0f;
 
     for (int i = 0; i < app->num_balls; i++)
     {
@@ -102,7 +135,7 @@ void app_update_callback( int value )
                 // sleep the ball and move to origin
                 app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
                 app->physics_world.sleeping[app->balls[i].physics_id] = true;
-                *pos = ac_vec3_zero();
+                *pos = (ac_vec3){ 0.0f, -1.0f, 0.0f };
             }
         }
     }

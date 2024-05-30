@@ -229,7 +229,6 @@ void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int *num_balls)
             ball_id = phys_add_entity(world, &pos);
             phys_add_entity_collider(world, collider, ball_id);
             phys_make_entity_dynamic(world, ball_id);
-            // phys_add_collision_callback(world, ballIDs[ballIndex], collisionCallback);
             world->masses[ball_id] = ball_setup[ball_index].mass;
 
             // add to app structure

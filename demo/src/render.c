@@ -154,18 +154,14 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     PhysWorld* world = &app->physics_world;
 
     unsigned entity_id = app->balls->physics_id; //cheap and effective!
-
     if (entity_id < app->physics_world.numEnts)
     {
-        static char * bool_string[] = {"False", "True"};
         static char entity_buffer[256];
-        sprintf(entity_buffer, "Entity %u | Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.3fm/s\n\tMass %.2f\n\tSleeping: %s",
-                entity_id,
+        sprintf(entity_buffer, "Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.3fm/s\n\tMass %.2f",
                 app->balls[app->target_entity_info].tag,
                 world->positions[entity_id].x, world->positions[entity_id].y, world->positions[entity_id].z,
                 world->velocities[entity_id].x, world->velocities[entity_id].y, world->velocities[entity_id].z, ac_vec3_magnitude(&world->velocities[entity_id]),
-                world->masses[entity_id],
-                bool_string[world->sleeping[entity_id]]);
+                world->masses[entity_id]);
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glRasterPos2d(10, glutGet(GLUT_WINDOW_HEIGHT) - 30);
