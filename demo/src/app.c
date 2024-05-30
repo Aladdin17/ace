@@ -64,10 +64,11 @@ void app_update_callback( int value )
     (void) value; // nullify unused value
     static const float msec_to_sec = 1.0f / 1000.0f;
 
-    // get delta time
+    // get delta time and reregister callback
     app->timer.current_frame_time = glutGet(GLUT_ELAPSED_TIME);
     float delta_time = (app->timer.current_frame_time - app->timer.last_frame_time) * msec_to_sec;
     app->timer.last_frame_time = app->timer.current_frame_time;
+    glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
 
     // show cue stick when cue ball not moving
     bool moving = false;
@@ -81,8 +82,30 @@ void app_update_callback( int value )
     }
     app->cue_stick.visible = !moving;
 
-    // re-register timer callback
-    glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
+    // detect if a ball has dropped into a 'pocket'
+    const float y_threshold = -0.5f;
+
+    for (int i = 0; i < app->num_balls; i++)
+    {
+        ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
+        if (pos->y < y_threshold)
+        {
+            if (i == 0)
+            {
+                // cue ball dropped, reset to origin
+                *pos = (ac_vec3){0.0f, 0.2f, 0.55f};
+                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
+            }
+            else
+            {
+                // target ball dropped
+                // sleep the ball and move to origin
+                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
+                app->physics_world.sleeping[app->balls[i].physics_id] = true;
+                *pos = ac_vec3_zero();
+            }
+        }
+    }
 
     // update simulation
     if (app->cue_stick.strike)

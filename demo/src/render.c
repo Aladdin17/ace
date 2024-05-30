@@ -30,6 +30,11 @@ void draw_scene( const pool_app* app, bool orthographic)
 {
     for (int i = 0; i < app->num_balls; i++)
     {
+        // skip sleeping balls
+        if (app->physics_world.sleeping[app->balls[i].physics_id])
+        {
+            continue;
+        }
         const ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
         const pool_ball* ball = &app->balls[i];
         app->balls[i].draw(ball, pos);
