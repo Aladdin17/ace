@@ -50,7 +50,7 @@ typedef struct pool_table
     ac_vec3 leg_centers[4];
     ac_vec3 cushion_centers[4];
 
-    void (*draw)(const struct pool_table*);
+    void (*draw)(const struct pool_table*, bool orthograhic);
 } pool_table;
 
 typedef struct pool_app

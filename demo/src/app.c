@@ -306,7 +306,7 @@ void app_render_callback( void )
 
     // draw the scene in the main viewport
     glViewport(0, 0, width, height);
-    draw_scene(app);
+    draw_scene(app, false);
 
     if(app->show_entity_info)
     {

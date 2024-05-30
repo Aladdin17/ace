@@ -26,7 +26,7 @@ void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radi
     glPopMatrix();
 }
 
-void draw_scene( const pool_app* app )
+void draw_scene( const pool_app* app, bool orthographic)
 {
     for (int i = 0; i < app->num_balls; i++)
     {
@@ -42,7 +42,7 @@ void draw_scene( const pool_app* app )
         app->cue_stick.draw(&app->cue_stick, target_pos, target_radius);
     }
 
-    app->table.draw(&app->table);
+    app->table.draw(&app->table, orthographic);
 }
 
 void draw_minimap(const pool_app* app)
@@ -69,7 +69,7 @@ void draw_minimap(const pool_app* app)
         0, 0, 0,
         -1, 0, 0
     );
-    draw_scene(app);
+    draw_scene(app, true);
     glPopMatrix();
 
     glMatrixMode(GL_PROJECTION);
@@ -193,7 +193,7 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     glPopAttrib();
 }
 
-void draw_pool_table( const pool_table* table )
+void draw_pool_table( const pool_table* table, bool orthographic )
 {
     // draw table surface
     glPushMatrix();
@@ -240,15 +240,17 @@ void draw_pool_table( const pool_table* table )
 
 
     // draw legs
-    for(int i = 0; i < 4; ++i)
+    if (!orthographic)
     {
-        glPushMatrix();
-            glColor3f(0.55f, 0.23f, 0.06f);
-            glTranslatef(table->leg_centers[i].x, table->leg_centers[i].y, table->leg_centers[i].z);
-            glScalef(table->cushion_width, table->leg_length, table->cushion_width);
-            glutSolidCube(1.0f);
+        for(int i = 0; i < 4; ++i)
+        {
+            glPushMatrix();
+                glColor3f(0.55f, 0.23f, 0.06f);
+                glTranslatef(table->leg_centers[i].x, table->leg_centers[i].y, table->leg_centers[i].z);
+                glScalef(table->cushion_width, table->leg_length, table->cushion_width);
+                glutSolidCube(1.0f);
+                glPopMatrix();
             glPopMatrix();
-        glPopMatrix();
+        }
     }
-
 }
