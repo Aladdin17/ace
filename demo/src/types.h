@@ -34,7 +34,7 @@ typedef struct pool_ball
 
 typedef struct pool_table
 {
-    unsigned physics_ids[7];
+    unsigned physics_ids[5];
     float length;
     float width;
     float top_depth;

@@ -36,16 +36,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     // with the long side aligned with the z-axis
     static const ac_vec3 table_origin = {0.0f, 0.0f, 0.0f};
     static const ac_vec3 table_top_collider_origin = {0.0f, -0.025f, 0.0f};
-    //static const ac_vec3 table_top_half_extents = {0.455f, 0.025f, 0.91f}; //x
-    //static ac_vec3 table_top_half_extents1 = {0.38f, 0.025f, 1.01f}; // z
-    //static ac_vec3 table_top_half_extents2 = {0.555f, 0.025f, 0.80f}; // x
-
-
-    // Table top colliders
-    static ac_vec3 table_top_half_extents1 = {0.34f, 0.025f, 0.1001f}; // z, half of original length
-    static ac_vec3 table_top_half_extents2 = {0.455f, 0.025f, 0.80f}; // x
-    static ac_vec3 table_top_half_extents3 = {0.34f, 0.025f, 0.1001f}; // z, half of original length
-
+    static const ac_vec3 table_top_half_extents = {0.455f, 0.025f, 0.91f};
     static const ac_vec3 long_cushion_half_extents = {0.05f, 0.05f, 0.96f};
     static const ac_vec3 short_cushion_half_extents = {0.46f, 0.05f, 0.05f};
 
@@ -60,23 +51,14 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     table->cushion_width = 0.10f;   // 0.05m half-width
     table->cushion_height = 0.10f;  // 0.05m half-height
 
-    table->pocket_radius = 0.05005f; // Pocket radius is approximately 5.5% of the table width
+    table->pocket_radius = table->width * 0.055; // Pocket radius is approximately 5.5% of the table width
 
-    // Add table top colliders -z
-    unsigned table_top_id1 = phys_add_entity(world, &(ac_vec3){0.0f, table_top_collider_origin.y, -0.85995f}); // shifted by half its length
-    phys_make_entity_static(world, table_top_id1);
-    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents1}, table_top_id1);
-    table->physics_ids[0] = table_top_id1;
 
-    unsigned table_top_id2 = phys_add_entity(world, &table_origin);
-    phys_make_entity_static(world, table_top_id2);
-    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents2}, table_top_id2);
-    table->physics_ids[1] = table_top_id2;
-
-    unsigned table_top_id3 = phys_add_entity(world, &(ac_vec3){0.0f, table_top_collider_origin.y, 0.85995f}); // shifted by half its length
-    phys_make_entity_static(world, table_top_id3);
-    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents3}, table_top_id3);
-    table->physics_ids[2] = table_top_id3;
+    // add the table top
+    unsigned table_top_id = phys_add_entity(world, &table_top_collider_origin);
+    phys_make_entity_static(world, table_top_id);
+    phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents}, table_top_id);
+    table->physics_ids[0] = table_top_id;
 
     //long cushions (z-axis)
     //positive z
@@ -105,22 +87,22 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     unsigned long_cushion_pos_id = phys_add_entity(world, &table->cushion_centers[0]);
     phys_make_entity_static(world, long_cushion_pos_id);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &long_cushion_half_extents}, long_cushion_pos_id);
-    table->physics_ids[3] = long_cushion_pos_id;
+    table->physics_ids[1] = long_cushion_pos_id;
 
     unsigned long_cushion_neg_id = phys_add_entity(world, &table->cushion_centers[1]);
     phys_make_entity_static(world, long_cushion_neg_id);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &long_cushion_half_extents}, long_cushion_neg_id);
-    table->physics_ids[4] = long_cushion_neg_id;
+    table->physics_ids[2] = long_cushion_neg_id;
 
     unsigned short_cushion_pos_id = phys_add_entity(world, &table->cushion_centers[2]);
     phys_make_entity_static(world, short_cushion_pos_id);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &short_cushion_half_extents}, short_cushion_pos_id);
-    table->physics_ids[5] = short_cushion_pos_id;
+    table->physics_ids[3] = short_cushion_pos_id;
 
     unsigned short_cushion_neg_id = phys_add_entity(world, &table->cushion_centers[3]);
     phys_make_entity_static(world, short_cushion_neg_id);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &short_cushion_half_extents}, short_cushion_neg_id);
-    table->physics_ids[6] = short_cushion_neg_id;
+    table->physics_ids[4] = short_cushion_neg_id;
 
 
     // add pockets
