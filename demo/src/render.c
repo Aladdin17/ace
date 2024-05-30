@@ -28,8 +28,6 @@ void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radi
 
 void draw_scene( const pool_app* app )
 {
-    app->table.draw(&app->table);
-
     for (int i = 0; i < app->num_balls; i++)
     {
         const ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
@@ -43,12 +41,15 @@ void draw_scene( const pool_app* app )
         const float target_radius = app->balls[app->cue_stick.target].radius;
         app->cue_stick.draw(&app->cue_stick, target_pos, target_radius);
     }
+
+    app->table.draw(&app->table);
 }
 
 void draw_minimap(const pool_app* app)
 {
     glPushAttrib(GL_LIGHTING);
     glDisable(GL_LIGHTING);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
     // set the projection matrix
     glMatrixMode(GL_PROJECTION);
@@ -57,8 +58,9 @@ void draw_minimap(const pool_app* app)
     glOrtho(
         -2, 2,
         -1, 1,
-        0, 2
+        0, 3
     );
+
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -70,10 +72,8 @@ void draw_minimap(const pool_app* app)
     draw_scene(app);
     glPopMatrix();
 
-    // restore the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-
     glPopAttrib();
 }
 
@@ -130,9 +130,11 @@ void draw_powerbar(float power_ratio )
 
 void draw_entity_info(const pool_app* app, unsigned ball_id)
 {
+    // push the current attributes
+    glPushAttrib(GL_DEPTH_TEST | GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
-    
+
     // setup the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -143,10 +145,6 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-
-    // disable lighting and depth testing
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
 
     PhysWorld* world = &app->physics_world;
 
@@ -184,11 +182,6 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
         }
     }
 
-
-    // reenable lighting and depth testing
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-
     // restore the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -196,6 +189,8 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     // restore the modelview matrix
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
+
+    glPopAttrib();
 }
 
 void draw_pool_table( const pool_table* table )
@@ -231,8 +226,7 @@ void draw_pool_table( const pool_table* table )
     }
 
     // draw pockets
-
-    GLUquadric *quad = gluNewQuadric(); 
+    GLUquadric *quad = gluNewQuadric();
     for(int i = 0; i < 4; ++i)
     {
         glPushMatrix();

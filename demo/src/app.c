@@ -130,7 +130,7 @@ void app_key_callback(unsigned char key, int x, int y)
     (void) y; // nullify unused y
 
     static const float movement_step = 0.05f;
-    static const float rotation_step = 2.0f;
+    static const float rotation_step = 1.0f;
     switch (key)
     {
     case '=':
@@ -192,7 +192,7 @@ void app_special_key_callback(int key, int x, int y)
     (void) x; // nullify unused x
     (void) y; // nullify unused y
 
-    static const float rotation_step = 2.0f;
+    static const float rotation_step = 1.0f;
 
     switch (key)
     {
@@ -223,14 +223,14 @@ void app_special_key_callback(int key, int x, int y)
         break;
     }
 
-    
+
     if(key >= GLUT_KEY_F1 && key <= GLUT_KEY_F11)
     {
         app->show_entity_info;
         app->target_entity_info = key - 1;
         return;
     }
-    
+
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -319,13 +319,10 @@ void app_render_callback( void )
     // render the minimap overlay
     if (app->show_minimap)
     {
-        glClear(GL_DEPTH_BUFFER_BIT);
         // set the viewport to the top right corner
         glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
         draw_minimap(app);
     }
-
-
 
     glutSwapBuffers();
 }
