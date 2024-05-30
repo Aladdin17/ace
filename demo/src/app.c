@@ -70,10 +70,16 @@ void app_update_callback( int value )
     app->timer.last_frame_time = app->timer.current_frame_time;
 
     // show cue stick when cue ball not moving
-    if(ac_vec3_magnitude(&app->physics_world.velocities[app->balls[0].physics_id]) < 0.07)
-        app->cue_stick.visible = true;
-    else // not pretty but it gets the job done
-        app->cue_stick.visible = false;
+    bool moving = false;
+    for (int i = 0; i < app->num_balls; i++)
+    {
+        if (ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >= 0.07f)
+        {
+            moving = true;
+            break;
+        }
+    }
+    app->cue_stick.visible = !moving;
 
     // re-register timer callback
     glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
