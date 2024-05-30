@@ -178,7 +178,10 @@ void app_key_callback(unsigned char key, int x, int y)
         app->cue_stick.pitch = ac_clamp(app->cue_stick.pitch - rotation_step, 0.0f, 90.0f);
         break;
     case ' ':
-        app->cue_stick.strike = true;
+        if (app->cue_stick.visible)
+        {
+            app->cue_stick.strike = true;
+        }
         break;
     case 'm':
     case 'M':
