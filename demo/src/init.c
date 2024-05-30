@@ -147,6 +147,13 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
                                           .z = table_origin.z - (table->length / 2.0f) + (table->pocket_radius)};
 
 
+    for (int i = 0; i < 4; ++i)
+    {
+        unsigned pocket_phys_id = phys_add_entity(world, &table->pocket_centers[i]);
+        phys_make_entity_static(world, pocket_phys_id);
+        phys_add_entity_collider(world, (Collider){.type = SPHERE_C, .data = &table->pocket_radius}, pocket_phys_id);
+        table->pocket_physics_ids[i] = pocket_phys_id;
+    }
 
     table->leg_length = short_cushion_half_extents.x;
     float leg_height = table_origin.y - table->leg_length / 2.0f;

@@ -41,12 +41,12 @@ typedef struct pool_table
     float cushion_height;
     float cushion_width;
     float pocket_radius;
-
     float leg_length;
 
     // relative to the origin of the table
     // which is the center of the playing surface
     ac_vec3 pocket_centers[4];
+    unsigned pocket_physics_ids[4];
     ac_vec3 leg_centers[4];
     ac_vec3 cushion_centers[4];
 
