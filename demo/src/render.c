@@ -159,7 +159,7 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     {
         static char * bool_string[] = {"False", "True"};
         static char entity_buffer[256];
-        sprintf(entity_buffer, "Entity %u | Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.fm/s\n\tMass %.2f\n\tSleeping: %s",
+        sprintf(entity_buffer, "Entity %u | Tag: %s\n\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.3fm/s\n\tMass %.2f\n\tSleeping: %s",
                 entity_id,
                 app->balls[app->target_entity_info].tag,
                 world->positions[entity_id].x, world->positions[entity_id].y, world->positions[entity_id].z,
