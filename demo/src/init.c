@@ -62,10 +62,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
 
     table->pocket_radius = 0.05005f; // Pocket radius is approximately 5.5% of the table width
 
-    
-
-
-    // Add table top colliders -z 
+    // Add table top colliders -z
     unsigned table_top_id1 = phys_add_entity(world, &(ac_vec3){0.0f, table_top_collider_origin.y, -0.85995f}); // shifted by half its length
     phys_make_entity_static(world, table_top_id1);
     phys_add_entity_collider(world, (Collider){.type = AABB_C, .data = &table_top_half_extents1}, table_top_id1);
@@ -143,7 +140,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     table->pocket_centers[2] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
                                           .y = pocket_height,
                                           .z = table_origin.z + (table->length / 2.0f) - (table->pocket_radius)};
-                    
+
     //x, -z
     table->pocket_centers[3] = (ac_vec3){ .x = table_origin.x + (table->width / 2.0f) - (table->pocket_radius),
                                           .y = pocket_height,
@@ -196,9 +193,9 @@ static ball_info ball_setup[] = {
     {{1.0f, 1.0f, 0.0f}, "3", 0.130f},
     {{1.0f, 0.0f, 1.0f}, "4", 0.150f},
     {{1.0f, 0.0f, 0.0f}, "5", 0.100f},
-    {{0.0f, 0.0f, 1.0f}, "6", 0.120f},
+    {{0.1f, 0.2f, 0.7f}, "6", 0.120f},
     {{0.0f, 1.0f, 1.0f}, "7", 0.140f},
-    {{0.0f, 0.5f, 0.0f}, "8", 0.180f},
+    {{0.1f, 0.2f, 0.7f}, "8", 0.180f},
     {{0.0f, 0.0f, 0.5f}, "9", 0.190f},
     {{0.5f, 0.5f, 0.5f}, "10", 0.160f}};
 

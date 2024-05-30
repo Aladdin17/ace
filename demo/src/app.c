@@ -279,18 +279,18 @@ void setup_lighting(void)
 
     // Set light properties
     GLfloat light_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat light_diffuse[]  = { 1.0f, 0.2f, 0.2f, 1.0f };
-    GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    GLfloat light_diffuse[]  = { 0.3f, 0.3f, 0.3f, 0.7f };
+    GLfloat light_specular[] = { 0.8f, 0.8f, 0.8f, 0.5f };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
     // Set spotlight parameters
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.0f); // Spotlight cone angle
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 4.5f); // Spotlight focus
-    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.8f);
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.001f);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 30.0f); // Spotlight cone angle
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 8.0f); // Spotlight focus
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.05f);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.005f);
 }
 
 
@@ -304,7 +304,7 @@ void app_render_callback( void )
     update_orbit_camera(&app->main_camera);
 
     // set up lighting
-    GLfloat light_position[] = { 0.0f, 30.0f, 0.0f, 1.0f };
+    GLfloat light_position[] = { 0.0f, 1.0f, 0.0f, 1.0f };
     GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
