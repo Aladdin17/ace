@@ -2,11 +2,11 @@
 #include "init.h"
 #include "render.h"
 #include "types.h"
+#include <GL/freeglut.h>
 #include <ace/geometry/shapes.h>
 #include <ace/math/math.h>
 #include <ace/math/vec3.h>
 #include <ace/physics/phys_world.h>
-#include <GL/freeglut.h>
 #include <math.h>
 
 //--------------------------------------------------------------------------------------------------
@@ -43,14 +43,14 @@ float get_surface_roughness_from_terminal(void)
     return 0.5f;
 }
 
-frame_time* app_init( void )
+frame_time* app_init(void)
 {
-    const int max_balls = 55; // fits well into the table...
+    const int max_balls = 55;  // fits well into the table...
 
     app = malloc(sizeof(pool_app));
 
-    app->num_balls = get_num_balls_from_terminal();
-    app->ball_layout = get_layout_from_terminal();
+    app->num_balls         = get_num_balls_from_terminal();
+    app->ball_layout       = get_layout_from_terminal();
     app->surface_roughness = get_surface_roughness_from_terminal();
 
     // external initialisations
@@ -80,33 +80,33 @@ frame_time* app_init( void )
 
 void ball_collision_callback(unsigned body1, unsigned body2)
 {
-    unsigned* pockets = app->table.pocket_physics_ids;
-    int num_pockets = 4;
-    for (int i = 0; i < num_pockets; ++i)
+    unsigned* pockets     = app->table.pocket_physics_ids;
+    int       num_pockets = 4;
+    for ( int i = 0; i < num_pockets; ++i )
     {
-        if (body2 == pockets[i])
+        if ( body2 == pockets[i] )
         {
             // sleep the bodies
-            app->physics_world.sleeping[body1] = true;
+            app->physics_world.sleeping[body1]   = true;
             app->physics_world.velocities[body1] = ac_vec3_zero();
-            app->physics_world.positions[body1] = ac_vec3_zero();
+            app->physics_world.positions[body1]  = ac_vec3_zero();
         }
     }
 
     // contact with the surface
-    if (body2 == app->table.physics_ids[0])
+    if ( body2 == app->table.physics_ids[0] )
     {
         // we remove at most 2% of the velocity per frame
         const static float max_deprecation = 0.02f;
-        float scalar = app->surface_roughness * max_deprecation;
+        float              scalar          = app->surface_roughness * max_deprecation;
 
         // only account for the x and z components of the velocity
         // we don't want to slow down the ball in the y direction
         // nor do we want to slow down the ball if it's already slow
-        ac_vec3 velocity = app->physics_world.velocities[body1];
-        ac_vec2 velocity_xz = { velocity.x, velocity.z };
-        float magnitude_xz = ac_vec2_magnitude(&velocity_xz);
-        if ( magnitude_xz <= app->min_ball_speed)
+        ac_vec3 velocity     = app->physics_world.velocities[body1];
+        ac_vec2 velocity_xz  = { velocity.x, velocity.z };
+        float   magnitude_xz = ac_vec2_magnitude(&velocity_xz);
+        if ( magnitude_xz <= app->min_ball_speed )
         {
             return;
         }
@@ -114,23 +114,20 @@ void ball_collision_callback(unsigned body1, unsigned body2)
         // apply the scalar to the velocity
         // 1.0f - scalar is the percentage of the velocity that will be kept
         // and apply this to the x and z components of the velocity
-        float new_velocity_magnitude = magnitude_xz * (1.0f - scalar);
-        ac_vec2 normalised_velocity = ac_vec2_normalize(&velocity_xz);
+        float   new_velocity_magnitude = magnitude_xz * (1.0f - scalar);
+        ac_vec2 normalised_velocity    = ac_vec2_normalize(&velocity_xz);
         ac_vec2 new_velocity_xz = ac_vec2_scale(&normalised_velocity, new_velocity_magnitude);
-        ac_vec3 new_velocity = (ac_vec3){
-            .x = new_velocity_xz.x,
-            .y = velocity.y,
-            .z = new_velocity_xz.y
-        };
+        ac_vec3 new_velocity =
+            (ac_vec3){ .x = new_velocity_xz.x, .y = velocity.y, .z = new_velocity_xz.y };
         app->physics_world.velocities[body1] = new_velocity;
     }
 }
 
-void app_cleanup( void )
+void app_cleanup(void)
 {
-    if (app)
+    if ( app )
     {
-        if (app->balls)
+        if ( app->balls )
         {
             free(app->balls);
         }
@@ -138,10 +135,10 @@ void app_cleanup( void )
     }
 }
 
-void app_reset( void )
+void app_reset(void)
 {
     bool show_minimap = false;
-    if (app)
+    if ( app )
     {
         show_minimap = app->show_minimap;
     }
@@ -154,9 +151,9 @@ void app_reset( void )
 // Update Callback
 //--------------------------------------------------------------------------------------------------
 
-void app_update_callback( int value )
+void app_update_callback(int value)
 {
-    (void) value; // nullify unused value
+    (void) value;  // nullify unused value
     static const float msec_to_sec = 1.0f / 1000.0f;
 
     // get delta time and reregister callback
@@ -178,11 +175,11 @@ void app_update_callback( int value )
 void reset_target_ball_if_sleeping(void)
 {
     unsigned target_physics_id = app->balls[app->cue_stick.target_ball].physics_id;
-    if (app->physics_world.sleeping[target_physics_id])
+    if ( app->physics_world.sleeping[target_physics_id] )
     {
-        app->physics_world.sleeping[target_physics_id] = false;
+        app->physics_world.sleeping[target_physics_id]   = false;
         app->physics_world.velocities[target_physics_id] = (ac_vec3){ 0.0f, -0.01f, 0.0f };
-        app->physics_world.positions[target_physics_id] = ball_start_pos_to_world_pos(
+        app->physics_world.positions[target_physics_id]  = ball_start_pos_to_world_pos(
             &app->cue_start_position,
             &app->table.surface_center,
             &(ac_vec2){ app->table.width, app->table.length },
@@ -194,14 +191,15 @@ void reset_target_ball_if_sleeping(void)
 void update_cue_stick_visibility(void)
 {
     bool moving = false;
-    for (int i = 0; i < app->num_balls; i++)
+    for ( int i = 0; i < app->num_balls; i++ )
     {
-        if (app->physics_world.sleeping[app->balls[i].physics_id])
+        if ( app->physics_world.sleeping[app->balls[i].physics_id] )
         {
             continue;
         }
 
-        if (ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >= app->min_ball_speed)
+        if ( ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >=
+             app->min_ball_speed )
         {
             moving = true;
             break;
@@ -213,17 +211,17 @@ void update_cue_stick_visibility(void)
 void detect_balls_off_table(void)
 {
     int target_ball_id = app->cue_stick.target_ball;
-    for (int i = 0; i < app->num_balls; i++)
+    for ( int i = 0; i < app->num_balls; i++ )
     {
-        if (app->physics_world.sleeping[app->balls[i].physics_id])
+        if ( app->physics_world.sleeping[app->balls[i].physics_id] )
         {
             continue;
         }
 
         ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
-        if (pos->y < app->y_threshold)
+        if ( pos->y < app->y_threshold )
         {
-            if (i == target_ball_id)
+            if ( i == target_ball_id )
             {
                 // the rest will be handled by the reset_target_ball_if_sleeping function
                 app->physics_world.sleeping[app->balls[i].physics_id] = true;
@@ -231,7 +229,7 @@ void detect_balls_off_table(void)
             }
 
             app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
-            *pos = ball_start_pos_to_world_pos(
+            *pos                                                    = ball_start_pos_to_world_pos(
                 &app->target_start_position,
                 &app->table.surface_center,
                 &(ac_vec2){ app->table.width, app->table.length },
@@ -286,8 +284,8 @@ void strike_target_ball(void)
 
 void app_key_callback(unsigned char key, int x, int y)
 {
-    (void) x; // nullify unused x
-    (void) y; // nullify unused y
+    (void) x;  // nullify unused x
+    (void) y;  // nullify unused y
 
     switch ( key )
     {
@@ -357,10 +355,10 @@ void app_key_callback(unsigned char key, int x, int y)
     case 'M':
         app->show_minimap = !app->show_minimap;
         break;
-    case 27: // ESCAPE Key
+    case 27:  // ESCAPE Key
         glutLeaveMainLoop();
         break;
-    case 127: // DELETE Key
+    case 127:  // DELETE Key
         app_reset();
         break;
     }
@@ -368,10 +366,10 @@ void app_key_callback(unsigned char key, int x, int y)
 
 void app_special_key_callback(int key, int x, int y)
 {
-    (void) x; // nullify unused x
-    (void) y; // nullify unused y
+    (void) x;  // nullify unused x
+    (void) y;  // nullify unused y
 
-    switch (key)
+    switch ( key )
     {
     case GLUT_KEY_UP:
         app->main_camera.pitch_angle = ac_clamp(
@@ -413,7 +411,7 @@ void app_special_key_callback(int key, int x, int y)
 // High-Level Rendering
 //--------------------------------------------------------------------------------------------------
 
-void app_render_callback( void )
+void app_render_callback(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -429,14 +427,14 @@ void app_render_callback( void )
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
     setup_lighting();
 
-    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int width  = glutGet(GLUT_WINDOW_WIDTH);
     int height = glutGet(GLUT_WINDOW_HEIGHT);
 
     // draw the scene in the main viewport
     glViewport(0, 0, width, height);
     draw_scene(app, false);
 
-    if(app->show_entity_info)
+    if ( app->show_entity_info )
     {
         unsigned target_entity = app->balls[0].physics_id;
         draw_entity_info(&app->physics_world, target_entity);
@@ -446,7 +444,7 @@ void app_render_callback( void )
     draw_powerbar(app->cue_stick.power);
 
     // render the minimap overlay
-    if (app->show_minimap)
+    if ( app->show_minimap )
     {
         // set the viewport to the top right corner
         glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
@@ -459,24 +457,18 @@ void app_render_callback( void )
 void update_main_camera(const orbit_camera* cam)
 {
     float pitch_rad = ac_deg_to_rad(cam->pitch_angle);
-    float yaw_rad = ac_deg_to_rad(cam->yaw_angle);
+    float yaw_rad   = ac_deg_to_rad(cam->yaw_angle);
 
-    ac_vec3 up = (ac_vec3){0, 1, 0};
-    ac_vec3 radial = (ac_vec3){
-        .x = cosf(yaw_rad) * cosf(pitch_rad),
-        .y = sinf(pitch_rad),
-        .z = sinf(yaw_rad) * cosf(pitch_rad)
-    };
-    radial = ac_vec3_normalize(&radial);
-    radial = ac_vec3_scale(&radial, cam->radius);
-    ac_vec3 eye = ac_vec3_add(&cam->target, &radial);
+    ac_vec3 up      = (ac_vec3){ 0, 1, 0 };
+    ac_vec3 radial  = (ac_vec3){ .x = cosf(yaw_rad) * cosf(pitch_rad),
+                                 .y = sinf(pitch_rad),
+                                 .z = sinf(yaw_rad) * cosf(pitch_rad) };
+    radial          = ac_vec3_normalize(&radial);
+    radial          = ac_vec3_scale(&radial, cam->radius);
+    ac_vec3 eye     = ac_vec3_add(&cam->target, &radial);
     ac_vec3 look_at = cam->target;
 
-    gluLookAt(
-        eye.x, eye.y, eye.z,
-        look_at.x, look_at.y, look_at.z,
-        up.x, up.y, up.z
-    );
+    gluLookAt(eye.x, eye.y, eye.z, look_at.x, look_at.y, look_at.z, up.x, up.y, up.z);
 }
 
 void setup_lighting(void)
@@ -497,6 +489,6 @@ void setup_lighting(void)
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
     // Set spotlight parameters
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0f); // Spotlight cone angle
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 6.0f); // Spotlight focus
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0f);   // Spotlight cone angle
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 6.0f);  // Spotlight focus
 }

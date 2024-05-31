@@ -1,9 +1,9 @@
 #pragma once
+#include "timer.h"
 #include <ace/math/vec2.h>
 #include <ace/math/vec3.h>
-#include <stdbool.h>
 #include <ace/physics/phys_world.h>
-#include "timer.h"
+#include <stdbool.h>
 
 typedef struct orbit_camera
 {
@@ -44,12 +44,11 @@ typedef struct cue_stick
     void (*draw)(const struct cue_stick*, const ac_vec3* target_position, float target_radius);
 } cue_stick;
 
-
 typedef struct pool_ball
 {
     unsigned physics_id;
-    ac_vec3 color;
-    float radius;
+    ac_vec3  color;
+    float    radius;
     void (*draw)(const struct pool_ball*, const ac_vec3* position);
 } pool_ball;
 
@@ -63,10 +62,10 @@ typedef struct pool_table
 
     // physics
     unsigned physics_ids[5];
-    ac_vec3 pocket_centers[4];
+    ac_vec3  pocket_centers[4];
     unsigned pocket_physics_ids[4];
-    ac_vec3 leg_centers[4];
-    ac_vec3 cushion_centers[4];
+    ac_vec3  leg_centers[4];
+    ac_vec3  cushion_centers[4];
 
     // rendering
     float length;
@@ -88,26 +87,26 @@ enum ball_layout
 typedef struct pool_app
 {
     // simulation properties
-    frame_time timer;          ///< stores frame time information
-    orbit_camera main_camera;  ///< used to orbit the camera around the table
-    cue_stick cue_stick;       ///< cue cue_stick
-    PhysWorld physics_world;   ///< physics world
+    frame_time   timer;          ///< stores frame time information
+    orbit_camera main_camera;    ///< used to orbit the camera around the table
+    cue_stick    cue_stick;      ///< cue cue_stick
+    PhysWorld    physics_world;  ///< physics world
 
     // pool balls
-    pool_ball* balls;          ///* 0 is cue ball
-    int num_balls;             ///* number of balls
-    ac_vec2 cue_start_position;
-    ac_vec2 target_start_position;
-    float ball_drop_height;
+    pool_ball* balls;      ///* 0 is cue ball
+    int        num_balls;  ///* number of balls
+    ac_vec2    cue_start_position;
+    ac_vec2    target_start_position;
+    float      ball_drop_height;
 
     // pool table
-    pool_table table;          ///< pool table
-    int ball_layout;           ///< 0 = 9-ball, 1 = 8-ball
-    float surface_roughness;   ///< surface roughness
+    pool_table table;              ///< pool table
+    int        ball_layout;        ///< 0 = 9-ball, 1 = 8-ball
+    float      surface_roughness;  ///< surface roughness
 
     // misc
-    bool show_minimap;         ///< show the minimap
-    bool show_entity_info;     ///< show info panel
-    float min_ball_speed;      ///< minimum speed for a ball to be considered moving
-    float y_threshold;         ///< y position threshold for a ball to be considered off the table
+    bool  show_minimap;      ///< show the minimap
+    bool  show_entity_info;  ///< show info panel
+    float min_ball_speed;    ///< minimum speed for a ball to be considered moving
+    float y_threshold;       ///< y position threshold for a ball to be considered off the table
 } pool_app;
