@@ -60,7 +60,10 @@ frame_time* app_init( void )
     // external initialisations
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
-    initialise_pool_balls(&app->physics_world, app->balls, &app->num_balls);
+
+    app->num_balls = 10; //this includes the cue ball because of init
+    app->balls = malloc(sizeof(pool_ball) * app->num_balls);
+    initialise_pool_balls(&app->physics_world, app->balls, app->num_balls);
     for (int i = 0; i < app->num_balls; i++)
     {
         phys_add_collision_callback(&app->physics_world, app->balls[i].physics_id, ball_collision_callback);

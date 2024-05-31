@@ -58,7 +58,7 @@ typedef struct pool_app
     frame_time timer;          // stores frame time information
     orbit_camera main_camera;  // used to orbit the camera around the table
     cue_stick cue_stick;       // cue cue_stick
-    pool_ball balls[11];       // 0 is cue ball, plus 10 targets
+    pool_ball* balls;       // 0 is cue ball, plus 10 targets
     int num_balls;             // number of balls
     pool_table table;          // pool table
     PhysWorld physics_world;   // physics world

@@ -186,16 +186,40 @@ static ball_info ball_setup[] = {
     {{0.0f, 1.0f, 1.0f}, "7", 0.140f},
     {{0.1f, 0.2f, 0.7f}, "8", 0.180f},
     {{0.0f, 0.0f, 0.5f}, "9", 0.190f},
-    {{0.5f, 0.5f, 0.5f}, "10", 0.160f}};
+    {{0.5f, 0.5f, 0.5f}, "10", 0.160f},
+    {{1.0f, 0.5f, 0.0f}, "11", 0.170f},
+    {{0.5f, 1.0f, 0.5f}, "12", 0.110f},
+    {{0.0f, 0.5f, 1.0f}, "13", 0.130f},
+    {{0.5f, 0.0f, 1.0f}, "14", 0.150f},
+    {{1.0f, 0.5f, 0.5f}, "15", 0.100f},
+    {{0.5f, 1.0f, 0.0f}, "16", 0.120f},
+    {{0.0f, 0.5f, 0.5f}, "17", 0.140f},
+    {{0.5f, 0.0f, 0.5f}, "18", 0.180f},
+    {{0.5f, 0.5f, 1.0f}, "19", 0.190f},
+    {{1.0f, 0.0f, 0.5f}, "20", 0.160f},
+    {{0.0f, 1.0f, 0.5f}, "21", 0.170f},
+    {{0.5f, 0.5f, 0.0f}, "22", 0.110f},
+    {{1.0f, 0.5f, 1.0f}, "23", 0.130f},
+    {{0.5f, 1.0f, 1.0f}, "24", 0.150f},
+    {{1.0f, 1.0f, 0.5f}, "25", 0.100f},
+    {{0.5f, 0.0f, 0.0f}, "26", 0.120f},
+    {{0.0f, 0.0f, 1.0f}, "27", 0.140f},
+    {{1.0f, 0.0f, 1.0f}, "28", 0.180f},
+    {{0.0f, 1.0f, 1.0f}, "29", 0.190f},
+    {{0.5f, 0.5f, 0.5f}, "30", 0.160f}
+};
 
-void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int *num_balls)
+void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
+void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
+
+void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls)
 {
     // currently all balls have the same radius but can differ in mass
     static const float radius = 0.0305f;
     static Sphere sphere_collider = {.radius = 0.0305f};
     static const Collider collider = {.type = SPHERE_C, .data = &sphere_collider};
 
-    *num_balls = 11;
+
 
     // cue ball
     unsigned ball_id = phys_add_entity(world, &(ac_vec3){0.0f, 0.2f, 0.55f});
@@ -211,36 +235,29 @@ void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int *num_balls)
     strcpy(balls[0].tag, info->tag);
     balls[0].draw = draw_pool_ball; // draw_ball;
 
-    // Set up pool ball formation
-    int num_rows = 4;
-    float spacing = radius * 1.8f;
-    float start_z = -0.455f;
-    int ball_index = 1;
+    ac_vec3 start_pos = {0, 0.2f,-0.455f};
 
-    for (int row = 0; row < num_rows; ++row)
+    float ball_radius = 0.0305f;
+
+    for (int i = 1; i < num_balls; ++i)
     {
-        for (int col = 0; col <= row; ++col)
-        {
-            ac_vec3 pos = (ac_vec3){
-                .x = (col - row / 2.0f) * spacing,
-                .y = 0.2f,
-                .z = start_z - row * spacing};
+        unsigned ball_index = phys_add_entity(world, &(ac_vec3){0.0f, 0.0f, 0.0f});
+        phys_add_entity_collider(world, collider, ball_index);
+        phys_make_entity_dynamic(world, ball_index);
+        world->masses[ball_index] = ball_setup[i].mass;
 
-            ball_id = phys_add_entity(world, &pos);
-            phys_add_entity_collider(world, collider, ball_id);
-            phys_make_entity_dynamic(world, ball_id);
-            world->masses[ball_id] = ball_setup[ball_index].mass;
+        balls[i].physics_id = ball_index;
+        balls[i].color = ball_setup[i].color;
+        balls[i].radius = ball_radius;
+        strcpy(balls[i].tag, ball_setup[i].tag);
+        balls[i].draw = draw_pool_ball;
 
-            // add to app structure
-            info = &ball_setup[ball_index];
-            balls[ball_index].physics_id = ball_id;
-            balls[ball_index].color = info->color;
-            balls[ball_index].radius = sphere_collider.radius;
-            strcpy(balls[ball_index].tag, info->tag);
-            balls[ball_index].draw = draw_pool_ball; // draw_ball;
-            ball_index++;
-        }
+        
     }
+
+    // - 1 because of cueball
+    //ball_formation_triangle(balls, num_balls - 1, world, start_pos, ball_radius);
+    ball_formation_rectangle(balls, num_balls - 1, world, start_pos, ball_radius);
 }
 
 void initialise_cue_stick(cue_stick *stick)
@@ -252,4 +269,60 @@ void initialise_cue_stick(cue_stick *stick)
     stick->strike = false;
     stick->visible = true;
     stick->draw = draw_cue_stick;
+}
+
+void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius)
+{
+    float spacing = ball_radius * 1.8f;
+    int ball_index = 1;
+    int row = 0;
+    int curr_row_len = 1;
+
+    while (ball_index <= num_balls) //while more balls to place 
+    {
+        for (int i = 0; i < curr_row_len && ball_index <= num_balls; i++) // set row by row till balls run out
+        {
+            ac_vec3 pos = {
+                .x = start_pos.x + (i - (curr_row_len - 1) / 2.0f) * spacing, // will set first ball depending on num balls and spacing
+                .y = start_pos.y,
+                .z = start_pos.z - row * spacing //move down -z
+            };
+
+            world->positions[balls[ball_index].physics_id] = pos;
+
+            ball_index++;
+        }
+
+        row++;
+        curr_row_len++;
+    }
+}
+
+void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius)
+{
+    float spacing = ball_radius * 1.8f;
+    int ball_index = 1;
+    int row = 0;
+    int col = 0;
+    int balls_per_row = num_balls / 2; // (simple 2 rows)
+
+    while (ball_index <= num_balls)
+    {
+        ac_vec3 pos = {
+            .x = start_pos.x + (col - balls_per_row / 2.0f) * spacing, //shifts so positions around start_pos (not like triangle)
+            .y = start_pos.y,
+            .z = start_pos.z - row * spacing
+        };
+
+        world->positions[balls[ball_index].physics_id] = pos;
+
+        ball_index++;
+
+        col++;
+        if (col >= balls_per_row)
+        {
+            row++;
+            col = 0;
+        }
+    }
 }
