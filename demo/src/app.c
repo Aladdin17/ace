@@ -56,7 +56,29 @@ int get_num_balls_from_terminal(int max_balls)
 
 int get_layout_from_terminal(void)
 {
-    return ball_layout_triangle;
+    char input[256];
+    int  layout = 0;
+    bool valid  = false;
+    while ( !valid )
+    {
+        printf("Select the table layout, 0 = Triangle, 1 = Rectangle: ");
+        if ( fgets(input, sizeof(input), stdin) != NULL )
+        {
+            removeNewlineChar(input);
+            if ( strToUint32(input, (uint32_t*) &layout, 10) )
+            {
+                switch ( layout )
+                {
+                case ball_layout_triangle:
+                case ball_layout_rectangle:
+                    valid = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    return layout;
 }
 
 float get_surface_roughness_from_terminal(void)
