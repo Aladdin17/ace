@@ -1,5 +1,6 @@
 #pragma once
 
+typedef struct pool_app pool_app;
 typedef struct PhysWorld PhysWorld;
 typedef struct pool_ball pool_ball;
 typedef struct pool_table pool_table;
@@ -7,6 +8,7 @@ typedef struct cue_stick cue_stick;
 typedef struct orbit_camera orbit_camera;
 typedef struct frame_time frame_time;
 
+void initialise_misc( pool_app* state );
 void initialise_orbit_camera( orbit_camera* camera );
 void initialise_frame_time( frame_time* time );
 void initialise_physics_world( PhysWorld* world, int update_rate );

@@ -31,15 +31,8 @@ frame_time* app_init( void )
 {
     app = malloc(sizeof(pool_app));
 
-
-    // show minimap
-    app->show_minimap = false;
-
-    //show info
-    app->show_entity_info = false;
-    app->target_entity_info = 1;
-
     // external initialisations
+    initialise_misc(app);
     initialise_frame_time(&app->timer);
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
@@ -53,6 +46,7 @@ frame_time* app_init( void )
     }
     initialise_pool_table(&app->physics_world, &app->table);
     initialise_cue_stick(&app->cue_stick);
+
     return &app->timer;
 }
 
