@@ -53,7 +53,18 @@ frame_time* app_init( void )
 
     // table must be initialised before balls
     initialise_pool_table(&app->physics_world, &app->table);
-    initialise_pool_balls(&app->physics_world, &app->balls, app->num_balls, app->ball_layout, ball_collision_callback);
+    initialise_pool_balls(
+        &app->physics_world,
+        &app->balls,
+        app->num_balls,
+        app->ball_layout,
+        ball_collision_callback,
+        &(ac_vec2){ app->table.width, app->table.length },
+        &app->table.surface_center,
+        &app->cue_start_position,
+        &app->target_start_position,
+        app->ball_drop_height
+    );
     initialise_cue_stick(&app->cue_stick);
 
     return &app->timer;

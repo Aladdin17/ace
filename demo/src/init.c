@@ -26,6 +26,9 @@ void initialise_misc( pool_app* app )
     app->show_entity_info = true;
     app->min_ball_speed = 0.07f;
     app->y_threshold = -1.0f;
+    app->cue_start_position = (ac_vec2){ 0.0f, 0.70f };
+    app->target_start_position = (ac_vec2){ 0.0f, -0.30f };
+    app->ball_drop_height = 0.2f;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -250,7 +253,7 @@ ac_vec3 generate_ball_color(float mass, float min, float max)
     return ac_vec3_lerp(&start_color, &end_color, scale);
 }
 
-void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_balls, int layout, void(*callback)(unsigned, unsigned))
+void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_balls, int layout, void(*callback)(unsigned, unsigned), const ac_vec2* table_dimensions, const ac_vec3* table_center, const ac_vec2* cue_position, const ac_vec2* target_pos, const float drop_height)
 {
     // get the number of balls from the user
     *balls_ptr = (pool_ball*)malloc(num_balls * sizeof(pool_ball));
@@ -262,7 +265,8 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
     static const Collider collider = {.type = SPHERE_C, .data = &sphere_collider};
 
     // cue ball
-    unsigned ball_id = phys_add_entity(world, &(ac_vec3){0.0f, 0.2f, 0.55f});
+    ac_vec3 cue_start_pos = ball_start_pos_to_world_pos(cue_position, table_center, table_dimensions, drop_height);
+    unsigned ball_id = phys_add_entity(world, &cue_start_pos);
     phys_add_entity_collider(world, collider, ball_id);
     phys_make_entity_dynamic(world, ball_id);
     phys_add_collision_callback(world, ball_id, callback);
@@ -293,14 +297,16 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
         balls[i].draw = draw_pool_ball;
     }
 
+    ac_vec3 target_start_pos = ball_start_pos_to_world_pos(target_pos, table_center, table_dimensions, drop_height);
+
     // - 1 because of cueball
     switch (layout)
     {
     case ball_layout_triangle:
-        ball_formation_triangle(balls, num_balls - 1, world, start_pos, ball_radius);
+        ball_formation_triangle(balls, num_balls - 1, world, target_start_pos, ball_radius);
         break;
     case ball_layout_rectangle:
-        ball_formation_rectangle(balls, num_balls - 1, world, start_pos, ball_radius);
+        ball_formation_rectangle(balls, num_balls - 1, world, target_start_pos, ball_radius);
         break;
     }
 }
@@ -359,4 +365,20 @@ void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world,
             col = 0;
         }
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Utility
+//--------------------------------------------------------------------------------------------------
+
+ac_vec3 ball_start_pos_to_world_pos(
+    const ac_vec2* start_position,
+    const ac_vec3* surface_center,
+    const ac_vec2* surface_dimensions,
+    float          drop_height
+)
+{
+    return (ac_vec3){ .x = surface_center->x + surface_dimensions->x / 2.0f * start_position->x,
+                      .y = surface_center->y + drop_height,
+                      .z = surface_center->z + surface_dimensions->y / 2.0f * start_position->y };
 }
