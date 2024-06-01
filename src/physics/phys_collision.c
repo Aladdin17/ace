@@ -1,4 +1,5 @@
 #include "ace/physics/phys_collision.h"
+#include <ace/math/vec2.h>
 #include <math.h>
 typedef IntersectionResult (*collision_detection_func)(
     const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
@@ -61,132 +62,34 @@ void resolve_collision(
         const float penetrationSlop  = 0.001f;  // max allowed overlap before depenetration
         float       penetrationDepth = fmaxf(info->penetrationDepth - penetrationSlop, 0.0f);
 
-        // depenetration is variable on the speed. higher speed = bigger depen
-        float relativeSpeed = ac_vec3_magnitude(&relativeVelocity);
+        // set the default depenetration, even distibution is both dynamic
+        // if both these ifs are true, the depenetration will be 0.5f
+        // but neither will be applied since they are static
+        ac_vec2 depenetrationScalars = { 0.5f, 0.5f };
+        if ( s1 )
+        {
+            depenetrationScalars.y += 0.5f;
+        }
+        if ( s2 )
+        {
+            depenetrationScalars.x += 0.5f;
+        }
 
-        float totalInverseMass = (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
-        float depenetrationScalar =
-            penetrationDepth / (totalInverseMass > 0.0f ? totalInverseMass : 1.0f);
-
-        // scale depen with relative speed
-        depenetrationScalar *= fmaxf(1.0f, relativeSpeed * 0.1f);
-
-        ac_vec3 correction = ac_vec3_scale(&info->contactNormal, depenetrationScalar);
-
-        // apply velocity and position correction to non-static objects
+        // apply velocity and position correction to non-static objects only
         if ( !s1 )
         {
+            ac_vec3 correction =
+                ac_vec3_scale(&info->contactNormal, penetrationDepth * depenetrationScalars.x);
             *v1   = ac_vec3_sub(v1, &velocityChange1);  // v1 -= velocityChange1
             *pos1 = ac_vec3_sub(pos1, &correction);
         }
 
         if ( !s2 )
         {
+            ac_vec3 correction =
+                ac_vec3_scale(&info->contactNormal, penetrationDepth * depenetrationScalars.y);
             *v2   = ac_vec3_add(v2, &velocityChange2);  // v2 += velocityChange2
             *pos2 = ac_vec3_add(pos2, &correction);
         }
     }
 }
-
-// ac_vec3 relativeVelocity = ac_vec3_sub(v2, v1);
-
-// float impulse = ac_vec3_dot(&relativeVelocity, &info->contactNormal);
-// // if objects are moving towards eachother or either entity is static
-// if ( impulse <= 0.0f || (s1 || s2) )
-// {
-//     // momentums before collision
-//     float momentum_body_1 = m1 * ac_vec3_magnitude(v1);
-//     float momentum_body_2 = m2 * ac_vec3_magnitude(v2);
-//     float total_momentum = momentum_body_1 + momentum_body_2;
-//     const float restitution = 0.8f;
-//     float total_momentum_after_collision = total_momentum * restitution;
-
-//     // calc velocity changes
-//     ac_vec3 body_1_reflection = ac_vec3_reflect(v1, &info->contactNormal);
-//     body_1_reflection = ac_vec3_normalize(&body_1_reflection);
-//     ac_vec3 body_2_reflection = ac_vec3_reflect(v2, &info->contactNormal);
-//     body_2_reflection = ac_vec3_normalize(&body_2_reflection);
-
-//     const float penetrationSlop  = 0.001f;  // max allowed overlap before depenetration
-//     float       penetrationDepth = fmaxf(info->penetrationDepth - penetrationSlop, 0.0f);
-
-//     // depenetration is variable on the speed. higher speed = bigger depen
-//     float relativeSpeed = ac_vec3_magnitude(&relativeVelocity);
-
-//     float totalInverseMass = (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
-//     float depenetrationScalar =
-//         penetrationDepth / (totalInverseMass > 0.0f ? totalInverseMass : 1.0f);
-
-//     // scale depen with relative speed
-//     depenetrationScalar *= fmaxf(1.0f, relativeSpeed * 0.1f);
-
-//     ac_vec3 correction = ac_vec3_scale(&info->contactNormal, depenetrationScalar);
-
-//     // apply velocity and position correction to non-static objects
-//     if ( !s1 )
-//     {
-//         float post_momentum_1 = momentum_body_1 / total_momentum *
-//         total_momentum_after_collision; float velocity_1_scalar = post_momentum_1 / m1; *v1   =
-//         ac_vec3_scale(&body_1_reflection, velocity_1_scalar); *pos1 = ac_vec3_sub(pos1,
-//         &correction);
-//     }
-
-//     if ( !s2 )
-//     {
-//         float post_momentum_2 = momentum_body_2 / total_momentum *
-//         total_momentum_after_collision; float velocity_2_scalar = post_momentum_2 / m2; *v2   =
-//         ac_vec3_scale(&body_2_reflection, velocity_2_scalar); *pos2 = ac_vec3_add(pos2,
-//         &correction);
-//     }
-
-// if ( ac_vec3_is_nan(&info->contactNormal) || ac_vec3_is_nan(&info->contactPoint) )
-// {
-//     return;
-// }
-
-// ac_vec3 relativeVelocity = ac_vec3_sub(v2, v1);
-
-// float impulse = ac_vec3_dot(&relativeVelocity, &info->contactNormal);
-// // if objects are moving towards eachother or either entity is static
-// if ( impulse <= 0.0f || (s1 || s2) )
-// {
-//     // calculate the impulse
-//     float total_mass = m1 + m2;
-//     if ( total_mass >= 0.0f )
-//     {
-//         return;
-//     }
-
-//     // calaculate impulse scalar
-//     float total_inverse_mass = 1.0f / total_mass;
-//     float lambda  = -(1.0f + 0.8f) * impulse / total_inverse_mass;  // 0.8 is the coefficient of
-//     restitution ac_vec3 linear_impulse = ac_vec3_scale(&info->contactNormal, lambda);
-
-//     // depenetrate
-//     const float penetrationSlop  = 0.001f;  // max allowed overlap before depenetration
-//     float       penetrationDepth = fmaxf(info->penetrationDepth - penetrationSlop, 0.0f);
-//     float depenetrationScalar = info->penetrationDepth * total_inverse_mass;
-
-//     // depenetration is variable on the speed. higher speed = bigger depen
-//     float relativeSpeed = ac_vec3_magnitude(&relativeVelocity);
-//     depenetrationScalar *= fmaxf(1.0f, relativeSpeed * 0.1f);
-//     ac_vec3 correction = ac_vec3_scale(&info->contactNormal, depenetrationScalar);
-
-//     // calc velocity changes
-//     ac_vec3 velocityChange1, velocityChange2;
-//     velocityChange1 = ac_vec3_scale(&info->contactNormal, lambda / m1);
-//     velocityChange2 = ac_vec3_scale(&info->contactNormal, lambda / m2);
-
-//     // apply velocity and position correction to non-static objects
-//     if ( !s1 )
-//     {
-//         *v1   = ac_vec3_add(v1, &velocityChange1);  // v1 -= velocityChange1
-//         *pos1 = ac_vec3_add(pos1, &correction);
-//     }
-
-//     if ( !s2 )
-//     {
-//         *v2   = ac_vec3_sub(v2, &velocityChange2);  // v2 += velocityChange2
-//         *pos2 = ac_vec3_sub(pos2, &correction);
-//     }
-// }
