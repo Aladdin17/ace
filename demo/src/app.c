@@ -30,12 +30,17 @@ pool_app* app;
 
 int get_num_balls_from_terminal(void)
 {
-    return 10;
+    return 10 + 1;
 }
 
 int get_layout_from_terminal(void)
 {
     return ball_layout_triangle;
+}
+
+float get_surface_roughness_from_terminal(void)
+{
+    return 0.5f;
 }
 
 frame_time* app_init( void )
@@ -44,15 +49,15 @@ frame_time* app_init( void )
 
     app = malloc(sizeof(pool_app));
 
+    app->num_balls = get_num_balls_from_terminal();
+    app->ball_layout = get_layout_from_terminal();
+    app->surface_roughness = get_surface_roughness_from_terminal();
+
     // external initialisations
     initialise_misc(app);
     initialise_frame_time(&app->timer);
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
-
-    // get info from the user
-    app->num_balls = get_num_balls_from_terminal() + 1;
-    app->ball_layout = get_layout_from_terminal();
 
     // table must be initialised before balls
     initialise_pool_table(&app->physics_world, &app->table);
@@ -93,7 +98,7 @@ void ball_collision_callback(unsigned body1, unsigned body2)
     {
         // we remove at most 2% of the velocity per frame
         const static float max_deprecation = 0.02f;
-        float scalar = app->table.surface_roughness * max_deprecation;
+        float scalar = app->surface_roughness * max_deprecation;
 
         // only account for the x and z components of the velocity
         // we don't want to slow down the ball in the y direction

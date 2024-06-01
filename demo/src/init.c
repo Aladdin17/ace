@@ -113,7 +113,6 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     // static const ac_vec3 short_cushion_half_extents = {table->width / 2.0f + table->cushion_width, table->cushion_height / 2.0f, table->cushion_width / 2.0f};
 
     table->surface_center = table_origin;
-    table->surface_roughness = 0.5f; /// \todo Need to integrate this into the physics
     table->surface_color = (ac_vec3){0.1f, 0.5f, 0.1f};
     table->cushion_color = (ac_vec3){0.65f, 0.33f, 0.16f};
     table->leg_color = (ac_vec3){0.55f, 0.23f, 0.06f};

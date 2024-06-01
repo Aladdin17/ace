@@ -57,7 +57,6 @@ typedef struct pool_table
 {
     // properties
     ac_vec3 surface_center;
-    float surface_roughness;
     ac_vec3 surface_color;
     ac_vec3 cushion_color;
     ac_vec3 leg_color;
@@ -104,6 +103,7 @@ typedef struct pool_app
     // pool table
     pool_table table;          ///< pool table
     int ball_layout;           ///< 0 = 9-ball, 1 = 8-ball
+    float surface_roughness;   ///< surface roughness
 
     // misc
     bool show_minimap;         ///< show the minimap
