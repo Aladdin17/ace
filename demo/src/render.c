@@ -2,6 +2,7 @@
 #include "types.h"
 #include <GL/freeglut.h>
 #include <ace/math/vec3.h>
+#include <stdio.h>
 
 void draw_pool_ball(const pool_ball* ball, const ac_vec3* position)
 {
@@ -156,6 +157,9 @@ void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
     if ( target_ball_id < world->numEnts )
     {
         static char entity_buffer[256];
+
+#pragma warning(push)
+#pragma warning(disable : 4996)
         sprintf(
             entity_buffer,
             "\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: "
@@ -169,6 +173,7 @@ void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
             ac_vec3_magnitude(&world->velocities[target_ball_id]),
             world->masses[target_ball_id]
         );
+#pragma warning(pop)
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glRasterPos2d(10, glutGet(GLUT_WINDOW_HEIGHT) - 30);

@@ -50,7 +50,7 @@ void phys_init_world(PhysWorld* world);
  * \param position The position of the entity.
  * \return The ID of the added entity.
  */
-unsigned phys_add_entity(PhysWorld* world, ac_vec3* position);
+unsigned phys_add_entity(PhysWorld* world, const ac_vec3* position);
 
 /**
  * \brief Adds a collider to an entity in the world.

@@ -103,9 +103,9 @@ void initialise_pool_table(PhysWorld* world, pool_table* table)
     // with the long side aligned with the z-axis
     static const ac_vec3 table_origin               = { 0.0f, 0.0f, 0.0f };
     static const ac_vec3 table_top_collider_origin  = { 0.0f, -0.025f, 0.0f };
-    static const ac_vec3 table_top_half_extents     = { 0.455f, 0.025f, 0.91f };
-    static const ac_vec3 long_cushion_half_extents  = { 0.05f, 0.05f, 0.96f };
-    static const ac_vec3 short_cushion_half_extents = { 0.46f, 0.05f, 0.05f };
+    static ac_vec3       table_top_half_extents     = { 0.455f, 0.025f, 0.91f };
+    static ac_vec3       long_cushion_half_extents  = { 0.05f, 0.05f, 0.96f };
+    static ac_vec3       short_cushion_half_extents = { 0.46f, 0.05f, 0.05f };
 
     // static const ac_vec3 table_top_half_extents = {table->width / 2.0f, table->top_depth / 2.0f,
     // table->length / 2.0f}; static const ac_vec3 table_top_collider_origin = {0.0f, 0.0f, 0.0f};
@@ -319,10 +319,6 @@ void initialise_pool_balls(
     balls[0].radius     = sphere_collider.radius;
     balls[0].draw       = draw_pool_ball;
 
-    ac_vec3 start_pos = { 0, 0.2f, -0.455f };
-
-    float ball_radius = 0.0305f;
-
     // seed the random number generator
     srand((unsigned int) time(NULL));
     for ( int i = 1; i < num_balls; ++i )
@@ -334,7 +330,7 @@ void initialise_pool_balls(
 
         balls[i].physics_id = ball_index;
         balls[i].color      = generate_ball_color(world->masses[ball_index], 0.1f, 0.2f);
-        balls[i].radius     = ball_radius;
+        balls[i].radius     = radius;
         phys_add_collision_callback(world, ball_index, callback);
         balls[i].draw = draw_pool_ball;
     }
@@ -346,10 +342,10 @@ void initialise_pool_balls(
     switch ( layout )
     {
     case ball_layout_triangle:
-        ball_formation_triangle(balls, num_balls - 1, world, target_start_pos, ball_radius);
+        ball_formation_triangle(balls, num_balls - 1, world, target_start_pos, radius);
         break;
     case ball_layout_rectangle:
-        ball_formation_rectangle(balls, num_balls - 1, world, target_start_pos, ball_radius);
+        ball_formation_rectangle(balls, num_balls - 1, world, target_start_pos, radius);
         break;
     }
 }

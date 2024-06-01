@@ -33,7 +33,7 @@ void phys_init_world(PhysWorld* world)
     memset(world->dynamicEntities, 0, sizeof(unsigned) * AC_MAX_PHYS_ENTS);
 }
 
-unsigned phys_add_entity(PhysWorld* world, ac_vec3* position)
+unsigned phys_add_entity(PhysWorld* world, const ac_vec3* position)
 {
     if ( world->numEnts < AC_MAX_PHYS_ENTS )
     {
