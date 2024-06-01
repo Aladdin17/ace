@@ -5,6 +5,16 @@
 #include <ace/geometry/shapes.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ace/math/vec3_ext.h>
+#include <time.h>
+
+//--------------------------------------------------------------------------------------------------
+// Forward Declarations
+//--------------------------------------------------------------------------------------------------
+void ball_formation_triangle(pool_ball*, int, PhysWorld*, ac_vec3, float);
+void ball_formation_rectangle(pool_ball*, int, PhysWorld*, ac_vec3, float);
+float generate_random_ball_mass(float, float);
+ac_vec3 generate_ball_color(float, float, float);
 
 //--------------------------------------------------------------------------------------------------
 // Misc
@@ -53,6 +63,28 @@ void initialise_physics_world(PhysWorld *world, int update_rate)
 {
     phys_init_world(world);
     world->timeStep = 1.0f / update_rate;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Cue Stick
+//--------------------------------------------------------------------------------------------------
+
+void initialise_cue_stick(cue_stick *stick)
+{
+    stick->target_ball = 0;
+    stick->pitch_angle = 0.0f;
+    stick->min_pitch_angle = 0.0f;
+    stick->max_pitch_angle = 90.0f;
+    stick->yaw = 0.0f;
+    stick->power = 0.0f;
+    stick->power_step = 0.05f;
+    stick->max_power_ms = 5.0f;
+    stick->rotation_step = 1.0f;
+    stick->color = (ac_vec3){ 0.651f, 0.51f, 0.035f };
+    stick->length = 1.45f;
+    stick->radius = 0.01f;
+    stick->draw_distance = 0.1f;
+    stick->draw = draw_cue_stick;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -196,50 +228,21 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
 // Pool Balls
 //--------------------------------------------------------------------------------------------------
 
-typedef struct
+float generate_random_ball_mass(float min, float max)
 {
-    ac_vec3 color;
-    char tag[16];
-    float mass;
-} ball_info;
+    float scale = rand() / (float)RAND_MAX;
+    return min + scale * (max - min);
+}
 
-static ball_info ball_setup[] = {
-    {{1.0f, 1.0f, 1.0f}, "Cue", 0.170f},
-    {{0.5f, 0.0f, 0.0f}, "1", 0.170f},
-    {{0.0f, 1.0f, 0.0f}, "2", 0.110f},
-    {{1.0f, 1.0f, 0.0f}, "3", 0.130f},
-    {{1.0f, 0.0f, 1.0f}, "4", 0.150f},
-    {{1.0f, 0.0f, 0.0f}, "5", 0.100f},
-    {{0.1f, 0.2f, 0.7f}, "6", 0.120f},
-    {{0.0f, 1.0f, 1.0f}, "7", 0.140f},
-    {{0.1f, 0.2f, 0.7f}, "8", 0.180f},
-    {{0.0f, 0.0f, 0.5f}, "9", 0.190f},
-    {{0.5f, 0.5f, 0.5f}, "10", 0.160f},
-    {{1.0f, 0.5f, 0.0f}, "11", 0.170f},
-    {{0.5f, 1.0f, 0.5f}, "12", 0.110f},
-    {{0.0f, 0.5f, 1.0f}, "13", 0.130f},
-    {{0.5f, 0.0f, 1.0f}, "14", 0.150f},
-    {{1.0f, 0.5f, 0.5f}, "15", 0.100f},
-    {{0.5f, 1.0f, 0.0f}, "16", 0.120f},
-    {{0.0f, 0.5f, 0.5f}, "17", 0.140f},
-    {{0.5f, 0.0f, 0.5f}, "18", 0.180f},
-    {{0.5f, 0.5f, 1.0f}, "19", 0.190f},
-    {{1.0f, 0.0f, 0.5f}, "20", 0.160f},
-    {{0.0f, 1.0f, 0.5f}, "21", 0.170f},
-    {{0.5f, 0.5f, 0.0f}, "22", 0.110f},
-    {{1.0f, 0.5f, 1.0f}, "23", 0.130f},
-    {{0.5f, 1.0f, 1.0f}, "24", 0.150f},
-    {{1.0f, 1.0f, 0.5f}, "25", 0.100f},
-    {{0.5f, 0.0f, 0.0f}, "26", 0.120f},
-    {{0.0f, 0.0f, 1.0f}, "27", 0.140f},
-    {{1.0f, 0.0f, 1.0f}, "28", 0.180f},
-    {{0.0f, 1.0f, 1.0f}, "29", 0.190f},
-    {{0.5f, 0.5f, 0.5f}, "30", 0.160f}
-};
-
-void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
-void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
-
+ac_vec3 generate_ball_color(float mass, float min, float max)
+{
+    // get the scale of the mass between min and max
+    float scale = (mass - min) / (max - min);
+    // get the color between red and green
+    ac_vec3 start_color = {0.0f, 0.0f, 1.0f};
+    ac_vec3 end_color = {1.0f, 0.0f, 0.0f};
+    return ac_vec3_lerp(&start_color, &end_color, scale);
+}
 
 void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_balls, int layout, void(*callback)(unsigned, unsigned))
 {
@@ -257,27 +260,28 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
     phys_add_entity_collider(world, collider, ball_id);
     phys_make_entity_dynamic(world, ball_id);
     phys_add_collision_callback(world, ball_id, callback);
-    world->masses[ball_id] = ball_setup[0].mass;
+    world->masses[ball_id] = 0.170f;
 
-    ball_info *info = &ball_setup[0];
     balls[0].physics_id = ball_id;
-    balls[0].color = info->color;
+    balls[0].color = (ac_vec3){ 1.0f, 1.0f, 1.0f };
     balls[0].radius = sphere_collider.radius;
-    balls[0].draw = draw_pool_ball; // draw_ball;
+    balls[0].draw = draw_pool_ball;
 
     ac_vec3 start_pos = {0, 0.2f,-0.455f};
 
     float ball_radius = 0.0305f;
 
+    // seed the random number generator
+    srand(time(NULL));
     for (int i = 1; i < num_balls; ++i)
     {
         unsigned ball_index = phys_add_entity(world, &(ac_vec3){0.0f, 0.0f, 0.0f});
         phys_add_entity_collider(world, collider, ball_index);
         phys_make_entity_dynamic(world, ball_index);
-        world->masses[ball_index] = ball_setup[i].mass;
+        world->masses[ball_index] = generate_random_ball_mass(0.1f, 0.2f);
 
         balls[i].physics_id = ball_index;
-        balls[i].color = ball_setup[i].color;
+        balls[i].color = generate_ball_color(world->masses[ball_index], 0.1f, 0.2f);
         balls[i].radius = ball_radius;
         phys_add_collision_callback(world, ball_index, callback);
         balls[i].draw = draw_pool_ball;
@@ -293,24 +297,6 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
         ball_formation_rectangle(balls, num_balls - 1, world, start_pos, ball_radius);
         break;
     }
-}
-
-void initialise_cue_stick(cue_stick *stick)
-{
-    stick->target_ball = 0;
-    stick->pitch_angle = 0.0f;
-    stick->min_pitch_angle = 0.0f;
-    stick->max_pitch_angle = 90.0f;
-    stick->yaw = 0.0f;
-    stick->power = 0.0f;
-    stick->power_step = 0.05f;
-    stick->max_power_ms = 5.0f;
-    stick->rotation_step = 1.0f;
-    stick->color = (ac_vec3){ 0.651f, 0.51f, 0.035f };
-    stick->length = 1.45f;
-    stick->radius = 0.01f;
-    stick->draw_distance = 0.1f;
-    stick->draw = draw_cue_stick;
 }
 
 void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius)
