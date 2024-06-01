@@ -57,7 +57,7 @@ void initialise_orbit_camera(orbit_camera* camera)
     camera->min_pitch_angle = 10.0f;
     camera->max_pitch_angle = 60.0f;
     camera->yaw_angle       = 90.0f;
-    camera->rotation_step   = 1.0f;
+    camera->rotation_step   = 2.0f;
     camera->zoom_step       = 0.2f;
     camera->target          = ac_vec3_zero();
 }
@@ -86,7 +86,7 @@ void initialise_cue_stick(cue_stick* stick)
     stick->power           = 0.0f;
     stick->power_step      = 0.05f;
     stick->max_power_ms    = 5.0f;
-    stick->rotation_step   = 1.0f;
+    stick->rotation_step   = 2.0f;
     stick->color           = (ac_vec3){ 0.651f, 0.51f, 0.035f };
     stick->length          = 1.45f;
     stick->radius          = 0.01f;
