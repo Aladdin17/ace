@@ -81,7 +81,7 @@ void ball_collision_callback(unsigned body1, unsigned body2)
         {
             // sleep the bodies
             app->physics_world.sleeping[body1] = true;
-            app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
+            app->physics_world.velocities[body1] = ac_vec3_zero();
             app->physics_world.positions[body1] = ac_vec3_zero();
         }
     }
