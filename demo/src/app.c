@@ -87,6 +87,38 @@ void ball_collision_callback(unsigned body1, unsigned body2)
             app->physics_world.positions[body1] = ac_vec3_zero();
         }
     }
+
+    // contact with the surface
+    if (body2 == app->table.physics_ids[0])
+    {
+        // we remove at most 2% of the velocity per frame
+        const static float max_deprecation = 0.02f;
+        float scalar = app->table.surface_roughness * max_deprecation;
+
+        // only account for the x and z components of the velocity
+        // we don't want to slow down the ball in the y direction
+        // nor do we want to slow down the ball if it's already slow
+        ac_vec3 velocity = app->physics_world.velocities[body1];
+        ac_vec2 velocity_xz = { velocity.x, velocity.z };
+        float magnitude_xz = ac_vec2_magnitude(&velocity_xz);
+        if ( magnitude_xz <= app->min_ball_speed)
+        {
+            return;
+        }
+
+        // apply the scalar to the velocity
+        // 1.0f - scalar is the percentage of the velocity that will be kept
+        // and apply this to the x and z components of the velocity
+        float new_velocity_magnitude = magnitude_xz * (1.0f - scalar);
+        ac_vec2 normalised_velocity = ac_vec2_normalize(&velocity_xz);
+        ac_vec2 new_velocity_xz = ac_vec2_scale(&normalised_velocity, new_velocity_magnitude);
+        ac_vec3 new_velocity = (ac_vec3){
+            .x = new_velocity_xz.x,
+            .y = velocity.y,
+            .z = new_velocity_xz.y
+        };
+        app->physics_world.velocities[body1] = new_velocity;
+    }
 }
 
 void app_cleanup( void )

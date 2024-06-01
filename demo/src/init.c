@@ -38,6 +38,7 @@ void initialise_misc( pool_app* app )
 
 void initialise_frame_time(frame_time *time)
 {
+    // don't change this
     time->update_rate = 120;
     time->last_frame_time = 0;
     time->current_frame_time = 0;
@@ -112,7 +113,7 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     // static const ac_vec3 short_cushion_half_extents = {table->width / 2.0f + table->cushion_width, table->cushion_height / 2.0f, table->cushion_width / 2.0f};
 
     table->surface_center = table_origin;
-    table->surface_roughness = 0.8f; /// \todo Need to integrate this into the physics
+    table->surface_roughness = 0.5f; /// \todo Need to integrate this into the physics
     table->surface_color = (ac_vec3){0.1f, 0.5f, 0.1f};
     table->cushion_color = (ac_vec3){0.65f, 0.33f, 0.16f};
     table->leg_color = (ac_vec3){0.55f, 0.23f, 0.06f};
