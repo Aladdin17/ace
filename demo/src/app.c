@@ -221,10 +221,18 @@ void app_key_callback(unsigned char key, int x, int y)
     switch (key)
     {
     case '=':
-        app->main_camera.radius = ac_clamp(app->main_camera.radius - movement_step, 1.0f, 10.0f);
+        app->main_camera.radius = ac_clamp(
+            app->main_camera.radius - app->main_camera.zoom_step,
+            app->main_camera.min_radius,
+            app->main_camera.max_radius
+        );
         break;
     case '-':
-        app->main_camera.radius = ac_clamp(app->main_camera.radius + movement_step, 1.0f, 10.0f);
+        app->main_camera.radius = ac_clamp(
+            app->main_camera.radius + app->main_camera.zoom_step,
+            app->main_camera.min_radius,
+            app->main_camera.max_radius
+        );
         break;
     case 's':
     case 'S':
@@ -282,26 +290,32 @@ void app_special_key_callback(int key, int x, int y)
     (void) x; // nullify unused x
     (void) y; // nullify unused y
 
-    static const float rotation_step = 1.0f;
-
     switch (key)
     {
     case GLUT_KEY_UP:
-        app->main_camera.pitch_angle = ac_clamp(app->main_camera.pitch_angle + rotation_step, 10.0f, 60.0f);
+        app->main_camera.pitch_angle = ac_clamp(
+            app->main_camera.pitch_angle + app->main_camera.rotation_step,
+            app->main_camera.min_pitch_angle,
+            app->main_camera.max_pitch_angle
+        );
         break;
     case GLUT_KEY_DOWN:
-        app->main_camera.pitch_angle = ac_clamp(app->main_camera.pitch_angle - rotation_step, 10.0f, 60.0f);
+        app->main_camera.pitch_angle = ac_clamp(
+            app->main_camera.pitch_angle - app->main_camera.rotation_step,
+            app->main_camera.min_pitch_angle,
+            app->main_camera.max_pitch_angle
+        );
         break;
     case GLUT_KEY_LEFT:
-        app->main_camera.yaw_angle += rotation_step;
-        if (app->main_camera.yaw_angle >= 0.0f)
+        app->main_camera.yaw_angle += app->main_camera.rotation_step;
+        if ( app->main_camera.yaw_angle >= 0.0f )
         {
             app->main_camera.yaw_angle -= 360.0f;
         }
         break;
     case GLUT_KEY_RIGHT:
-        app->main_camera.yaw_angle -= rotation_step;
-        if (app->main_camera.yaw_angle < 360.0f)
+        app->main_camera.yaw_angle -= app->main_camera.rotation_step;
+        if ( app->main_camera.yaw_angle < 360.0f )
         {
             app->main_camera.yaw_angle += 360.0f;
         }

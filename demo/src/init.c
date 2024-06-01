@@ -12,9 +12,15 @@
 void initialise_orbit_camera(orbit_camera *camera)
 {
     camera->radius = 5.0f;
+    camera->min_radius = 2.0f;
+    camera->max_radius = 10.0f;
     camera->pitch_angle = 30.0f;
+    camera->min_pitch_angle = 10.0f;
+    camera->max_pitch_angle = 60.0f;
     camera->yaw_angle = 90.0f;
-    camera->target = (ac_vec3){0, 0, 0};
+    camera->rotation_step = 1.0f;
+    camera->zoom_step = 0.2f;
+    camera->target = ac_vec3_zero();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -252,7 +258,7 @@ void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls)
         strcpy(balls[i].tag, ball_setup[i].tag);
         balls[i].draw = draw_pool_ball;
 
-        
+
     }
 
     // - 1 because of cueball
@@ -278,7 +284,7 @@ void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, 
     int row = 0;
     int curr_row_len = 1;
 
-    while (ball_index <= num_balls) //while more balls to place 
+    while (ball_index <= num_balls) //while more balls to place
     {
         for (int i = 0; i < curr_row_len && ball_index <= num_balls; i++) // set row by row till balls run out
         {

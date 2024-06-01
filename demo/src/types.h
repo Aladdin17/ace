@@ -6,9 +6,15 @@
 
 typedef struct orbit_camera
 {
-    float radius;
-    float pitch_angle;
-    float yaw_angle;
+    float   radius;
+    float   min_radius;
+    float   max_radius;
+    float   pitch_angle;
+    float   min_pitch_angle;
+    float   max_pitch_angle;
+    float   yaw_angle;
+    float   rotation_step;
+    float   zoom_step;
     ac_vec3 target;
 } orbit_camera;
 
