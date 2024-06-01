@@ -15,7 +15,7 @@
 void ball_collision_callback(unsigned, unsigned);
 void update_cue_stick_visibility(void);
 void detect_balls_off_table(void);
-void stike_target_ball(void);
+void strike_target_ball(void);
 void update_main_camera(const orbit_camera*);
 void setup_lighting(void);
 
@@ -111,6 +111,17 @@ void app_update_callback( int value )
     app->timer.last_frame_time = app->timer.current_frame_time;
     glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
 
+    // update simulation
+    update_cue_stick_visibility();
+    detect_balls_off_table();
+    strike_target_ball();
+    phys_update(&app->physics_world, delta_time);
+
+    glutPostRedisplay();
+}
+
+void update_cue_stick_visibility(void)
+{
     // show cue stick when cue ball not moving
     bool moving = false;
     for (int i = 0; i < app->num_balls; i++)
@@ -127,7 +138,10 @@ void app_update_callback( int value )
         }
     }
     app->cue_stick.visible = !moving;
+}
 
+void detect_balls_off_table(void)
+{
     // detect if a ball has dropped into a 'pocket'
     const float y_threshold = -2.0f;
 
@@ -152,8 +166,10 @@ void app_update_callback( int value )
             }
         }
     }
+}
 
-    // update simulation
+void strike_target_ball(void)
+{
     if (app->cue_stick.strike)
     {
         // apply force to target ball
@@ -189,9 +205,6 @@ void app_update_callback( int value )
         app->cue_stick.power = 0.0f;
         app->cue_stick.strike = false;
     }
-
-    phys_update(&app->physics_world, delta_time);
-    glutPostRedisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
