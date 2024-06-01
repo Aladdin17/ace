@@ -98,6 +98,10 @@ void app_cleanup( void )
 void app_reset( void )
 {
     bool show_minimap = false;
+    if (app)
+    {
+        show_minimap = app->show_minimap;
+    }
     app_cleanup();
     app_init();
     app->show_minimap = show_minimap;
