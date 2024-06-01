@@ -22,8 +22,8 @@ ac_vec3 generate_ball_color(float, float, float);
 
 void initialise_misc( pool_app* app )
 {
-    app->show_minimap = false;
-    app->show_entity_info = false;
+    app->show_minimap = true;
+    app->show_entity_info = true;
     app->min_ball_speed = 0.07f;
     app->y_threshold = -1.0f;
 }
