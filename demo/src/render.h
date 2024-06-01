@@ -16,3 +16,5 @@ void draw_scene(const pool_app* app, bool orthographic);
 void draw_minimap(const pool_app* app);
 void draw_powerbar(float power_ratio);
 void draw_entity_info(const PhysWorld* world, unsigned entity_id);
+
+void draw_controls_overlay(void);

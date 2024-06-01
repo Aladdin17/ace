@@ -25,6 +25,7 @@ void initialise_misc(pool_app* app)
 {
     app->show_minimap          = true;
     app->show_entity_info      = true;
+    app->show_controls         = true;
     app->min_ball_speed        = 0.07f;
     app->y_threshold           = -2.0f;
     app->cue_start_position    = (ac_vec2){ 0.0f, 0.70f };

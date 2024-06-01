@@ -162,8 +162,8 @@ void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
 #pragma warning(disable : 4996)
         sprintf(
             entity_buffer,
-            "\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: "
-            "%2.3fm/s\n\tMass %.2fkg",
+            "Position (%.2f, %.2f, %.2f)\nVelocity (%.2f, %.2f, %.2f) | Speed: "
+            "%2.3fm/s\nMass %.2fkg",
             world->positions[target_ball_id].x,
             world->positions[target_ball_id].y,
             world->positions[target_ball_id].z,
@@ -190,7 +190,7 @@ void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
             }
             else
             {
-                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, entity_buffer[i]);
+                glutBitmapCharacter(GLUT_BITMAP_8_BY_13, entity_buffer[i]);
             }
         }
     }
@@ -285,4 +285,69 @@ void draw_pool_table(const pool_table* table, bool orthographic)
             glPopMatrix();
         }
     }
+}
+
+void draw_controls_overlay(void)
+{
+    // push the current attributes
+    glPushAttrib(GL_DEPTH_TEST | GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+
+    // setup the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
+
+    // setup the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    static char *entity_buffer =
+"     C : Show Controls\n"
+"   W/S : Set Cue Power\n"
+"   A/D : Aim Cue\n"
+"   Q/E : Pitch Cue\n"
+" Space : Shoot\n"
+"Arrows : Move Camera\n"
+"   =/- : Zoom Camera\n"
+"     M : Toggle Minimap\n"
+"     I : Toggle Entity Info\n"
+"   DEL : Reset\n"
+"   ESC : Quit";
+
+    const int x_offset    = glutGet(GLUT_WINDOW_WIDTH) - 230;
+    const int y_offset    = 220;
+    const int line_height = 20;
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2d(x_offset, y_offset);
+
+    int   current_line = 0;
+    char* next_char    = entity_buffer;
+    while ( *next_char != '\0' )
+    {
+        if ( *next_char == '\n' )
+        {
+            current_line++;
+            glRasterPos2d(x_offset, y_offset - (current_line * line_height));
+        }
+        else
+        {
+            glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *next_char);
+        }
+        next_char++;
+    }
+
+    // restore the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    // restore the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glPopAttrib();
 }

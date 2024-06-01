@@ -422,9 +422,17 @@ void app_key_callback(unsigned char key, int x, int y)
             app->cue_stick.strike = true;
         }
         break;
+    case 'c':
+    case 'C':
+        app->show_controls = !app->show_controls;
+        break;
     case 'm':
     case 'M':
         app->show_minimap = !app->show_minimap;
+        break;
+    case 'i':
+    case 'I':
+        app->show_entity_info = !app->show_entity_info;
         break;
     case 27:  // ESCAPE Key
         glutLeaveMainLoop();
@@ -469,9 +477,6 @@ void app_special_key_callback(int key, int x, int y)
         {
             app->main_camera.yaw_angle += 360.0f;
         }
-        break;
-    case GLUT_KEY_F12:
-        app->show_entity_info = !app->show_entity_info;
         break;
     default:
         break;
@@ -520,6 +525,12 @@ void app_render_callback(void)
         // set the viewport to the top right corner
         glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
         draw_minimap(app);
+    }
+
+    if ( app->show_controls )
+    {
+        glViewport(0, 0, width, height);
+        draw_controls_overlay();
     }
 
     glutSwapBuffers();
