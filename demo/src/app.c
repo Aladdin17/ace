@@ -13,7 +13,7 @@
 // Forward Declarations
 //--------------------------------------------------------------------------------------------------
 void ball_collision_callback(unsigned, unsigned);
-void reset_target_ball_if_lost(void);
+void reset_target_ball_if_sleeping(void);
 void update_cue_stick_visibility(void);
 void detect_balls_off_table(void);
 void strike_target_ball(void);
@@ -166,7 +166,7 @@ void app_update_callback( int value )
     glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
 
     // update simulation
-    reset_target_ball_if_lost();
+    reset_target_ball_if_sleeping();
     update_cue_stick_visibility();
     detect_balls_off_table();
     strike_target_ball();
@@ -175,13 +175,13 @@ void app_update_callback( int value )
     glutPostRedisplay();
 }
 
-void reset_target_ball_if_lost(void)
+void reset_target_ball_if_sleeping(void)
 {
     unsigned target_physics_id = app->balls[app->cue_stick.target_ball].physics_id;
     if (app->physics_world.sleeping[target_physics_id])
     {
         app->physics_world.sleeping[target_physics_id] = false;
-        app->physics_world.velocities[target_physics_id] = ac_vec3_zero();
+        app->physics_world.velocities[target_physics_id] = (ac_vec3){ 0.0f, -0.01f, 0.0f };
         app->physics_world.positions[target_physics_id] = ball_start_pos_to_world_pos(
             &app->cue_start_position,
             &app->table.surface_center,
@@ -225,7 +225,8 @@ void detect_balls_off_table(void)
         {
             if (i == target_ball_id)
             {
-                // this will be handled in the reset_target_ball_if_lost function
+                // the rest will be handled by the reset_target_ball_if_sleeping function
+                app->physics_world.sleeping[app->balls[i].physics_id] = true;
                 continue;
             }
 
