@@ -107,13 +107,17 @@ void initialise_pool_table(PhysWorld *world, pool_table *table)
     // static const ac_vec3 long_cushion_half_extents = {table->cushion_width / 2.0f, table->cushion_height / 2.0f, table->length / 2.0f + table->cushion_width};
     // static const ac_vec3 short_cushion_half_extents = {table->width / 2.0f + table->cushion_width, table->cushion_height / 2.0f, table->cushion_width / 2.0f};
 
+    table->surface_center = table_origin;
+    table->surface_roughness = 0.8f; /// \todo Need to integrate this into the physics
+    table->surface_color = (ac_vec3){0.1f, 0.5f, 0.1f};
+    table->cushion_color = (ac_vec3){0.65f, 0.33f, 0.16f};
+    table->leg_color = (ac_vec3){0.55f, 0.23f, 0.06f};
     table->length = 1.82f;          // 0.91m half-length
     table->width = 0.91f;           // 0.455m half-width
     table->top_depth = 0.05f;       // 0.015m half-depth
     table->cushion_width = 0.10f;   // 0.05m half-width
     table->cushion_height = 0.10f;  // 0.05m half-height
-
-    table->pocket_radius = table->width * 0.055; // Pocket radius is approximately 5.5% of the table width
+    table->pocket_radius = table->width * 0.055f; // Pocket radius is approximately 5.5% of the table width
 
 
     // add the table top

@@ -1,4 +1,5 @@
 #pragma once
+#include <ace/math/vec2.h>
 #include <ace/math/vec3.h>
 #include <stdbool.h>
 #include <ace/physics/phys_world.h>
@@ -54,7 +55,21 @@ typedef struct pool_ball
 
 typedef struct pool_table
 {
+    // properties
+    ac_vec3 surface_center;
+    float surface_roughness;
+    ac_vec3 surface_color;
+    ac_vec3 cushion_color;
+    ac_vec3 leg_color;
+
+    // physics
     unsigned physics_ids[5];
+    ac_vec3 pocket_centers[4];
+    unsigned pocket_physics_ids[4];
+    ac_vec3 leg_centers[4];
+    ac_vec3 cushion_centers[4];
+
+    // rendering
     float length;
     float width;
     float top_depth;
@@ -62,14 +77,6 @@ typedef struct pool_table
     float cushion_width;
     float pocket_radius;
     float leg_length;
-
-    // relative to the origin of the table
-    // which is the center of the playing surface
-    ac_vec3 pocket_centers[4];
-    unsigned pocket_physics_ids[4];
-    ac_vec3 leg_centers[4];
-    ac_vec3 cushion_centers[4];
-
     void (*draw)(const struct pool_table*, bool orthograhic);
 } pool_table;
 
@@ -90,6 +97,9 @@ typedef struct pool_app
     // pool balls
     pool_ball* balls;          ///* 0 is cue ball
     int num_balls;             ///* number of balls
+    ac_vec2 cue_start_position;
+    ac_vec2 target_start_position;
+    float ball_drop_height;
 
     // pool table
     pool_table table;          ///< pool table

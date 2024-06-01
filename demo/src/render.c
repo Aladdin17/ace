@@ -208,7 +208,7 @@ void draw_pool_table( const pool_table* table, bool orthographic )
 {
     // draw table surface
     glPushMatrix();
-        glColor3f(0.1f, 0.5f, 0.1f);
+        glColor3fv(table->surface_color.data);
         glTranslatef(0.0f, -table->top_depth / 2.0f, 0.0f);
         glScalef(table->width, table->top_depth, table->length);
         glutSolidCube(1.0f);
@@ -218,7 +218,7 @@ void draw_pool_table( const pool_table* table, bool orthographic )
     for (int i = 0; i <= 1; i++)
     {
         glPushMatrix();
-            glColor3f(0.65f, 0.33f, 0.16f);
+            glColor3fv(table->cushion_color.data);
             glTranslatef(table->cushion_centers[i].x, table->cushion_centers[i].y, table->cushion_centers[i].z);
             glScalef(table->cushion_width, table->cushion_height, table->length + (2 * table->cushion_width));
             glutSolidCube(1.0f);
@@ -229,7 +229,7 @@ void draw_pool_table( const pool_table* table, bool orthographic )
     for (int i = 2; i <= 3; ++i)
     {
         glPushMatrix();
-            glColor3f(0.65f, 0.33f, 0.16f);
+            glColor3fv(table->cushion_color.data);
             glTranslatef(table->cushion_centers[i].x, table->cushion_centers[i].y, table->cushion_centers[i].z);
             glScalef(table->width + (2 * table->cushion_width), table->cushion_height, table->cushion_width);
             glutSolidCube(1.0f);
@@ -256,7 +256,7 @@ void draw_pool_table( const pool_table* table, bool orthographic )
         for(int i = 0; i < 4; ++i)
         {
             glPushMatrix();
-                glColor3f(0.55f, 0.23f, 0.06f);
+                glColor3fv(table->leg_color.data);
                 glTranslatef(table->leg_centers[i].x, table->leg_centers[i].y, table->leg_centers[i].z);
                 glScalef(table->cushion_width, table->leg_length, table->cushion_width);
                 glutSolidCube(1.0f);

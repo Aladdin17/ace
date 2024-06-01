@@ -52,8 +52,9 @@ frame_time* app_init( void )
     app->num_balls = get_num_balls_from_terminal() + 1;
     app->ball_layout = get_layout_from_terminal();
 
-    initialise_pool_balls(&app->physics_world, &app->balls, app->num_balls, app->ball_layout, ball_collision_callback);
+    // table must be initialised before balls
     initialise_pool_table(&app->physics_world, &app->table);
+    initialise_pool_balls(&app->physics_world, &app->balls, app->num_balls, app->ball_layout, ball_collision_callback);
     initialise_cue_stick(&app->cue_stick);
 
     return &app->timer;
