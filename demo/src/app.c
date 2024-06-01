@@ -10,36 +10,22 @@
 #include <math.h>
 
 //--------------------------------------------------------------------------------------------------
+// Forward Declarations
+//--------------------------------------------------------------------------------------------------
+void ball_collision_callback(unsigned, unsigned);
+void update_cue_stick_visibility(void);
+void detect_balls_off_table(void);
+void stike_target_ball(void);
+void update_main_camera(const orbit_camera*);
+void setup_lighting(void);
+
+//--------------------------------------------------------------------------------------------------
 // The app object and initialisation
 //
 // Not the best way to do this but we can't do much with the way GLUT requires the app to be global
 //--------------------------------------------------------------------------------------------------
 
 pool_app* app;
-
-void ball_collision_callback(unsigned body1, unsigned body2)
-{
-    unsigned* pockets = app->table.pocket_physics_ids;
-    int num_pockets = 4;
-    for (int i = 0; i < num_pockets; ++i)
-    {
-        if (body2 == pockets[i])
-        {
-            if (body1 == 0) // cue-ball
-            {
-                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
-                app->physics_world.positions[body1] = (ac_vec3){0.0f, 0.2f, 0.55f};
-            }
-            else
-            {
-                // sleep body 1 and move to origin
-                app->physics_world.velocities[body1] = (ac_vec3){ 0.0f, -1.0f, 0.0f };
-                app->physics_world.sleeping[body1] = true;
-                app->physics_world.positions[body1] = ac_vec3_zero();
-            }
-        }
-    }
-}
 
 frame_time* app_init( void )
 {
@@ -71,6 +57,30 @@ frame_time* app_init( void )
     initialise_pool_table(&app->physics_world, &app->table);
     initialise_cue_stick(&app->cue_stick);
     return &app->timer;
+}
+
+void ball_collision_callback(unsigned body1, unsigned body2)
+{
+    unsigned* pockets = app->table.pocket_physics_ids;
+    int num_pockets = 4;
+    for (int i = 0; i < num_pockets; ++i)
+    {
+        if (body2 == pockets[i])
+        {
+            if (body1 == 0) // cue-ball
+            {
+                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
+                app->physics_world.positions[body1] = (ac_vec3){0.0f, 0.2f, 0.55f};
+            }
+            else
+            {
+                // sleep body 1 and move to origin
+                app->physics_world.velocities[body1] = (ac_vec3){ 0.0f, -1.0f, 0.0f };
+                app->physics_world.sleeping[body1] = true;
+                app->physics_world.positions[body1] = ac_vec3_zero();
+            }
+        }
+    }
 }
 
 void app_reset( void )
@@ -183,7 +193,6 @@ void app_update_callback( int value )
     phys_update(&app->physics_world, delta_time);
     glutPostRedisplay();
 }
-
 
 //--------------------------------------------------------------------------------------------------
 // Key Callbacks
@@ -305,7 +314,49 @@ void app_special_key_callback(int key, int x, int y)
 // High-Level Rendering
 //--------------------------------------------------------------------------------------------------
 
-void update_orbit_camera(const orbit_camera* cam)
+void app_render_callback( void )
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    // update camera
+    update_main_camera(&app->main_camera);
+
+    // set up lighting
+    GLfloat light_position[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+    setup_lighting();
+
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+
+    // draw the scene in the main viewport
+    glViewport(0, 0, width, height);
+    draw_scene(app, false);
+
+    if(app->show_entity_info)
+    {
+        draw_entity_info(app, app->target_entity_info);
+    }
+
+    // draw the powerbar overlay
+    draw_powerbar(app->cue_stick.power);
+
+    // render the minimap overlay
+    if (app->show_minimap)
+    {
+        // set the viewport to the top right corner
+        glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
+        draw_minimap(app);
+    }
+
+    glutSwapBuffers();
+}
+
+void update_main_camera(const orbit_camera* cam)
 {
     float pitch_rad = ac_deg_to_rad(cam->pitch_angle);
     float yaw_rad = ac_deg_to_rad(cam->yaw_angle);
@@ -350,47 +401,4 @@ void setup_lighting(void)
     glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 8.0f); // Spotlight focus
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.05f);
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.005f);
-}
-
-
-void app_render_callback( void )
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // update camera
-    update_orbit_camera(&app->main_camera);
-
-    // set up lighting
-    GLfloat light_position[] = { 0.0f, 1.0f, 0.0f, 1.0f };
-    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
-    setup_lighting();
-
-    int width = glutGet(GLUT_WINDOW_WIDTH);
-    int height = glutGet(GLUT_WINDOW_HEIGHT);
-
-    // draw the scene in the main viewport
-    glViewport(0, 0, width, height);
-    draw_scene(app, false);
-
-    if(app->show_entity_info)
-    {
-        draw_entity_info(app, app->target_entity_info);
-    }
-
-    // draw the powerbar overlay
-    draw_powerbar(app->cue_stick.power);
-
-    // render the minimap overlay
-    if (app->show_minimap)
-    {
-        // set the viewport to the top right corner
-        glViewport(2 * width / 3, 2 * height / 3, width / 3, height / 3);
-        draw_minimap(app);
-    }
-
-    glutSwapBuffers();
 }
