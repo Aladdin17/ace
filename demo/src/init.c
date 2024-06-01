@@ -274,7 +274,7 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
     float ball_radius = 0.0305f;
 
     // seed the random number generator
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
     for (int i = 1; i < num_balls; ++i)
     {
         unsigned ball_index = phys_add_entity(world, &(ac_vec3){0.0f, 0.0f, 0.0f});
