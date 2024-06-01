@@ -98,4 +98,6 @@ typedef struct pool_app
     // misc
     bool show_minimap;         ///< show the minimap
     bool show_entity_info;     ///< show info panel
+    float min_ball_speed;      ///< minimum speed for a ball to be considered moving
+    float y_threshold;         ///< y position threshold for a ball to be considered off the table
 } pool_app;

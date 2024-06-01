@@ -122,7 +122,6 @@ void app_update_callback( int value )
 
 void update_cue_stick_visibility(void)
 {
-    // show cue stick when cue ball not moving
     bool moving = false;
     for (int i = 0; i < app->num_balls; i++)
     {
@@ -131,7 +130,7 @@ void update_cue_stick_visibility(void)
             continue;
         }
 
-        if (ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >= 0.07f)
+        if (ac_vec3_magnitude(&app->physics_world.velocities[app->balls[i].physics_id]) >= app->min_ball_speed)
         {
             moving = true;
             break;
@@ -142,13 +141,10 @@ void update_cue_stick_visibility(void)
 
 void detect_balls_off_table(void)
 {
-    // detect if a ball has dropped into a 'pocket'
-    const float y_threshold = -2.0f;
-
     for (int i = 0; i < app->num_balls; i++)
     {
         ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
-        if (pos->y < y_threshold)
+        if (pos->y < app->y_threshold)
         {
             if (i == 0)
             {
