@@ -31,10 +31,6 @@ frame_time* app_init( void )
 {
     app = malloc(sizeof(pool_app));
 
-    // frame_time
-    app->timer.update_rate = 120; // Hz
-    app->timer.last_frame_time = 0;
-    app->timer.current_frame_time = 0;
 
     // show minimap
     app->show_minimap = false;
@@ -44,6 +40,7 @@ frame_time* app_init( void )
     app->target_entity_info = 1;
 
     // external initialisations
+    initialise_frame_time(&app->timer);
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
 

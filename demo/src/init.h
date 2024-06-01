@@ -5,8 +5,10 @@ typedef struct pool_ball pool_ball;
 typedef struct pool_table pool_table;
 typedef struct cue_stick cue_stick;
 typedef struct orbit_camera orbit_camera;
+typedef struct frame_time frame_time;
 
 void initialise_orbit_camera( orbit_camera* camera );
+void initialise_frame_time( frame_time* time );
 void initialise_physics_world( PhysWorld* world, int update_rate );
 void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls);
 void initialise_pool_table( PhysWorld* world, pool_table* table );

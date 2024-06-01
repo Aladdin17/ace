@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct
+typedef struct frame_time
 {
     int update_rate;
     int last_frame_time;
