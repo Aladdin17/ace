@@ -61,7 +61,7 @@ int get_layout_from_terminal(void)
     bool valid  = false;
     while ( !valid )
     {
-        printf("Select the table layout, 0 = Triangle, 1 = Rectangle: ");
+        printf("Select the ball layout, 0 = Triangle, 1 = Rectangle: ");
         if ( fgets(input, sizeof(input), stdin) != NULL )
         {
             removeNewlineChar(input);

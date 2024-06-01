@@ -163,7 +163,7 @@ void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
         sprintf(
             entity_buffer,
             "\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: "
-            "%2.3fm/s\n\tMass %.2f",
+            "%2.3fm/s\n\tMass %.2fkg",
             world->positions[target_ball_id].x,
             world->positions[target_ball_id].y,
             world->positions[target_ball_id].z,
