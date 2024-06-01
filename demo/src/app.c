@@ -3,11 +3,13 @@
 #include "render.h"
 #include "types.h"
 #include <GL/freeglut.h>
+#include <ace/core/string.h>
 #include <ace/geometry/shapes.h>
 #include <ace/math/math.h>
 #include <ace/math/vec3.h>
 #include <ace/physics/phys_world.h>
 #include <math.h>
+#include <stdio.h>
 
 //--------------------------------------------------------------------------------------------------
 // Forward Declarations
@@ -28,9 +30,28 @@ void setup_lighting(void);
 
 pool_app* app;
 
-int get_num_balls_from_terminal(void)
+int get_num_balls_from_terminal(int max_balls)
 {
-    return 10 + 1;
+    char input[256];
+    int  num_balls = 0;
+    bool valid     = false;
+    while ( !valid )
+    {
+        printf("Enter the number of balls [0 - %d]: ", max_balls);
+        if ( fgets(input, sizeof(input), stdin) != NULL )
+        {
+            removeNewlineChar(input);
+            if ( strToUint32(input, (uint32_t*) &num_balls, 10) )
+            {
+                if ( num_balls >= 0 && num_balls <= max_balls )
+                {
+                    valid = true;
+                }
+            }
+        }
+    }
+
+    return num_balls + 1;
 }
 
 int get_layout_from_terminal(void)
@@ -49,7 +70,7 @@ frame_time* app_init(void)
 
     app = malloc(sizeof(pool_app));
 
-    app->num_balls         = get_num_balls_from_terminal();
+    app->num_balls         = get_num_balls_from_terminal(max_balls);
     app->ball_layout       = get_layout_from_terminal();
     app->surface_roughness = get_surface_roughness_from_terminal();
 
