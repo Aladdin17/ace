@@ -111,9 +111,11 @@ frame_time* app_init(void)
 
     app = malloc(sizeof(pool_app));
 
+    printf("Welcome to the ACE Pool Game\n\n");
     app->num_balls         = get_num_balls_from_terminal(max_balls);
     app->ball_layout       = get_layout_from_terminal();
     app->surface_roughness = get_surface_roughness_from_terminal();
+    printf("Starting pool with %d balls\n\n\n", app->num_balls - 1);
 
     // external initialisations
     initialise_misc(app);
