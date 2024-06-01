@@ -334,15 +334,6 @@ void app_special_key_callback(int key, int x, int y)
     default:
         break;
     }
-
-
-    if(key >= GLUT_KEY_F1 && key <= GLUT_KEY_F11)
-    {
-        app->show_entity_info;
-        app->target_entity_info = key - 1;
-        return;
-    }
-
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -374,7 +365,8 @@ void app_render_callback( void )
 
     if(app->show_entity_info)
     {
-        draw_entity_info(app, app->target_entity_info);
+        unsigned target_entity = app->balls[0].physics_id;
+        draw_entity_info(app, target_entity);
     }
 
     // draw the powerbar overlay

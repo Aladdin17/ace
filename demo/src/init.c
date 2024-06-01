@@ -14,7 +14,6 @@ void initialise_misc( pool_app* app )
 {
     app->show_minimap = false;
     app->show_entity_info = false;
-    app->target_entity_info = 1;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -284,7 +283,6 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
         phys_add_collision_callback(world, ball_index, callback);
         strcpy(balls[i].tag, ball_setup[i].tag);
         balls[i].draw = draw_pool_ball;
-
     }
 
     // - 1 because of cueball

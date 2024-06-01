@@ -79,6 +79,7 @@ enum ball_layout
     ball_layout_triangle,
     ball_layout_rectangle
 };
+
 typedef struct pool_app
 {
     // simulation properties
@@ -90,7 +91,7 @@ typedef struct pool_app
     // pool balls
     pool_ball* balls;          ///* 0 is cue ball
     int num_balls;             ///* number of balls
-    int target_entity_info;    // entity to show
+
     // pool table
     pool_table table;          ///< pool table
     int ball_layout;           ///< 0 = 9-ball, 1 = 8-ball
