@@ -144,7 +144,7 @@ void draw_powerbar(float power_ratio )
     glPopAttrib();
 }
 
-void draw_entity_info(const pool_app* app, unsigned ball_id)
+void draw_entity_info(const PhysWorld* world, unsigned target_ball_id)
 {
     // push the current attributes
     glPushAttrib(GL_DEPTH_TEST | GL_LIGHTING);
@@ -162,16 +162,13 @@ void draw_entity_info(const pool_app* app, unsigned ball_id)
     glPushMatrix();
     glLoadIdentity();
 
-    PhysWorld* world = &app->physics_world;
-
-    unsigned entity_id = app->balls->physics_id; //cheap and effective!
-    if (entity_id < app->physics_world.numEnts)
+    if (target_ball_id < world->numEnts)
     {
         static char entity_buffer[256];
         sprintf(entity_buffer, "\tPosition (%.2f, %.2f, %.2f)\n\tVelocity (%.2f, %.2f, %.2f) | Speed: %2.3fm/s\n\tMass %.2f",
-                world->positions[entity_id].x, world->positions[entity_id].y, world->positions[entity_id].z,
-                world->velocities[entity_id].x, world->velocities[entity_id].y, world->velocities[entity_id].z, ac_vec3_magnitude(&world->velocities[entity_id]),
-                world->masses[entity_id]);
+                world->positions[target_ball_id].x, world->positions[target_ball_id].y, world->positions[target_ball_id].z,
+                world->velocities[target_ball_id].x, world->velocities[target_ball_id].y, world->velocities[target_ball_id].z, ac_vec3_magnitude(&world->velocities[target_ball_id]),
+                world->masses[target_ball_id]);
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glRasterPos2d(10, glutGet(GLUT_WINDOW_HEIGHT) - 30);

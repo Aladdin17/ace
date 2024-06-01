@@ -388,7 +388,7 @@ void app_render_callback( void )
     if(app->show_entity_info)
     {
         unsigned target_entity = app->balls[0].physics_id;
-        draw_entity_info(app, target_entity);
+        draw_entity_info(&app->physics_world, target_entity);
     }
 
     // draw the powerbar overlay
