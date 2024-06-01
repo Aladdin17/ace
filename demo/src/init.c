@@ -263,7 +263,6 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
     balls[0].physics_id = ball_id;
     balls[0].color = info->color;
     balls[0].radius = sphere_collider.radius;
-    strcpy(balls[0].tag, info->tag);
     balls[0].draw = draw_pool_ball; // draw_ball;
 
     ac_vec3 start_pos = {0, 0.2f,-0.455f};
@@ -281,7 +280,6 @@ void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_ball
         balls[i].color = ball_setup[i].color;
         balls[i].radius = ball_radius;
         phys_add_collision_callback(world, ball_index, callback);
-        strcpy(balls[i].tag, ball_setup[i].tag);
         balls[i].draw = draw_pool_ball;
     }
 

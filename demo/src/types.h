@@ -49,7 +49,6 @@ typedef struct pool_ball
     unsigned physics_id;
     ac_vec3 color;
     float radius;
-    char tag[16];
     void (*draw)(const struct pool_ball*, const ac_vec3* position);
 } pool_ball;
 
