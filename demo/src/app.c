@@ -34,9 +34,8 @@ int get_num_balls_from_terminal(void)
 
 int get_layout_from_terminal(void)
 {
-    return 0;
+    return ball_layout_triangle;
 }
-
 
 frame_time* app_init( void )
 {
