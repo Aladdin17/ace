@@ -20,14 +20,29 @@ typedef struct orbit_camera
 
 typedef struct cue_stick
 {
-    unsigned target;
-    float pitch;
+    // properties
+    int   target_ball;  // this must be < num_balls
+    float pitch_angle;
+    float min_pitch_angle;
+    float max_pitch_angle;
     float yaw;
     float power;
+    float power_step;
+    float max_power_ms;
+    float rotation_step;
+
+    // runtime
     bool strike;
-    bool visible;
-    void (*draw)(const struct cue_stick*, const ac_vec3* position, float radius);
+
+    // rendering
+    ac_vec3 color;
+    float   length;
+    float   radius;
+    float   draw_distance;  // in m from target ball
+    bool    visible;
+    void (*draw)(const struct cue_stick*, const ac_vec3* target_position, float target_radius);
 } cue_stick;
+
 
 typedef struct pool_ball
 {

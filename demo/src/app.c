@@ -170,41 +170,41 @@ void detect_balls_off_table(void)
 
 void strike_target_ball(void)
 {
-    if (app->cue_stick.strike)
+    if ( !app->cue_stick.strike )
     {
-        // apply force to target ball
-        // force is between 0.0 and 1.0
-        // max strike force is set to 60N (newtons)
-        // and assuming instant impulse transfer
-        // delta_v = F / m
-
-        // float force_newtons = 60.0f * app->cue_stick.power; // 60N max force
-        float mass_kg = app->physics_world.masses[app->cue_stick.target];
-        if (mass_kg > 0.0f)
-        {
-            float max_velocity = 5.0f; // m/s
-
-            // float inv_mass = 1.0f / mass_kg * 1000.0f;
-            // float delta_velocity = force_newtons * inv_mass;
-            // float delta_v = 40.0f * stick.power; // max velocity is 5.0f
-
-            // calculate direction of force based on stick orientation, yaw, and pitch
-            ac_vec3 new_velocity = (ac_vec3){
-                .x = -sinf(ac_deg_to_rad(app->cue_stick.yaw)) * cosf(ac_deg_to_rad(app->cue_stick.pitch)),
-                .y = sinf(ac_deg_to_rad(app->cue_stick.pitch)),
-                .z = -cosf(ac_deg_to_rad(app->cue_stick.yaw)) * cosf(ac_deg_to_rad(app->cue_stick.pitch))
-            };
-            new_velocity = ac_vec3_normalize(&new_velocity);
-            new_velocity = ac_vec3_scale(&new_velocity, max_velocity * app->cue_stick.power);
-
-            // apply to cue ball
-            app->physics_world.velocities[app->cue_stick.target] = new_velocity;
-        }
-
-        // reset stick power
-        app->cue_stick.power = 0.0f;
-        app->cue_stick.strike = false;
+        return;
     }
+
+    int num_balls   = app->num_balls;
+    int target_ball = (int) app->cue_stick.target_ball;
+    if ( target_ball >= num_balls )
+    {
+        return;
+    }
+
+    pool_ball* balls                  = app->balls;
+    PhysWorld* world                  = &app->physics_world;
+    unsigned   target_ball_physics_id = balls[target_ball].physics_id;
+    float      mass_kg                = world->masses[target_ball_physics_id];
+    if ( mass_kg > 0.0f )
+    {
+        // calculate direction of force based on stick orientation, yaw, and pitch
+        ac_vec3 new_velocity = (ac_vec3){ .x = -sinf(ac_deg_to_rad(app->cue_stick.yaw)) *
+                                               cosf(ac_deg_to_rad(app->cue_stick.pitch_angle)),
+                                          .y = sinf(ac_deg_to_rad(app->cue_stick.pitch_angle)),
+                                          .z = -cosf(ac_deg_to_rad(app->cue_stick.yaw)) *
+                                               cosf(ac_deg_to_rad(app->cue_stick.pitch_angle)) };
+        new_velocity         = ac_vec3_normalize(&new_velocity);
+        new_velocity =
+            ac_vec3_scale(&new_velocity, app->cue_stick.max_power_ms * app->cue_stick.power);
+
+        // apply to cue ball
+        world->velocities[target_ball_physics_id] = new_velocity;
+    }
+
+    // reset stick power
+    app->cue_stick.power  = 0.0f;
+    app->cue_stick.strike = false;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -216,9 +216,7 @@ void app_key_callback(unsigned char key, int x, int y)
     (void) x; // nullify unused x
     (void) y; // nullify unused y
 
-    static const float movement_step = 0.05f;
-    static const float rotation_step = 1.0f;
-    switch (key)
+    switch ( key )
     {
     case '=':
         app->main_camera.radius = ac_clamp(
@@ -236,38 +234,48 @@ void app_key_callback(unsigned char key, int x, int y)
         break;
     case 's':
     case 'S':
-        app->cue_stick.power = ac_clamp(app->cue_stick.power + 0.01f, 0.0f, 1.0f);
+        app->cue_stick.power =
+            ac_clamp(app->cue_stick.power + app->cue_stick.power_step, 0.0f, 1.0f);
         break;
     case 'w':
     case 'W':
-        app->cue_stick.power = ac_clamp(app->cue_stick.power - 0.01f, 0.0f, 1.0f);
+        app->cue_stick.power =
+            ac_clamp(app->cue_stick.power - app->cue_stick.power_step, 0.0f, 1.0f);
         break;
     case 'a':
     case 'A':
-        app->cue_stick.yaw += rotation_step;
-        if (app->cue_stick.yaw >= 360.0f)
+        app->cue_stick.yaw += app->cue_stick.rotation_step;
+        if ( app->cue_stick.yaw >= 360.0f )
         {
             app->cue_stick.yaw -= 360.0f;
         }
         break;
     case 'd':
     case 'D':
-        app->cue_stick.yaw -= rotation_step;
-        if (app->cue_stick.yaw < 0.0f)
+        app->cue_stick.yaw -= app->cue_stick.rotation_step;
+        if ( app->cue_stick.yaw < 0.0f )
         {
             app->cue_stick.yaw += 360.0f;
         }
         break;
     case 'q':
     case 'Q':
-        app->cue_stick.pitch = ac_clamp(app->cue_stick.pitch + rotation_step, 0.0f, 90.0f);
+        app->cue_stick.pitch_angle = ac_clamp(
+            app->cue_stick.pitch_angle + app->cue_stick.rotation_step,
+            app->cue_stick.min_pitch_angle,
+            app->cue_stick.max_pitch_angle
+        );
         break;
     case 'e':
     case 'E':
-        app->cue_stick.pitch = ac_clamp(app->cue_stick.pitch - rotation_step, 0.0f, 90.0f);
+        app->cue_stick.pitch_angle = ac_clamp(
+            app->cue_stick.pitch_angle - app->cue_stick.rotation_step,
+            app->cue_stick.min_pitch_angle,
+            app->cue_stick.max_pitch_angle
+        );
         break;
     case ' ':
-        if (app->cue_stick.visible)
+        if ( app->cue_stick.visible )
         {
             app->cue_stick.strike = true;
         }

@@ -268,12 +268,19 @@ void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls)
 
 void initialise_cue_stick(cue_stick *stick)
 {
-    stick->pitch = 0.0f;
+    stick->target_ball = 0;
+    stick->pitch_angle = 0.0f;
+    stick->min_pitch_angle = 0.0f;
+    stick->max_pitch_angle = 90.0f;
     stick->yaw = 0.0f;
     stick->power = 0.0f;
-    stick->target = 0; // cue ball
-    stick->strike = false;
-    stick->visible = true;
+    stick->power_step = 0.05f;
+    stick->max_power_ms = 5.0f;
+    stick->rotation_step = 1.0f;
+    stick->color = (ac_vec3){ 0.651f, 0.51f, 0.035f };
+    stick->length = 1.45f;
+    stick->radius = 0.01f;
+    stick->draw_distance = 0.1f;
     stick->draw = draw_cue_stick;
 }
 

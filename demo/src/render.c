@@ -13,21 +13,25 @@ void draw_pool_ball( const pool_ball* ball, const ac_vec3* position )
     glPopMatrix();
 }
 
-void draw_cue_stick( const cue_stick* stick, const ac_vec3* position, float radius )
+void draw_cue_stick(const cue_stick* stick, const ac_vec3* target_position, float target_radius)
 {
-    // draw stick
     glPushMatrix();
-    glColor3f(0.651f, 0.51f, 0.035f); // brown
-    glTranslatef(position->x, position->y, position->z); // move to cue ball
+    glColor3fv(stick->color.data);
+    glTranslatef(target_position->x, target_position->y, target_position->z);
     glRotatef(stick->yaw, 0.0f, 1.0f, 0.0f);
-    glRotatef(stick->pitch, -1.0f, 0.0f, 0.0f);
-    glTranslatef(0.0f, 0.0f, (stick->power) / 8.0f + radius); // move to end of cue ball
-    glutSolidCylinder(0.01, 1.45f, 20, 20); // 1cm, by 1.45m
+    glRotatef(stick->pitch_angle, -1.0f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, stick->power * stick->draw_distance + target_radius);
+    glutSolidCylinder(stick->radius, stick->length, 20, 20);
     glPopMatrix();
 }
 
+
 void draw_scene( const pool_app* app, bool orthographic)
 {
+    const PhysWorld* world = &app->physics_world;
+    const pool_ball* balls = app->balls;
+    const int num_balls = app->num_balls;
+
     for (int i = 0; i < app->num_balls; i++)
     {
         // skip sleeping balls
@@ -40,11 +44,18 @@ void draw_scene( const pool_app* app, bool orthographic)
         app->balls[i].draw(ball, pos);
     }
 
-    if (app->cue_stick.visible)
+    // draw the cue stick
+    if ( app->cue_stick.visible )
     {
-        const ac_vec3* target_pos = &app->physics_world.positions[app->cue_stick.target];
-        const float target_radius = app->balls[app->cue_stick.target].radius;
-        app->cue_stick.draw(&app->cue_stick, target_pos, target_radius);
+        const cue_stick* stick = &app->cue_stick;
+        if ( stick->target_ball < num_balls )
+        {
+            const pool_ball* target_ball       = &balls[stick->target_ball];
+            const unsigned   target_physics_id = target_ball->physics_id;
+            const ac_vec3*   target_pos        = &world->positions[target_physics_id];
+            const float      target_radius     = target_ball->radius;
+            stick->draw(&app->cue_stick, target_pos, target_radius);
+        }
     }
 
     app->table.draw(&app->table, orthographic);
