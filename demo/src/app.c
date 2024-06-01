@@ -13,6 +13,7 @@
 // Forward Declarations
 //--------------------------------------------------------------------------------------------------
 void ball_collision_callback(unsigned, unsigned);
+void reset_target_ball_if_lost(void);
 void update_cue_stick_visibility(void);
 void detect_balls_off_table(void);
 void strike_target_ball(void);
@@ -78,18 +79,10 @@ void ball_collision_callback(unsigned body1, unsigned body2)
     {
         if (body2 == pockets[i])
         {
-            if (body1 == 0) // cue-ball
-            {
-                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
-                app->physics_world.positions[body1] = (ac_vec3){0.0f, 0.2f, 0.55f};
-            }
-            else
-            {
-                // sleep body 1 and move to origin
-                app->physics_world.velocities[body1] = (ac_vec3){ 0.0f, -1.0f, 0.0f };
-                app->physics_world.sleeping[body1] = true;
-                app->physics_world.positions[body1] = ac_vec3_zero();
-            }
+            // sleep the bodies
+            app->physics_world.sleeping[body1] = true;
+            app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
+            app->physics_world.positions[body1] = ac_vec3_zero();
         }
     }
 }
@@ -134,12 +127,29 @@ void app_update_callback( int value )
     glutTimerFunc(1000 / app->timer.update_rate, app_update_callback, 0);
 
     // update simulation
+    reset_target_ball_if_lost();
     update_cue_stick_visibility();
     detect_balls_off_table();
     strike_target_ball();
     phys_update(&app->physics_world, delta_time);
 
     glutPostRedisplay();
+}
+
+void reset_target_ball_if_lost(void)
+{
+    unsigned target_physics_id = app->balls[app->cue_stick.target_ball].physics_id;
+    if (app->physics_world.sleeping[target_physics_id])
+    {
+        app->physics_world.sleeping[target_physics_id] = false;
+        app->physics_world.velocities[target_physics_id] = ac_vec3_zero();
+        app->physics_world.positions[target_physics_id] = ball_start_pos_to_world_pos(
+            &app->cue_start_position,
+            &app->table.surface_center,
+            &(ac_vec2){ app->table.width, app->table.length },
+            app->ball_drop_height
+        );
+    }
 }
 
 void update_cue_stick_visibility(void)
@@ -165,23 +175,17 @@ void detect_balls_off_table(void)
 {
     for (int i = 0; i < app->num_balls; i++)
     {
+        if (app->physics_world.sleeping[app->balls[i].physics_id])
+        {
+            continue;
+        }
+
         ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
         if (pos->y < app->y_threshold)
         {
-            if (i == 0)
-            {
-                // cue ball dropped, reset to origin
-                *pos = (ac_vec3){0.0f, 0.2f, 0.55f};
-                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
-            }
-            else
-            {
-                // target ball dropped
-                // sleep the ball and move to origin
-                app->physics_world.velocities[app->balls[i].physics_id] = (ac_vec3){0.0f, 0.0f, 0.0f};
-                app->physics_world.sleeping[app->balls[i].physics_id] = true;
-                *pos = (ac_vec3){ 0.0f, -1.0f, 0.0f };
-            }
+            app->physics_world.sleeping[app->balls[i].physics_id] = true;
+            app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
+            *pos = ac_vec3_zero();
         }
     }
 }
