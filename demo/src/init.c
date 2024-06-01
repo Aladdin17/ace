@@ -4,6 +4,7 @@
 #include <ace/physics/phys_world.h>
 #include <ace/geometry/shapes.h>
 #include <string.h>
+#include <stdlib.h>
 
 //--------------------------------------------------------------------------------------------------
 // Misc
@@ -240,20 +241,23 @@ static ball_info ball_setup[] = {
 void ball_formation_triangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
 void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius);
 
-void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls)
+
+void initialise_pool_balls(PhysWorld *world, pool_ball **balls_ptr, int num_balls, int layout, void(*callback)(unsigned, unsigned))
 {
+    // get the number of balls from the user
+    *balls_ptr = (pool_ball*)malloc(num_balls * sizeof(pool_ball));
+    pool_ball *balls = *balls_ptr;
+
     // currently all balls have the same radius but can differ in mass
     static const float radius = 0.0305f;
     static Sphere sphere_collider = {.radius = 0.0305f};
     static const Collider collider = {.type = SPHERE_C, .data = &sphere_collider};
 
-
-
     // cue ball
     unsigned ball_id = phys_add_entity(world, &(ac_vec3){0.0f, 0.2f, 0.55f});
     phys_add_entity_collider(world, collider, ball_id);
     phys_make_entity_dynamic(world, ball_id);
-    // phys_add_collision_callback(world, ballID, collisionCallback);
+    phys_add_collision_callback(world, ball_id, callback);
     world->masses[ball_id] = ball_setup[0].mass;
 
     ball_info *info = &ball_setup[0];
@@ -277,15 +281,22 @@ void initialise_pool_balls(PhysWorld *world, pool_ball *balls, int num_balls)
         balls[i].physics_id = ball_index;
         balls[i].color = ball_setup[i].color;
         balls[i].radius = ball_radius;
+        phys_add_collision_callback(world, ball_index, callback);
         strcpy(balls[i].tag, ball_setup[i].tag);
         balls[i].draw = draw_pool_ball;
-
 
     }
 
     // - 1 because of cueball
-    //ball_formation_triangle(balls, num_balls - 1, world, start_pos, ball_radius);
-    ball_formation_rectangle(balls, num_balls - 1, world, start_pos, ball_radius);
+    switch (layout)
+    {
+    case ball_layout_triangle:
+        ball_formation_triangle(balls, num_balls - 1, world, start_pos, ball_radius);
+        break;
+    case ball_layout_rectangle:
+        ball_formation_rectangle(balls, num_balls - 1, world, start_pos, ball_radius);
+        break;
+    }
 }
 
 void initialise_cue_stick(cue_stick *stick)

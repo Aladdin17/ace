@@ -74,16 +74,28 @@ typedef struct pool_table
     void (*draw)(const struct pool_table*, bool orthograhic);
 } pool_table;
 
+enum ball_layout
+{
+    ball_layout_triangle,
+    ball_layout_rectangle
+};
 typedef struct pool_app
 {
-    frame_time timer;          // stores frame time information
-    orbit_camera main_camera;  // used to orbit the camera around the table
-    cue_stick cue_stick;       // cue cue_stick
-    pool_ball* balls;       // 0 is cue ball, plus 10 targets
-    int num_balls;             // number of balls
-    pool_table table;          // pool table
-    PhysWorld physics_world;   // physics world
-    bool show_minimap;         // show the minimap
-    bool show_entity_info;     // show info panel
+    // simulation properties
+    frame_time timer;          ///< stores frame time information
+    orbit_camera main_camera;  ///< used to orbit the camera around the table
+    cue_stick cue_stick;       ///< cue cue_stick
+    PhysWorld physics_world;   ///< physics world
+
+    // pool balls
+    pool_ball* balls;          ///* 0 is cue ball
+    int num_balls;             ///* number of balls
     int target_entity_info;    // entity to show
+    // pool table
+    pool_table table;          ///< pool table
+    int ball_layout;           ///< 0 = 9-ball, 1 = 8-ball
+
+    // misc
+    bool show_minimap;         ///< show the minimap
+    bool show_entity_info;     ///< show info panel
 } pool_app;

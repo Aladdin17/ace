@@ -27,6 +27,17 @@ void setup_lighting(void);
 
 pool_app* app;
 
+int get_num_balls_from_terminal(void)
+{
+    return 10;
+}
+
+int get_layout_from_terminal(void)
+{
+    return 0;
+}
+
+
 frame_time* app_init( void )
 {
     app = malloc(sizeof(pool_app));
@@ -37,13 +48,11 @@ frame_time* app_init( void )
     initialise_orbit_camera(&app->main_camera);
     initialise_physics_world(&app->physics_world, app->timer.update_rate);
 
-    app->num_balls = 10; //this includes the cue ball because of init
-    app->balls = malloc(sizeof(pool_ball) * app->num_balls);
-    initialise_pool_balls(&app->physics_world, app->balls, app->num_balls);
-    for (int i = 0; i < app->num_balls; i++)
-    {
-        phys_add_collision_callback(&app->physics_world, app->balls[i].physics_id, ball_collision_callback);
-    }
+    // get info from the user
+    app->num_balls = get_num_balls_from_terminal() + 1;
+    app->ball_layout = get_layout_from_terminal();
+
+    initialise_pool_balls(&app->physics_world, &app->balls, app->num_balls, app->ball_layout, ball_collision_callback);
     initialise_pool_table(&app->physics_world, &app->table);
     initialise_cue_stick(&app->cue_stick);
 
