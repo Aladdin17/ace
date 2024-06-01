@@ -173,6 +173,7 @@ void update_cue_stick_visibility(void)
 
 void detect_balls_off_table(void)
 {
+    int target_ball_id = app->cue_stick.target_ball;
     for (int i = 0; i < app->num_balls; i++)
     {
         if (app->physics_world.sleeping[app->balls[i].physics_id])
@@ -183,9 +184,19 @@ void detect_balls_off_table(void)
         ac_vec3* pos = &app->physics_world.positions[app->balls[i].physics_id];
         if (pos->y < app->y_threshold)
         {
-            app->physics_world.sleeping[app->balls[i].physics_id] = true;
+            if (i == target_ball_id)
+            {
+                // this will be handled in the reset_target_ball_if_lost function
+                continue;
+            }
+
             app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
-            *pos = ac_vec3_zero();
+            *pos = ball_start_pos_to_world_pos(
+                &app->target_start_position,
+                &app->table.surface_center,
+                &(ac_vec2){ app->table.width, app->table.length },
+                app->ball_drop_height
+            );
         }
     }
 }
