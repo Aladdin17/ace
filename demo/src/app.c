@@ -83,7 +83,26 @@ int get_layout_from_terminal(void)
 
 float get_surface_roughness_from_terminal(void)
 {
-    return 0.5f;
+    char  input[256];
+    float roughness = 0.0f;
+    bool  valid     = false;
+    while ( !valid )
+    {
+        printf("Enter the surface roughness [0.0 - 1.0]: ");
+        if ( fgets(input, sizeof(input), stdin) != NULL )
+        {
+            removeNewlineChar(input);
+            if ( strToFloat(input, &roughness) )
+            {
+                if ( roughness >= 0.0f && roughness <= 1.0f )
+                {
+                    valid = true;
+                }
+            }
+        }
+    }
+
+    return roughness;
 }
 
 frame_time* app_init(void)
