@@ -83,15 +83,22 @@ void ball_collision_callback(unsigned body1, unsigned body2)
     }
 }
 
+void app_cleanup( void )
+{
+    if (app)
+    {
+        if (app->balls)
+        {
+            free(app->balls);
+        }
+        free(app);
+    }
+}
+
 void app_reset( void )
 {
     bool show_minimap = false;
-    if (app)
-    {
-        show_minimap = app->show_minimap;
-        free(app);
-    }
-
+    app_cleanup();
     app_init();
     app->show_minimap = show_minimap;
 }
