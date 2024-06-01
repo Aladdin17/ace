@@ -40,6 +40,8 @@ int get_layout_from_terminal(void)
 
 frame_time* app_init( void )
 {
+    const int max_balls = 55; // fits well into the table...
+
     app = malloc(sizeof(pool_app));
 
     // external initialisations

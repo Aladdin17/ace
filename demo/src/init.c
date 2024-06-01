@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <ace/math/vec3_ext.h>
 #include <time.h>
+#include <math.h>
 
 //--------------------------------------------------------------------------------------------------
 // Forward Declarations
@@ -25,9 +26,9 @@ void initialise_misc( pool_app* app )
     app->show_minimap = true;
     app->show_entity_info = true;
     app->min_ball_speed = 0.07f;
-    app->y_threshold = -1.0f;
+    app->y_threshold = -2.0f;
     app->cue_start_position = (ac_vec2){ 0.0f, 0.70f };
-    app->target_start_position = (ac_vec2){ 0.0f, -0.30f };
+    app->target_start_position = (ac_vec2){ 0.0f, -0.15f };
     app->ball_drop_height = 0.2f;
 }
 
@@ -344,7 +345,7 @@ void ball_formation_rectangle(pool_ball *balls, int num_balls, PhysWorld* world,
     int ball_index = 1;
     int row = 0;
     int col = 0;
-    int balls_per_row = num_balls / 2; // (simple 2 rows)
+    int balls_per_row = (num_balls / (int) sqrtf((float) num_balls)) - 1;
 
     while (ball_index <= num_balls)
     {
