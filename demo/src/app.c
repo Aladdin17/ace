@@ -305,54 +305,73 @@ void detect_balls_off_table(void)
                 continue;
             }
 
-            app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
-            *pos                                                    = ball_start_pos_to_world_pos(
+            *pos = ball_start_pos_to_world_pos(
                 &app->target_start_position,
                 &app->table.surface_center,
                 &(ac_vec2){ app->table.width, app->table.length },
                 app->ball_drop_height
             );
+            app->physics_world.velocities[app->balls[i].physics_id] = ac_vec3_zero();
         }
     }
 }
 
 void strike_target_ball(void)
 {
-    if ( !app->cue_stick.strike )
+    cue_stick* cue_stick = &app->cue_stick;
+
+    if ( !cue_stick->strike )
     {
         return;
     }
 
     int num_balls   = app->num_balls;
-    int target_ball = (int) app->cue_stick.target_ball;
+    int target_ball = (int) cue_stick->target_ball;
     if ( target_ball >= num_balls )
     {
         return;
     }
 
-    pool_ball* balls                  = app->balls;
-    PhysWorld* world                  = &app->physics_world;
-    unsigned   target_ball_physics_id = balls[target_ball].physics_id;
-    float      mass_kg                = world->masses[target_ball_physics_id];
+    pool_ball*         balls                  = app->balls;
+    PhysWorld*         world                  = &app->physics_world;
+    unsigned           target_ball_physics_id = balls[target_ball].physics_id;
+    float              mass_kg                = world->masses[target_ball_physics_id];
+    static const float contact_time_seconds   = 0.01f;  // 10ms
     if ( mass_kg > 0.0f )
     {
-        // calculate direction of force based on stick orientation, yaw, and pitch
-        ac_vec3 new_velocity = (ac_vec3){ .x = -sinf(ac_deg_to_rad(app->cue_stick.yaw)) *
-                                               cosf(ac_deg_to_rad(app->cue_stick.pitch_angle)),
-                                          .y = sinf(ac_deg_to_rad(app->cue_stick.pitch_angle)),
-                                          .z = -cosf(ac_deg_to_rad(app->cue_stick.yaw)) *
-                                               cosf(ac_deg_to_rad(app->cue_stick.pitch_angle)) };
-        new_velocity         = ac_vec3_normalize(&new_velocity);
-        new_velocity =
-            ac_vec3_scale(&new_velocity, app->cue_stick.max_power_ms * app->cue_stick.power);
+        // calculate normalised direction of force based on stick orientation, yaw, and pitch
+        ac_vec3 direction = (ac_vec3){
+            .x = -sinf(ac_deg_to_rad(cue_stick->yaw)) * cosf(ac_deg_to_rad(cue_stick->pitch_angle)),
+            .y = sinf(ac_deg_to_rad(cue_stick->pitch_angle)),
+            .z = -cosf(ac_deg_to_rad(cue_stick->yaw)) * cosf(ac_deg_to_rad(cue_stick->pitch_angle))
+        };
 
-        // apply to cue ball
-        world->velocities[target_ball_physics_id] = new_velocity;
+        direction = ac_vec3_normalize(&direction);
+
+        // calculate the impulse based on power and direction
+        ac_vec3 impulse =
+            ac_vec3_scale(&direction, cue_stick->power * cue_stick->max_power_newtons);
+
+        // calculate the acceleration of the ball based on 'F = ma' -> 'a = F/m'
+        ac_vec3 acceleration = ac_vec3_scale(&impulse, 1.0f / mass_kg);
+
+        // we will use the formula 'v = u + at' to calculate the new velocity
+        // where 'u' is the initial velocity of the ball
+        // 'a' is the acceleration of the ball
+        // and 't' is the contact time between the stick and the ball
+
+        // first we calculate the change in velocity based on acceleration and contact time
+        // 'dv = a * t'
+        ac_vec3 delta_velocity = ac_vec3_scale(&acceleration, contact_time_seconds);
+
+        // update the velocity of the ball -> 'v = u + dv'
+        world->velocities[target_ball_physics_id] =
+            ac_vec3_add(&world->velocities[target_ball_physics_id], &delta_velocity);
     }
 
     // reset stick power
-    app->cue_stick.power  = 0.0f;
-    app->cue_stick.strike = false;
+    cue_stick->power  = 0.0f;
+    cue_stick->strike = false;
 }
 
 //--------------------------------------------------------------------------------------------------

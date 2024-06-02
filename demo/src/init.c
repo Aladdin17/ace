@@ -79,20 +79,20 @@ void initialise_physics_world(PhysWorld* world, int update_rate)
 
 void initialise_cue_stick(cue_stick* stick)
 {
-    stick->target_ball     = 0;
-    stick->pitch_angle     = 0.0f;
-    stick->min_pitch_angle = 0.0f;
-    stick->max_pitch_angle = 90.0f;
-    stick->yaw             = 0.0f;
-    stick->power           = 0.0f;
-    stick->power_step      = 0.05f;
-    stick->max_power_ms    = 5.0f;
-    stick->rotation_step   = 2.0f;
-    stick->color           = (ac_vec3){ 0.651f, 0.51f, 0.035f };
-    stick->length          = 1.45f;
-    stick->radius          = 0.01f;
-    stick->draw_distance   = 0.1f;
-    stick->draw            = draw_cue_stick;
+    stick->target_ball       = 0;
+    stick->pitch_angle       = 0.0f;
+    stick->min_pitch_angle   = 0.0f;
+    stick->max_pitch_angle   = 90.0f;
+    stick->yaw               = 0.0f;
+    stick->power             = 0.0f;
+    stick->power_step        = 0.05f;
+    stick->max_power_newtons = 150.0f;
+    stick->rotation_step     = 2.0f;
+    stick->color             = (ac_vec3){ 0.651f, 0.51f, 0.035f };
+    stick->length            = 1.45f;
+    stick->radius            = 0.01f;
+    stick->draw_distance     = 0.1f;
+    stick->draw              = draw_cue_stick;
 }
 
 //--------------------------------------------------------------------------------------------------

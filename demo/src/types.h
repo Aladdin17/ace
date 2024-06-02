@@ -29,7 +29,7 @@ typedef struct cue_stick
     float yaw;
     float power;
     float power_step;
-    float max_power_ms;
+    float max_power_newtons;
     float rotation_step;
 
     // runtime
