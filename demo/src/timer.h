@@ -5,9 +5,13 @@
  */
 #pragma once
 
+/**
+ * \struct frame_time
+ * \brief Structure to hold the data for frame timing.
+ */
 typedef struct frame_time
 {
-    int update_rate;
-    int last_frame_time;
-    int current_frame_time;
+    int update_rate;         ///< The update rate of the application, in Hz.
+    int last_frame_time;     ///< The time of the last frame.
+    int current_frame_time;  ///< The time of the current frame.
 } frame_time;
