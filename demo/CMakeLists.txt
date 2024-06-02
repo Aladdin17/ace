@@ -14,6 +14,7 @@ set_target_properties(
     PROPERTIES
         C_STANDARD 11
         C_STANDARD_REQUIRED ON
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/executable
 )
 
 target_compile_options(
