@@ -368,7 +368,7 @@ void draw_init_screen(void)
 
     // render text to center of screen
     static const char* text_line_1  = "Welcome to ACE Pool!";
-    static const char* text_line_2  = "Please follow instructions in the console";
+    static const char* text_line_2  = "Please follow the instructions in the console";
     static const int   line_spacing = 20;
 
     // generate offsets
@@ -397,5 +397,4 @@ void draw_init_screen(void)
     }
 
     glutSwapBuffers();
-    fflush(stdin);
 }

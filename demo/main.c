@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(900, 600);
     glutInitWindowPosition(10, 10);
-    glutCreateWindow("ACE Pool Game");
+    glutCreateWindow("ACE Pool");
     glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
 
     // Local OpenGL Callbacks

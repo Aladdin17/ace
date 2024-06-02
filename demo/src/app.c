@@ -115,6 +115,7 @@ void get_config_from_user(void)
 {
     static const int max_balls = 55;  // fits well into the table...
 
+    fflush(stdin);
     printf("Please insert numbers only, pressing enter after each input.\n\n");
     app->num_balls         = get_num_balls_from_terminal(max_balls);
     app->ball_layout       = get_layout_from_terminal();
