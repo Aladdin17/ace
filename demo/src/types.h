@@ -1,3 +1,8 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \brief Defines the types needed by the application
+ */
 #pragma once
 #include "timer.h"
 #include <ace/math/vec2.h>
@@ -39,7 +44,7 @@ typedef struct cue_stick
     ac_vec3 color;
     float   length;
     float   radius;
-    float   draw_distance;  // in m from target ball
+    float   draw_distance;
     bool    visible;
     void (*draw)(const struct cue_stick*, const ac_vec3* target_position, float target_radius);
 } cue_stick;
@@ -93,15 +98,15 @@ typedef struct pool_app
     PhysWorld    physics_world;  ///< physics world
 
     // pool balls
-    pool_ball* balls;      ///* 0 is cue ball
-    int        num_balls;  ///* number of balls
-    ac_vec2    cue_start_position;
-    ac_vec2    target_start_position;
-    float      ball_drop_height;
+    pool_ball* balls;                  ///< 0 is cue ball
+    int        num_balls;              ///< number of balls
+    ac_vec2    cue_start_position;     ///< position of the cue ball on the table 0-1 (x, z)
+    ac_vec2    target_start_position;  ///< position of the target ball on the table 0-1 (x, z)
+    float      ball_drop_height;       ///< height to drop the balls from
 
     // pool table
     pool_table table;              ///< pool table
-    int        ball_layout;        ///< 0 = 9-ball, 1 = 8-ball
+    int        ball_layout;        ///< based on ball_layout enum
     float      surface_roughness;  ///< surface roughness
 
     // misc

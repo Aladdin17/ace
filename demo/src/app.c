@@ -1,3 +1,9 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \author Blake Caldwell
+ * \brief Application main loop, initialisation, and callbacks.
+ */
 #include "app.h"
 #include "init.h"
 #include "render.h"
@@ -15,11 +21,13 @@
 // Forward Declarations
 //--------------------------------------------------------------------------------------------------
 
+// user initialisation functions
 int   get_num_balls_from_terminal(int);
 int   get_layout_from_terminal(void);
 float get_surface_roughness_from_terminal(void);
 void  get_config_from_user(void);
 
+// game logic
 void ball_collision_callback(unsigned, unsigned);
 void reset_target_ball_if_sleeping(void);
 void update_cue_stick_visibility(void);
@@ -27,6 +35,10 @@ void detect_balls_off_table(void);
 void strike_target_ball(void);
 void update_main_camera(const orbit_camera*);
 void setup_lighting(void);
+
+// init functions
+void app_cleanup(void);
+void app_reset(void);
 
 //--------------------------------------------------------------------------------------------------
 // The app object and initialisation
@@ -256,6 +268,8 @@ void reset_target_ball_if_sleeping(void)
     if ( app->physics_world.sleeping[target_physics_id] )
     {
         app->physics_world.sleeping[target_physics_id]   = false;
+        // we apply a small downward velocity to help the stick not become
+        // visible when the ball is reset
         app->physics_world.velocities[target_physics_id] = (ac_vec3){ 0.0f, -0.01f, 0.0f };
         app->physics_world.positions[target_physics_id]  = ball_start_pos_to_world_pos(
             &app->cue_start_position,
@@ -519,14 +533,8 @@ void app_render_callback(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // update camera
+    // update camera and lighting
     update_main_camera(&app->main_camera);
-
-    // set up lighting
-    GLfloat light_position[] = { 0.0f, 3.0f, 0.0f, 1.0f };
-    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
     setup_lighting();
 
     int width  = glutGet(GLUT_WINDOW_WIDTH);
@@ -581,22 +589,27 @@ void update_main_camera(const orbit_camera* cam)
 
 void setup_lighting(void)
 {
+    // lighting properties
+    static const GLfloat light1_position[]       = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static const GLfloat light1_ambient[]        = { 0.5f, 0.5f, 0.5f, 1.0f };
+    static const GLfloat light1_diffuse[]        = { 0.3f, 0.3f, 0.3f, 1.0f };
+    static const GLfloat light1_specular[]       = { 0.7f, 0.7f, 0.7f, 1.0f };
+    static const GLfloat light1_spot_direction[] = { 0.0f, -1.0f, 0.0f };
+    static const GLfloat light1_spot_cutoff      = 45.0f;
+    static const GLfloat light1_spot_exponent    = 6.0f;
+
+    // enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
 
-    // Set light properties
-    GLfloat light_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat light_diffuse[]  = { 0.3f, 0.3f, 0.3f, 1.0f };
-    GLfloat light_specular[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-
-    // Set spotlight parameters
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0f);   // Spotlight cone angle
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 6.0f);  // Spotlight focus
+    glLightfv(GL_LIGHT0, GL_POSITION, light1_position);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light1_spot_direction);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light1_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light1_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light1_specular);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, light1_spot_cutoff);
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, light1_spot_exponent);
 }

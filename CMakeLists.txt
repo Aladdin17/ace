@@ -177,6 +177,7 @@ if( AC_BUILD_DOCS )
 			docs
 			${CMAKE_CURRENT_SOURCE_DIR}/include
 			${CMAKE_CURRENT_SOURCE_DIR}/src
+			${CMAKE_CURRENT_SOURCE_DIR}/demo
 		)
 
 		# add a post build command to run doxygen

@@ -1,12 +1,18 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \author Blake Caldwell
+ * \brief Implements the rendering functions for the application
+ */
 #include "render.h"
 #include "types.h"
 #include <GL/freeglut.h>
+#include <ace/math/math.h>
 #include <ace/math/vec3.h>
 #include <stdio.h>
 
 void draw_pool_ball(const pool_ball* ball, const ac_vec3* position)
 {
-    // draw ball
     glPushMatrix();
     glTranslatef(position->x, position->y, position->z);
     glColor3f(ball->color.x, ball->color.y, ball->color.z);
@@ -67,7 +73,6 @@ void draw_minimap(const pool_app* app)
     glDisable(GL_LIGHTING);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // set the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -87,6 +92,9 @@ void draw_minimap(const pool_app* app)
 
 void draw_powerbar(float power_ratio)
 {
+    // clamp the power ratio between the valid range, this should never be necessary
+    power_ratio = ac_clamp(power_ratio, 0.0f, 1.0f);
+
     // disable depth test for this overlay
     glPushAttrib(GL_DEPTH_TEST | GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
@@ -96,7 +104,6 @@ void draw_powerbar(float power_ratio)
     int width  = glutGet(GLUT_WINDOW_WIDTH);
     int height = glutGet(GLUT_WINDOW_HEIGHT);
 
-    // set the projection matrix
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -132,7 +139,7 @@ void draw_powerbar(float power_ratio)
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-    // restore depth test
+    // restore depth test and lighting
     glPopAttrib();
 }
 

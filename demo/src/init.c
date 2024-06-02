@@ -1,3 +1,9 @@
+/**
+ * \file
+ * \author Christien Alden
+ * \author Blake Caldwell
+ * \brief Initialisation functions for the pool app.
+ */
 #include "init.h"
 #include "render.h"
 #include "types.h"
@@ -5,6 +11,7 @@
 #include <ace/math/vec3_ext.h>
 #include <ace/physics/phys_world.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -12,9 +19,42 @@
 //--------------------------------------------------------------------------------------------------
 // Forward Declarations
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * \brief Sets up the balls in a triangle formation.
+ * \param[in,out] balls The balls to set up.
+ * \param[in] num_balls The number of balls to set up.
+ * \param[in] world The physics world to add the balls to.
+ * \param[in] start_pos The position to start the balls at.
+ * \param[in] ball_radius The radius of the balls.
+ */
 void    ball_formation_triangle(pool_ball*, int, PhysWorld*, ac_vec3, float);
+/**
+ * \brief Sets up the balls in a rectangle formation.
+ * \param[in,out] balls The balls to set up.
+ * \param[in] num_balls The number of balls to set up.
+ * \param[in] world The physics world to add the balls to.
+ * \param[in] start_pos The position to start the balls at.
+ * \param[in] ball_radius The radius of the balls.
+ */
 void    ball_formation_rectangle(pool_ball*, int, PhysWorld*, ac_vec3, float);
+/**
+ * \brief Generates a random mass for a ball between \p min and \p max.
+ * \param[in] min The minimum mass.
+ * \param[in] max The maximum mass.
+ * \return The random mass.
+ */
 float   generate_random_ball_mass(float, float);
+/**
+ * \brief Lerps between blue (light) and red (heavy) ball based on its mass.
+ * \param[in] mass The mass of the ball
+ * \param[in] min The minimum mass.
+ * \param[in] max The maximum mass.
+ * \return The color of the ball.
+ * \details The color of the ball is lerped between
+ * blue and red based on the mass of the ball and the min and max mass. Meaning that a ball at
+ * miniumum mass will be blue and a ball at maximum mass will be red.
+ */
 ac_vec3 generate_ball_color(float, float, float);
 
 //--------------------------------------------------------------------------------------------------
@@ -69,6 +109,12 @@ void initialise_orbit_camera(orbit_camera* camera)
 
 void initialise_physics_world(PhysWorld* world, int update_rate)
 {
+    // force an update rate of 120 if the user tries to set it to 0 or less
+    if ( update_rate <= 0 )
+    {
+        update_rate = 120;
+    }
+
     phys_init_world(world);
     world->timeStep = 1.0f / update_rate;
 }
@@ -101,33 +147,26 @@ void initialise_cue_stick(cue_stick* stick)
 
 void initialise_pool_table(PhysWorld* world, pool_table* table)
 {
-    // with the long side aligned with the z-axis
+    // table dimensions
     static const ac_vec3 table_origin               = { 0.0f, 0.0f, 0.0f };
     static const ac_vec3 table_top_collider_origin  = { 0.0f, -0.025f, 0.0f };
     static ac_vec3       table_top_half_extents     = { 0.455f, 0.025f, 0.91f };
     static ac_vec3       long_cushion_half_extents  = { 0.05f, 0.05f, 0.96f };
     static ac_vec3       short_cushion_half_extents = { 0.46f, 0.05f, 0.05f };
 
-    // static const ac_vec3 table_top_half_extents = {table->width / 2.0f, table->top_depth / 2.0f,
-    // table->length / 2.0f}; static const ac_vec3 table_top_collider_origin = {0.0f, 0.0f, 0.0f};
-    // static const ac_vec3 long_cushion_half_extents = {table->cushion_width / 2.0f,
-    // table->cushion_height / 2.0f, table->length / 2.0f + table->cushion_width}; static const
-    // ac_vec3 short_cushion_half_extents = {table->width / 2.0f + table->cushion_width,
-    // table->cushion_height / 2.0f, table->cushion_width / 2.0f};
-
+    // initialise the table object
     table->surface_center = table_origin;
     table->surface_color  = (ac_vec3){ 0.1f, 0.5f, 0.1f };
     table->cushion_color  = (ac_vec3){ 0.65f, 0.33f, 0.16f };
     table->leg_color      = (ac_vec3){ 0.55f, 0.23f, 0.06f };
-    table->length         = 1.82f;  // 0.91m half-length
-    table->width          = 0.91f;  // 0.455m half-width
-    table->top_depth      = 0.05f;  // 0.015m half-depth
-    table->cushion_width  = 0.10f;  // 0.05m half-width
-    table->cushion_height = 0.10f;  // 0.05m half-height
-    table->pocket_radius =
-        table->width * 0.055f;  // Pocket radius is approximately 5.5% of the table width
+    table->length         = 1.82f;                  // 0.91m half-length
+    table->width          = 0.91f;                  // 0.455m half-width
+    table->top_depth      = 0.05f;                  // 0.015m half-depth
+    table->cushion_width  = 0.10f;                  // 0.05m half-width
+    table->cushion_height = 0.10f;                  // 0.05m half-height
+    table->pocket_radius  = table->width * 0.055f;  // Approximately 5.5% of the table width
 
-    // add the table top
+    // add the table surface
     unsigned table_top_id = phys_add_entity(world, &table_top_collider_origin);
     phys_make_entity_static(world, table_top_id);
     phys_add_entity_collider(
@@ -348,6 +387,10 @@ void initialise_pool_balls(
     case ball_layout_rectangle:
         ball_formation_rectangle(balls, num_balls - 1, world, target_start_pos, radius);
         break;
+    default:
+        // not ideal but without a logging library this will do
+        printf("Invalid ball layout\n");
+        exit(1);
     }
 }
 
@@ -355,10 +398,11 @@ void ball_formation_triangle(
     pool_ball* balls, int num_balls, PhysWorld* world, ac_vec3 start_pos, float ball_radius
 )
 {
-    float spacing      = ball_radius * 1.8f;
-    int   ball_index   = 1;
-    int   row          = 0;
-    int   curr_row_len = 1;
+    const float spacing_modifier = 1.8f;
+    float       spacing          = ball_radius * spacing_modifier;
+    int         ball_index       = 1;
+    int         row              = 0;
+    int         curr_row_len     = 1;
 
     while ( ball_index <= num_balls )  // while more balls to place
     {

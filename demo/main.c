@@ -1,3 +1,7 @@
+/**
+ * \file
+ * \brief Provides opengl initialisation for the demo.
+ */
 #include "GL/freeglut.h"
 #include "src/app.h"
 
