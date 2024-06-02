@@ -366,11 +366,13 @@ void draw_init_screen(void)
 
     // setup the projection matrix
     glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
 
     // setup the modelview matrix
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     glLoadIdentity();
 
     // render text to center of screen
@@ -403,5 +405,10 @@ void draw_init_screen(void)
         glutBitmapCharacter(GLUT_BITMAP_8_BY_13, text_line_2[i]);
     }
 
+    // reset the matrices
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
     glutSwapBuffers();
 }
