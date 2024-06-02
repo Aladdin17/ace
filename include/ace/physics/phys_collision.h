@@ -1,11 +1,11 @@
 /**
- * \file phys_collision.h
+ * \file
+ * \author Blake Caldwell
  * \brief Contains the definitions for collision detection and resolution.
  */
 #pragma once
-
-#include "ace/geometry/intersection.h"
 #include "phys_components.h"
+#include <ace/geometry/intersection.h>
 
 #ifdef __cplusplus
 extern "C" {

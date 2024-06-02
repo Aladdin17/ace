@@ -1,7 +1,23 @@
-#include "ace/physics/phys_world.h"
-#include "ace/physics/phys_collision.h"
-#include "memory.h"
-#include "stdio.h"
+/**
+ * \file
+ * \author Blake Caldwell
+ * \brief Implements the physics world.
+ */
+#include <ace/physics/phys_collision.h>
+#include <ace/physics/phys_world.h>
+#include <memory.h>
+#include <stdio.h>
+
+//--------------------------------------------------------------------------------------------------
+// Forward Declarations
+//--------------------------------------------------------------------------------------------------
+
+void update_collisions(PhysWorld* world);
+void update_movements(PhysWorld* world);
+
+//--------------------------------------------------------------------------------------------------
+// Public Functions
+//--------------------------------------------------------------------------------------------------
 
 void phys_init_world(PhysWorld* world)
 {
@@ -76,10 +92,9 @@ void phys_sleep_entity(PhysWorld* world, unsigned entity, bool sleep)
     world->sleeping[entity] = sleep;
 }
 
-// update funcs
-
-void update_collisions(PhysWorld* world);
-void update_movements(PhysWorld* world);
+//--------------------------------------------------------------------------------------------------
+// Update Functions
+//--------------------------------------------------------------------------------------------------
 
 void phys_update(PhysWorld* world, float deltaTime)
 {

@@ -1,5 +1,6 @@
 /**
- * \file phys_components.h
+ * \file
+ * \author Blake Caldwell
  * \brief Contains the definitions for physics components.
  */
 #pragma once

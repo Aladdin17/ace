@@ -1,6 +1,12 @@
-#include "ace/physics/phys_collision.h"
+/**
+ * \file
+ * \author Blake Caldwell
+ * \brief Implements collision detection and resolution.
+ */
 #include <ace/math/vec2.h>
+#include <ace/physics/phys_collision.h>
 #include <math.h>
+
 typedef IntersectionResult (*collision_detection_func)(
     const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 );
