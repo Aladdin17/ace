@@ -111,11 +111,7 @@ frame_time* app_init(void)
 
     app = malloc(sizeof(pool_app));
 
-    // clear the input buffer and screen
-    // not the best but helpful for the user to see the prompt
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glutSwapBuffers();
-    fflush(stdin);
+    draw_init_screen();
 
     // read user config from the terminal
     printf("Welcome to the ACE Pool Game\n\n");

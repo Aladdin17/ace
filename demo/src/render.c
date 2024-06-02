@@ -351,3 +351,51 @@ void draw_controls_overlay(void)
 
     glPopAttrib();
 }
+
+void draw_init_screen(void)
+{
+    // clear the input buffer and screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // setup the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
+
+    // setup the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    // render text to center of screen
+    static const char* text_line_1  = "Welcome to ACE Pool!";
+    static const char* text_line_2  = "Please follow instructions in the console";
+    static const int   line_spacing = 20;
+
+    // generate offsets
+    const int y_offset_1 = glutGet(GLUT_WINDOW_HEIGHT) / 2 + line_spacing;
+    const int text_length_1 =
+        glutBitmapLength(GLUT_BITMAP_8_BY_13, (const unsigned char*) text_line_1) / 2;
+    const int x_offset_1 = glutGet(GLUT_WINDOW_WIDTH) / 2 - text_length_1;
+
+    const int y_offset_2 = glutGet(GLUT_WINDOW_HEIGHT) / 2 - line_spacing;
+    const int text_length_2 =
+        glutBitmapLength(GLUT_BITMAP_8_BY_13, (const unsigned char*) text_line_2) / 2;
+    const int x_offset_2 = glutGet(GLUT_WINDOW_WIDTH) / 2 - text_length_2;
+
+    // render text
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2d(x_offset_1, y_offset_1);
+    for ( int i = 0; text_line_1[i] != '\0'; i++ )
+    {
+        glutBitmapCharacter(GLUT_BITMAP_8_BY_13, text_line_1[i]);
+    }
+
+    glRasterPos2d(x_offset_2, y_offset_2);
+    for ( int i = 0; text_line_2[i] != '\0'; i++ )
+    {
+        glutBitmapCharacter(GLUT_BITMAP_8_BY_13, text_line_2[i]);
+    }
+
+    glutSwapBuffers();
+    fflush(stdin);
+}

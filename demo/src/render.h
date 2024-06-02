@@ -18,3 +18,4 @@ void draw_powerbar(float power_ratio);
 void draw_entity_info(const PhysWorld* world, unsigned entity_id);
 
 void draw_controls_overlay(void);
+void draw_init_screen(void);
