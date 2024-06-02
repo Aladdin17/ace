@@ -10,7 +10,6 @@
  * but are provided here for convenience and to avoid code duplication.
  */
 #pragma once
-#include "mat2.h"
 #include "vec2.h"
 
 #ifdef __cplusplus
@@ -66,17 +65,6 @@ ac_vec2 ac_vec2_project(const ac_vec2* a, const ac_vec2* b);
  * If either vector is of zero length or NaN, the returned vector will have NaN components.
  */
 ac_vec2 ac_vec2_reflect(const ac_vec2* incoming, const ac_vec2* normal);
-/**
- * \ingroup vec2
- * \brief Calculates a vector that has been multiplied by a matrix.
- * \param[in] vec The vector to multiply.
- * \param[in] mat The matrix to multiply by.
- * \return The resulting vector.
- * \details
- * If either \p vec or \p mat fails their respective is_nan check, the resulting
- * vector will be the nan vector.
- */
-ac_vec2 ac_vec2_mult_matrix(const ac_vec2* vec, const ac_mat2* mat);
 
 #ifdef __cplusplus
 }
