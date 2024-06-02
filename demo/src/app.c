@@ -14,6 +14,12 @@
 //--------------------------------------------------------------------------------------------------
 // Forward Declarations
 //--------------------------------------------------------------------------------------------------
+
+int   get_num_balls_from_terminal(int);
+int   get_layout_from_terminal(void);
+float get_surface_roughness_from_terminal(void);
+void  get_config_from_user(void);
+
 void ball_collision_callback(unsigned, unsigned);
 void reset_target_ball_if_sleeping(void);
 void update_cue_stick_visibility(void);
@@ -105,20 +111,23 @@ float get_surface_roughness_from_terminal(void)
     return roughness;
 }
 
-frame_time* app_init(void)
+void get_config_from_user(void)
 {
-    const int max_balls = 55;  // fits well into the table...
+    static const int max_balls = 55;  // fits well into the table...
 
-    app = malloc(sizeof(pool_app));
-
-    draw_init_screen();
-
-    // read user config from the terminal
-    printf("Welcome to the ACE Pool Game\n\n");
+    printf("Please insert numbers only, pressing enter after each input.\n\n");
     app->num_balls         = get_num_balls_from_terminal(max_balls);
     app->ball_layout       = get_layout_from_terminal();
     app->surface_roughness = get_surface_roughness_from_terminal();
     printf("Starting pool with %d balls\n\n\n", app->num_balls - 1);
+}
+
+frame_time* app_init(void)
+{
+    // allocate memory for the app and base initialisation
+    app = malloc(sizeof(pool_app));
+    draw_init_screen();
+    get_config_from_user();
 
     // external initialisations
     initialise_misc(app);
@@ -142,6 +151,7 @@ frame_time* app_init(void)
     );
     initialise_cue_stick(&app->cue_stick);
 
+    // the caller needs this to register the timer callback
     return &app->timer;
 }
 
