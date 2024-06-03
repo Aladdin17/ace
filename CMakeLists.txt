@@ -53,6 +53,9 @@ add_subdirectory( vendor )
 # link to the freeglut library
 target_link_libraries( ${PROJECT_NAME} PRIVATE freeglut_static )
 
+# add demo
+add_subdirectory(demo)
+
 option( AC_BUILD_TESTS "Build ace test suites" OFF )
 if( AC_BUILD_TESTS )
 	# modify base library config for testing
@@ -174,6 +177,7 @@ if( AC_BUILD_DOCS )
 			docs
 			${CMAKE_CURRENT_SOURCE_DIR}/include
 			${CMAKE_CURRENT_SOURCE_DIR}/src
+			${CMAKE_CURRENT_SOURCE_DIR}/demo
 		)
 
 		# add a post build command to run doxygen

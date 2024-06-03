@@ -1,12 +1,21 @@
-#include "phys_collision.h"
+/**
+ * \file
+ * \author Blake Caldwell
+ * \brief Implements collision detection and resolution.
+ */
+#include <ace/math/vec2.h>
+#include <ace/physics/phys_collision.h>
 #include <math.h>
+
 typedef IntersectionResult (*collision_detection_func)(
     const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
 );
+
 static const collision_detection_func collisionDetectionFunctions[2][2] = {
-    // sphere,       aabb
-    { sphere_sphere,   AABB_sphere }, // sphere
-    {   sphere_AABB, sphere_sphere }  // aabb
+    // 3hrs of my life was spent on finding that this indexing was wrong
+    // SPHERE_C, AABB_C
+    { sphere_sphere, sphere_AABB }, // SPHERE_C
+    {   AABB_sphere,        NULL }  // AABB_C
 };
 
 IntersectionResult check_collision(Collider* c1, ac_vec3* const p1, Collider* c2, ac_vec3* const p2)
@@ -36,6 +45,11 @@ void resolve_collision(
     bool                s2
 )
 {
+    if ( ac_vec3_is_nan(&info->contactNormal) || ac_vec3_is_nan(&info->contactPoint) )
+    {
+        return;
+    }
+
     ac_vec3 relativeVelocity = ac_vec3_sub(v2, v1);
 
     float impulse = ac_vec3_dot(&relativeVelocity, &info->contactNormal);
@@ -43,7 +57,7 @@ void resolve_collision(
     if ( impulse <= 0.0f || (s1 || s2) )
     {
         // calculate the impulse
-        float impulseScalar  = -(1.0f + 0.7f) * impulse;  // 0.8 is the coefficient of restitution
+        float impulseScalar  = -(1.0f + 0.8f) * impulse;  // 0.8 is the coefficient of restitution
         impulseScalar       /= (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
 
         // calc velocity changes
@@ -51,30 +65,35 @@ void resolve_collision(
         velocityChange1 = ac_vec3_scale(&info->contactNormal, impulseScalar / (s1 ? 1.0f : m1));
         velocityChange2 = ac_vec3_scale(&info->contactNormal, impulseScalar / (s2 ? 1.0f : m2));
 
-        const float penetrationSlop  = 0.01f;  // max allowed overlap before depenetration
+        const float penetrationSlop  = 0.001f;  // max allowed overlap before depenetration
         float       penetrationDepth = fmaxf(info->penetrationDepth - penetrationSlop, 0.0f);
 
-        // depenetration is variable on the speed. higher speed = bigger depen
-        float relativeSpeed = vec3f_magnitude(&relativeVelocity);
+        // set the default depenetration, even distibution is both dynamic
+        // if both these ifs are true, the depenetration will be 0.5f
+        // but neither will be applied since they are static
+        ac_vec2 depenetrationScalars = { 0.5f, 0.5f };
+        if ( s1 )
+        {
+            depenetrationScalars.y += 0.5f;
+        }
+        if ( s2 )
+        {
+            depenetrationScalars.x += 0.5f;
+        }
 
-        float totalInverseMass = (s1 ? 0.0f : 1.0f / m1) + (s2 ? 0.0f : 1.0f / m2);
-        float depenetrationScalar =
-            penetrationDepth / (totalInverseMass > 0.0f ? totalInverseMass : 1.0f);
-
-        // scale depen with relative speed
-        depenetrationScalar *= fmaxf(1.0f, relativeSpeed * 0.1f);
-
-        ac_vec3 correction = ac_vec3_scale(&info->contactNormal, depenetrationScalar);
-
-        // apply velocity and position correction to non-static objects
+        // apply velocity and position correction to non-static objects only
         if ( !s1 )
         {
+            ac_vec3 correction =
+                ac_vec3_scale(&info->contactNormal, penetrationDepth * depenetrationScalars.x);
             *v1   = ac_vec3_sub(v1, &velocityChange1);  // v1 -= velocityChange1
             *pos1 = ac_vec3_sub(pos1, &correction);
         }
 
         if ( !s2 )
         {
+            ac_vec3 correction =
+                ac_vec3_scale(&info->contactNormal, penetrationDepth * depenetrationScalars.y);
             *v2   = ac_vec3_add(v2, &velocityChange2);  // v2 += velocityChange2
             *pos2 = ac_vec3_add(pos2, &correction);
         }

@@ -1,3 +1,8 @@
+/**
+ * \file
+ * \author Blake Caldwell
+ * \brief Defines intersection functions for various shapes.
+ */
 #pragma once
 #include "../math/vec3.h"
 #include "../physics/phys_components.h"

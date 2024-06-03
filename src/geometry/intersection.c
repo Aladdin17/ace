@@ -1,6 +1,10 @@
+/**
+ * \file
+ * \author Blake Caldwell
+ * \brief Implements intersection functions for various shapes.
+ */
 #include <ace/geometry/intersection.h>
 #include <math.h>
-#
 
 IntersectionResult sphere_sphere(
     const Collider* c1, const ac_vec3* p1, const Collider* c2, const ac_vec3* p2
@@ -66,7 +70,7 @@ IntersectionResult sphere_AABB(
         closestPoint.data[i] = fmaxf(Bmin.data[i], fminf(p1->data[i], Bmax.data[i]));
     }
 
-    ac_vec3 diffVec = ac_vec3_sub(p1, &closestPoint);
+    ac_vec3 diffVec = ac_vec3_sub(&closestPoint, p1);
 
     float distSquared         = ac_vec3_dot(&diffVec, &diffVec);
     float sphereRadiusSquared = sphere->radius * sphere->radius;
@@ -91,19 +95,3 @@ IntersectionResult AABB_sphere(
 {
     return sphere_AABB(c2, p2, c1, p1);
 }
-
-// IntersectionResult // we dont need to implement
-// AABB_AABB(ac_vec3 *c1Extents, const ac_vec3 *const p1, ac_vec3 *c2Extents,
-//           const ac_vec3 *const p2) { // MAKE COLLISION RESULT PROPERLY
-
-//   //
-//   http://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf
-//   //  page 119
-//   // return !(
-//   //     abs(p1->x - p2->x) > (c1Extents->x + c2Extents->x) ||
-//   //     abs(p1->y - p2->y) > (c1Extents->y + c2Extents->y) ||
-//   //     abs(p1->z - p2->z) > (c1Extents->z + c2Extents->z));
-
-//   IntersectionResult c;
-//   return c;
-// }

@@ -93,16 +93,3 @@ ac_vec2 ac_vec2_reflect(const ac_vec2* incoming, const ac_vec2* normal)
     ac_vec2 scaled_n   = ac_vec2_scale(&n_normalized, projection_modifier * projection);
     return ac_vec2_sub(incoming, &scaled_n);
 }
-
-ac_vec2 ac_vec2_mult_matrix(const ac_vec2* vec, const ac_mat2* mat)
-{
-    // guard against NaN vectors
-    if ( ac_vec2_is_nan(vec) || ac_mat2_is_nan(mat) )
-    {
-        return ac_vec2_nan();
-    }
-
-    // multiply the vector by the matrix
-    return (ac_vec2){ .x = vec->x * mat->a + vec->y * mat->c,
-                      .y = vec->x * mat->b + vec->y * mat->d };
-}

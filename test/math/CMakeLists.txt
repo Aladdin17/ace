@@ -7,6 +7,4 @@ target_sources(
 		vec2_test.cpp
 		vec3_ext_test.cpp
 		vec3_test.cpp
-		vec4_ext_test.cpp
-		vec4_test.cpp
 )

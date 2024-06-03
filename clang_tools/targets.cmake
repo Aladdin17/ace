@@ -26,6 +26,8 @@ else()
 			${CMAKE_SOURCE_DIR}/src/*.c
 			${CMAKE_SOURCE_DIR}/src/*.h
 			${CMAKE_SOURCE_DIR}/include/*.h
+			${CMAKE_SOURCE_DIR}/demo/*.c
+			${CMAKE_SOURCE_DIR}/demo/*.h
 		)
 
 		add_custom_target(
@@ -69,6 +71,7 @@ else()
 			GLOB_RECURSE
 			TIDY_SOURCE_FILES
 			${CMAKE_SOURCE_DIR}/src/*.c
+			${CMAKE_SOURCE_DIR}/demo/*.c
 		)
 
 		add_custom_target(
